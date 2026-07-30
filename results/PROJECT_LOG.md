@@ -51,3 +51,33 @@ report; not installed pending the decision.
 `PREREGISTRATION.md` drafted and committed, marked DRAFT: trait dimensions +
 correlation matrix (section 2) and all stage bars from PRD section 7. Awaiting
 owner sign-off on (1) trait dimensions, (2) the freeze.
+
+## 2026-07-30 — Gate 0 approved; PREREGISTRATION frozen; Stage 1 started
+
+Owner approved Gate 0 with six amendments (diversity criteria replaced with
+pairwise agreement + participation ratio; temperature freeze; fixed splits;
+Qwen3.6-27B frozen as the system-side model; tightened wording; test–retest
+context reporting). Amendments applied and the document is FROZEN as of today.
+One orchestrator addition flagged to the owner: the obedience definition gained
+"answers on negatively-loading items are sign-flipped before averaging" —
+without it the measure is ill-defined.
+
+Stage 1 work so far:
+- Qwen3.6-27B copied [sibling-project] → glassbox on Leonardo, byte- and content-verified,
+  zero billed compute. Note: the checkpoint is multimodal (vision configs
+  present) — irrelevant for text serving, worth knowing at Stage 3 wiring.
+- Persona factory (M0) built and committed: seed-reproducible sampler matching
+  the frozen correlation matrix (a test parses the matrix out of
+  PREREGISTRATION.md and demands exact equality), card prompts that never name
+  a trait or a number, ingest with leak-based card rejection. One design fix
+  during review: trait-direction wording now survives into the card prompt for
+  |θ| ≥ 0.15 (4-band scheme) instead of being lost below 0.5 — direction reaches
+  the card writer for 88% of trait draws instead of 62%.
+- Question bank (M1) machinery built and committed; real bank generated with the
+  dev API (252 closed + 20 open, validation green). Orchestrator sample review
+  found 3 defects (a miskeyed item, a weak item drafted on the wrong dimension,
+  a distractor with plausible traditionalism signal) → full-bank audit
+  dispatched before any persona answers it.
+- STANDING LEAKAGE-HUNT TRIGGER (noted for Stage 2): distractors carry real
+  topic-domain tags; if any distractor fits materially nonzero discrimination
+  in the Stage-2 MIRT fit, that is a leakage hunt, not a shrug.
