@@ -112,3 +112,18 @@ the session scratchpad; rebuild log will be preserved.
 
 Persona side unaffected: 500 personas minted (seed 548, manifest recorded);
 Gemma card-writing job running on Leonardo in parallel.
+
+## 2026-07-31 — Cards: 499/500 rendered and leak-checked
+
+Card batch (jobs 51146579 + 51150672, 11.05 core-hours total): 500 biographies
+rendered; ingest leak-checker rejected 6 that used trait vocabulary ("risk
+tolerance"/"risk appetite") — exactly the leak class it exists to catch. A
+fresh-seed retry cleared 5. p0314 leaked the same phrase twice; its re-render
+(prompt gains a one-line vocabulary ban, new seed) is folded into the next GPU
+job rather than a standalone submission — engine init dominates small jobs.
+Independent re-scan of all 499 stored cards: zero leaks. Noted for the record:
+demographic combinations can be odd (e.g. a 79-year-old barista with kids at
+home) — no frozen bar tests demographic realism; accepted as-is.
+
+Caveat recorded: ingest rewrites card_rejects.jsonl per run (it now lists only
+p0314); the round-1 reject list lives in this log and in the raw completions.

@@ -15,3 +15,4 @@ accordingly if it is ever used for bulk development calls.
 | 2026-07-30 | 1 | Question bank generation (252 closed + 20 open items, 108 drafting calls) | gemini-3.5-flash-lite API, ~44k in tokens | ≈$0.02 |
 | 2026-07-30 | 1 | Qwen3.6-27B copy [sibling-project] → glassbox (login-node I/O, no jobs) | none billed | 0 |
 | 2026-07-31 | 1 | Gemma card writing, 500 personas (job 51146579, 1 node × 11m17s) | 6.02 core-hours | 6.02 core-h |
+| 2026-07-31 | 1 | Card retry for 6 leak-rejected personas (job 51150672, 1 node × 9m26s) | 5.03 core-hours | 5.03 core-h |
