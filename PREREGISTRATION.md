@@ -1,11 +1,15 @@
 # PREREGISTRATION — Project GLASSBOX
 
-> **STATUS: DRAFT — NOT FROZEN. Awaiting owner sign-off at Gate 0.**
-> Once the owner signs off, this document is frozen. After that, nothing in it moves.
-> Any measurement done differently from what is written here is labeled **exploratory**
-> in every report where it appears. Deviations require stopping and asking the owner first.
+> **STATUS: FROZEN — approved by the owner on 2026-07-30, with the owner's six
+> amendments applied** (diversity criteria replaced; temperature-freeze and
+> fixed-splits clauses added; frozen system-side model recorded; obedience,
+> item-recovery, and Gate-5 wording tightened; test–retest context reporting
+> added; Stage-5 RL-training batch noted).
+> Nothing in this document moves. Any measurement done differently from what is
+> written here is labeled **exploratory** in every report where it appears.
+> Deviations require stopping and asking the owner first.
 
-Sign-off: ______________________  Date frozen: ______________
+Sign-off: owner (chat, Gate 0 approval with amendments).  Date frozen: 2026-07-30
 
 ---
 
@@ -73,6 +77,12 @@ tuning knob** and is recorded in the experiment config, not here.
 **Population size:** 300–500 personas. Persona cards are written by Gemma 4 31B
 conditioned on θ; cards show traits as life details, never as labels or numbers.
 
+The persona factory is fully seed-reproducible: every batch is minted from a
+recorded seed and can be re-created or extended at any time. A separate, freshly
+generated batch of personas will be created for RL policy training in Stage 5,
+so the original held-out personas are never seen by the RL policy during
+training and remain clean for confirmatory evaluation.
+
 ## 3. The Wall (leakage rules — violations void the study)
 
 1. `data/truth/` (θ, full cards, noise params) is readable only by `src/eval/`.
@@ -107,9 +117,21 @@ Every evaluation reports lift over baseline; raw accuracy alone is never reporte
   distribution, estimated from 50 samples per item at fixed temperature.
 - **Calibration:** ECE (10 equal-width bins) and coverage of ±1σ credible intervals
   (nominal 68%, accepted band 60–75%).
-- **Diversity clustering (Gate 1):** k-means on personas' standardized full-bank
-  answer vectors; k chosen by mean silhouette over k = 10…60; the chosen k is the
-  "number of behavioral clusters".
+- **Diversity measures (Gate 1):** the population is a continuous multivariate
+  normal — it has no true clusters, so no clustering method is used. Two measures
+  instead: (i) pairwise agreement = fraction of full-bank items on which two
+  personas give the **exact same** answer (exact match on binary and on Likert-5);
+  (ii) effective dimensionality = the participation ratio (Σλ)² / Σλ² of the
+  eigenvalues λ of the covariance of the personas × items standardized answer
+  matrix.
+- **Responder sampling temperature** is tuned during Stage 1 only, frozen at
+  Gate 1, recorded here at freeze-time as an addendum line, and never changed
+  afterward. All "true answer distribution" estimates in every later stage use
+  this temperature.
+- **Fixed splits:** held-out sets are created once, before Stage 2, with a
+  recorded seed: 20% of personas and 20% of items are held out. The same
+  held-out sets are used for all confirmatory results in Stages 2–5. Open-ended
+  probe stratification (near / same-domain / far) is fixed at the same time.
 - **Test–retest (Gate 1):** re-ask 30 fixed items per persona in a fresh session;
   agreement = exact match on binary, within ±1 on Likert-5.
 - **Predictor:** ordinal logit (graded response form) combining θ̂ with item loadings.
@@ -122,17 +144,31 @@ Every evaluation reports lift over baseline; raw accuracy alone is never reporte
 ## 6. Frozen bars per gate
 
 ### Gate 1 — population QA (sanity gate; development stage)
-- **Diversity:** no persona pair with answer agreement > 95% on the full bank;
-  silhouette-chosen k ≥ 30 behavioral clusters.
-- **Trait obedience:** median per-dimension correlation (point-biserial/polyserial)
-  between planted θ and own bank answers ≥ 0.5.
-- **Realistic inconsistency:** population test–retest agreement in the 70–90% band.
+- **Diversity (all three must hold):**
+  (a) no persona pair with exact-match answer agreement > 95% on the full bank;
+  (b) median pairwise exact-match agreement across all persona pairs ≤ 80%;
+  (c) effective dimensionality (participation ratio, §5) ≥ 5.
+- **Trait obedience:** for each dimension d, the correlation across personas
+  between planted θ_d and the persona's mean standardized answer on the items
+  designed to load on dimension d (answers on negatively-loading items are
+  sign-flipped before averaging). Bar: median across the 8 dimensions ≥ 0.5.
+- **Realistic inconsistency:** population test–retest agreement (30 re-asked
+  items per persona, fresh session; exact match on binary, within ±1 on
+  Likert-5) in the 70–90% pooled band. For context, binary and Likert-5
+  agreement are additionally reported separately alongside their chance levels
+  (binary exact-match ≈ 50%; Likert-5 within-±1 ≈ 52% under uniform answering).
+  Reported only — no additional bar.
+- The dashboard population page shows the pairwise-agreement histogram and the
+  eigenvalue spectrum (no cluster plots), plus trait distributions and the
+  test–retest histogram.
 
 ### Gate 2 — static recovery (full answer matrix, no interviews)
 - **Trait recovery:** per-dimension r(θ̂_fit, θ_true) ≥ 0.8 on held-out personas,
   all 8 dimensions, after Procrustes alignment.
-- **Item recovery:** fitted vs designed loadings r ≥ 0.7 on held-out items; designed
-  weak items must show low fitted discrimination (ordering sanity check).
+- **Item recovery:** for each held-out item, the correlation (and cosine
+  similarity) between its fitted and its designed 8-dimensional loading vector,
+  computed per item. Bar: median across held-out items r ≥ 0.7. Designed weak
+  items must show low fitted discrimination (ordering sanity check).
 - **Blur honesty:** ±1σ intervals cover true θ 60–75% of the time.
 - **Dimensionality check (reported, no bar):** held-out likelihood vs number of
   latent dimensions; is the planted 8 recoverable?
@@ -156,8 +192,9 @@ Every evaluation reports lift over baseline; raw accuracy alone is never reporte
   cross-tabs, with error bars.
 
 ### Gate 5 — adaptive interviewing + RL (efficiency result)
-- **(a)** An adaptive interviewer (RL or info-gain heuristic) reaches the Gate-3 blur
-  target in ≤ 50% of the questions random ordering needs.
+- Target = the Gate-3 accuracy level: per-dimension RMSE(θ̂, θ_true) ≤ 0.5.
+- **(a)** Median questions-to-target for the adaptive interviewer (RL or
+  info-gain heuristic) ≤ 50% of median questions-to-target for random ordering.
 - **(b)** RL vs heuristic on questions-to-target: reported either way; heuristic
   winning is a legitimate finding, not a failure.
 
@@ -169,8 +206,10 @@ Every experiment logs compute (Leonardo core-hours) and API cost in
 ## 8. Models
 
 - Personas (card writing + responding): Gemma 4 31B on Leonardo.
-- System side (interviewer, encoders): **decision pending at Gate 0** — Gemini
-  flash-lite via API or an approved open-source dense model of a different family
-  on Leonardo. Whichever is chosen, the Wall's family-split rule (§3.3) holds.
+- System side (interviewer, encoders): **frozen at Gate 0 — Qwen3.6-27B on
+  Leonardo** (dense, non-Gemma family; satisfies the Wall's family-split rule,
+  §3.3). All confirmatory (bar-facing) results are produced with this frozen
+  system-side model. Gemini flash-lite and OpenRouter qwen3.7-flash are
+  development tools only and never appear in reported confirmatory numbers.
 - Predictor and MIRT fitting: pure Python statistical code, no LLM.
 - Anthropic models are never used for simulating humans or grading.

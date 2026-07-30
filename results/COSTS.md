@@ -2,6 +2,11 @@
 
 Every experiment logs its compute and API cost here, as it runs, not afterwards.
 
+**Warning on OpenRouter `qwen/qwen3.7-flash`:** it is a reasoning model and spends
+hidden thinking tokens on every call (~180 output tokens for a one-word reply).
+Its effective per-call cost is several times the headline per-token price. Budget
+accordingly if it is ever used for bulk development calls.
+
 | Date | Stage | What | Compute/API | Cost |
 | --- | --- | --- | --- | --- |
 | 2026-07-30 | 0 | Gemini API path verification (1 trivial call) | gemini-3.5-flash-lite API, 8 in / 1 out tokens | ≈$0.00 |
