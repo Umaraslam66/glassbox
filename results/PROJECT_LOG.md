@@ -127,3 +127,34 @@ home) — no frozen bar tests demographic realism; accepted as-is.
 
 Caveat recorded: ingest rewrites card_rejects.jsonl per run (it now lists only
 p0314); the round-1 reject list lives in this log and in the raw completions.
+
+## 2026-07-31 — Question bank PLANTED after four QA rounds
+
+The bank (252 closed + 20 open) passed independent verification and is now
+final: no further content changes without owner decision. The path there,
+honestly: initial generation → audit flagged 95 → fixes failed verification
+(9 bad fixes + ~24% residual defects in a control sample) → full vehicle-map
+rebuild (101 items; 16 blocking residuals) → scoped final fixes (~50 items;
+2 new blocking) → five micro-fixes → PASS. Cumulative: ~115 of 272 items
+rewritten, 14 retagged, design table byte-identical throughout. Every round's
+findings and fixes are preserved in the session scratchpad logs.
+
+KNOWN INSTRUMENT LIMITATIONS (accepted, watch at Gates 1–2):
+- Weak items q229, q234 may be non-monotonic (both poles can disagree) —
+  inspect their fitted signs in Stage 2; low discrimination is expected and
+  fine, a flipped sign is not.
+- PRC− shares one syntactic frame ("without ever checking what it costs")
+  across 4 items — possible method factor.
+- LOC has a 6-item "would you live elsewhere" cluster (q170/q174/q180/q184/
+  q186/q230) — within-dimension redundancy, not cross-dimension leakage.
+- q006/q039 sit adjacent on the planted-zero TRU–RSK pair (bank-your-savings
+  vehicle); faint opposing side-signals on q040/q196/q200 should wash out —
+  check the TRU–RSK recovered correlation specifically.
+- q190 brushes the ENV throwaway vehicle (ENV–LOC planted 0.00).
+- q166/q145/q157 form a machine-vs-person family within TEC (all TEC-only; no
+  cross-dimension harm).
+- Closed-only domain split moved (technology 14 / money 22) though the pooled
+  frozen table is unchanged — matters only if closed items are ever stratified
+  by domain alone.
+- Realistic answerability premises (home/garden, employment clusters) and
+  style nits accepted as survey realism.
