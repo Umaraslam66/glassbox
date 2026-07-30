@@ -81,3 +81,34 @@ Stage 1 work so far:
 - STANDING LEAKAGE-HUNT TRIGGER (noted for Stage 2): distractors carry real
   topic-domain tags; if any distractor fits materially nonzero discrimination
   in the Stage-2 MIRT fit, that is a leakage hunt, not a shrug.
+
+## 2026-07-30 — Bank QA: fix round 1 FAILED verification; structured rebuild ordered
+
+Honest record of a failed round. The first bank audit flagged 95 of 272 items
+(sign errors, wrong dimensions, near-duplicates). Fixes were applied and
+validated mechanically — then an independent verification pass (fresh agent,
+adversarial, with a 25-item control sample of untouched items) returned NO:
+
+- 9 of the 95 fixes were still defective (new confounds, unsupported secondary
+  loadings, a distractor with price-habit signal).
+- Control sample: 6/25 untouched items defective (~24%, CI 9–45%) — the first
+  audit had a material false-negative rate.
+- Systematic wording bias: ENV items carrying price language, RSK items set in
+  tech contexts, TRD leaning on paper-vs-digital — the bank would manufacture
+  the very correlations the study must prove it can recover (ENV–PRC planted at
+  −0.15, RSK–TEC at +0.40, TRD–TEC at −0.35).
+- Same behavioral "vehicle" loaded on different dimensions in different items
+  (cheapest-X on ENV and PRC; cash-vs-bank on TRU and RSK), undermining
+  separability.
+- What WAS clean: zero sign/keying errors remain, public/truth files perfectly
+  consistent, no leakage.
+
+Decision: not another patch round. Full content rebuild against a vehicle map
+(each behavioral vehicle belongs to exactly one dimension; banned-context lists
+per dimension; a correlation-bias budget; reverse-keyed items must use distinct
+vehicles). Design table, item ids, and slots preserved. Acceptance requires a
+fresh full-bank verification audit — no sampling this time. Policy file kept in
+the session scratchpad; rebuild log will be preserved.
+
+Persona side unaffected: 500 personas minted (seed 548, manifest recorded);
+Gemma card-writing job running on Leonardo in parallel.
