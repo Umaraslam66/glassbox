@@ -35,11 +35,13 @@ data/           generated people and transcripts (never committed)
 
 ## Running it
 
-Python 3.11 or newer. Dependencies: `numpy` (population sampling) and `pytest`.
+Python 3.11 or newer. Dependencies: `numpy` (population sampling) and `pytest`. The
+dashboard adds `streamlit` (which brings `altair` and `pandas`); nothing outside
+`app/` needs it.
 
 ```bash
 python3 -m venv .venv
-./.venv/bin/pip install numpy pytest
+./.venv/bin/pip install numpy pytest streamlit
 ./.venv/bin/python -m pytest tests/ -q
 ```
 
@@ -50,6 +52,12 @@ Mint a population (the truth directory is passed in, never hardcoded):
     --out-truth <truth dir> --out-public data/public
 ./.venv/bin/python -m src.personas.ingest \
     --completions <gemma completions.jsonl> --out-truth <truth dir>
+```
+
+Watch a run on the local dashboard (`app/README.md` lists what each page needs):
+
+```bash
+./.venv/bin/streamlit run app/dashboard.py
 ```
 
 The tests are the thing to run first and after every change. The Wall test is part of them, so a change that leaks the truth fails the suite.

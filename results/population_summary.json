@@ -1,0 +1,635 @@
+{
+  "schema": "glassbox.population_summary/1",
+  "generated_at": "2026-07-30T23:29:45Z",
+  "n_personas": 500,
+  "n_with_wobble": 500,
+  "dimensions": [
+    "TRU",
+    "RSK",
+    "ENV",
+    "PRC",
+    "TRD",
+    "SOC",
+    "TEC",
+    "LOC"
+  ],
+  "dimension_labels": {
+    "TRU": "institution trust",
+    "RSK": "risk appetite",
+    "ENV": "environmentalism",
+    "PRC": "price sensitivity",
+    "TRD": "traditionalism",
+    "SOC": "sociability",
+    "TEC": "tech optimism",
+    "LOC": "locality attachment"
+  },
+  "theta": {
+    "bins": 20,
+    "range": [
+      -2.0,
+      2.0
+    ],
+    "histograms": {
+      "TRU": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          18,
+          8,
+          24,
+          15,
+          23,
+          20,
+          40,
+          27,
+          42,
+          36,
+          44,
+          36,
+          42,
+          20,
+          33,
+          21,
+          9,
+          10,
+          11,
+          21
+        ],
+        "n": 500
+      },
+      "RSK": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          10,
+          9,
+          12,
+          17,
+          22,
+          29,
+          36,
+          24,
+          42,
+          49,
+          37,
+          44,
+          43,
+          17,
+          32,
+          24,
+          18,
+          14,
+          7,
+          14
+        ],
+        "n": 500
+      },
+      "ENV": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          14,
+          12,
+          15,
+          17,
+          25,
+          25,
+          45,
+          37,
+          43,
+          31,
+          45,
+          42,
+          39,
+          24,
+          24,
+          15,
+          9,
+          13,
+          9,
+          16
+        ],
+        "n": 500
+      },
+      "PRC": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          13,
+          6,
+          15,
+          25,
+          23,
+          28,
+          30,
+          34,
+          32,
+          48,
+          49,
+          32,
+          33,
+          27,
+          24,
+          22,
+          17,
+          10,
+          11,
+          21
+        ],
+        "n": 500
+      },
+      "TRD": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          16,
+          8,
+          6,
+          21,
+          19,
+          28,
+          28,
+          31,
+          36,
+          40,
+          53,
+          42,
+          32,
+          32,
+          22,
+          17,
+          22,
+          12,
+          14,
+          21
+        ],
+        "n": 500
+      },
+      "SOC": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          15,
+          3,
+          12,
+          22,
+          24,
+          25,
+          28,
+          34,
+          34,
+          48,
+          39,
+          42,
+          42,
+          26,
+          23,
+          21,
+          15,
+          14,
+          11,
+          22
+        ],
+        "n": 500
+      },
+      "TEC": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          23,
+          12,
+          11,
+          17,
+          27,
+          19,
+          31,
+          34,
+          45,
+          38,
+          37,
+          40,
+          35,
+          25,
+          27,
+          27,
+          19,
+          18,
+          6,
+          9
+        ],
+        "n": 500
+      },
+      "LOC": {
+        "bin_edges": [
+          -2.0,
+          -1.8,
+          -1.6,
+          -1.4,
+          -1.2,
+          -1.0,
+          -0.8,
+          -0.6,
+          -0.4,
+          -0.2,
+          0.0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          10,
+          13,
+          7,
+          15,
+          19,
+          32,
+          35,
+          47,
+          34,
+          36,
+          38,
+          36,
+          30,
+          32,
+          27,
+          18,
+          13,
+          14,
+          15,
+          29
+        ],
+        "n": 500
+      }
+    }
+  },
+  "wobble": {
+    "bins": 20,
+    "histogram": {
+      "bin_edges": [
+        0.1,
+        0.1175,
+        0.135,
+        0.1525,
+        0.17,
+        0.1875,
+        0.205,
+        0.2225,
+        0.24,
+        0.2575,
+        0.275,
+        0.2925,
+        0.31,
+        0.3275,
+        0.345,
+        0.3625,
+        0.38,
+        0.3975,
+        0.415,
+        0.4325,
+        0.45
+      ],
+      "counts": [
+        23,
+        32,
+        25,
+        19,
+        27,
+        23,
+        32,
+        13,
+        27,
+        25,
+        27,
+        20,
+        23,
+        30,
+        34,
+        17,
+        31,
+        27,
+        20,
+        25
+      ],
+      "n": 500
+    }
+  },
+  "demographics": {
+    "n_profiles": 500,
+    "fields": {
+      "occupation": {
+        "n_distinct": 87,
+        "n_shown": 20,
+        "truncated": true,
+        "counts": [
+          {
+            "value": "software developer",
+            "count": 14
+          },
+          {
+            "value": "bookkeeper",
+            "count": 11
+          },
+          {
+            "value": "cybersecurity analyst",
+            "count": 10
+          },
+          {
+            "value": "midwife",
+            "count": 10
+          },
+          {
+            "value": "seasonal farm worker",
+            "count": 10
+          },
+          {
+            "value": "physiotherapist",
+            "count": 10
+          },
+          {
+            "value": "chef in a small restaurant",
+            "count": 10
+          },
+          {
+            "value": "preschool teacher",
+            "count": 10
+          },
+          {
+            "value": "sales representative",
+            "count": 9
+          },
+          {
+            "value": "gardener and landscaper",
+            "count": 9
+          },
+          {
+            "value": "paralegal",
+            "count": 9
+          },
+          {
+            "value": "roofer",
+            "count": 9
+          },
+          {
+            "value": "prison officer",
+            "count": 8
+          },
+          {
+            "value": "welder",
+            "count": 8
+          },
+          {
+            "value": "pharmacist",
+            "count": 8
+          },
+          {
+            "value": "data analyst",
+            "count": 8
+          },
+          {
+            "value": "heating engineer",
+            "count": 8
+          },
+          {
+            "value": "train conductor",
+            "count": 8
+          },
+          {
+            "value": "cleaner",
+            "count": 8
+          },
+          {
+            "value": "baker",
+            "count": 8
+          }
+        ]
+      },
+      "city_size": {
+        "n_distinct": 4,
+        "n_shown": 4,
+        "truncated": false,
+        "counts": [
+          {
+            "value": "small town",
+            "count": 140
+          },
+          {
+            "value": "village",
+            "count": 135
+          },
+          {
+            "value": "big city",
+            "count": 114
+          },
+          {
+            "value": "mid-size city",
+            "count": 111
+          }
+        ]
+      },
+      "household": {
+        "n_distinct": 6,
+        "n_shown": 6,
+        "truncated": false,
+        "counts": [
+          {
+            "value": "with partner",
+            "count": 116
+          },
+          {
+            "value": "alone",
+            "count": 110
+          },
+          {
+            "value": "with kids, no partner",
+            "count": 99
+          },
+          {
+            "value": "with partner and kids",
+            "count": 91
+          },
+          {
+            "value": "shared flat",
+            "count": 47
+          },
+          {
+            "value": "with parents",
+            "count": 37
+          }
+        ]
+      },
+      "region_type": {
+        "n_distinct": 3,
+        "n_shown": 3,
+        "truncated": false,
+        "counts": [
+          {
+            "value": "suburban",
+            "count": 192
+          },
+          {
+            "value": "rural",
+            "count": 164
+          },
+          {
+            "value": "urban",
+            "count": 144
+          }
+        ]
+      }
+    }
+  }
+}
