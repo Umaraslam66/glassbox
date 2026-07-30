@@ -1,0 +1,20 @@
+# Data: personas, transcripts, truth store. Never committed.
+data/
+
+# Secrets
+.env
+.env.*
+
+# Personal ops docs (contain account details)
+LEONARDO_HOWTO.md
+LEONARDO_REFERENCE.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# macOS
+.DS_Store
