@@ -29,3 +29,25 @@ Empty so far: the module packages under `src/`, `experiments/`, `app/`.
 
 Still open for Gate 0: Gemma smoke test on Leonardo, Gemini API path verified,
 trait dimensions agreed with the owner, `PREREGISTRATION.md` frozen.
+
+## 2026-07-30 — Stage 0: Leonardo set up, smoke test passed, API paths verified
+
+Leonardo: created `[redacted-workspace]/glassbox/` and copied the Gemma 4
+31B installation from [sibling-project] (weights, vLLM venv, CUDA compat tools, HF cache —
+69 GB, byte-verified; [sibling-project] itself untouched). Smoke test job 51068113 passed on
+the first submission: 4 GPUs visible, Gemma answered a role-play prompt in
+character. Log: `glassbox/logs/glassbox-smoke-gemma-51068113.out` on Leonardo.
+Cost: 5.74 core-hours (see COSTS.md).
+
+API paths verified with one trivial call each: `gemini-3.5-flash-lite` (PRD
+default) and the OpenRouter fallback `qwen/qwen3.7-flash` (owner-provided;
+reasoning model — spends hidden thinking tokens even on trivial prompts).
+
+System-side model investigation (PRD amendment): Qwen3.6-27B — dense (verified in
+its config: no expert keys), non-Gemma family, already on Leonardo in [sibling-project],
+proven there with the same venv we now run. Proposed to the owner in the Gate 0
+report; not installed pending the decision.
+
+`PREREGISTRATION.md` drafted and committed, marked DRAFT: trait dimensions +
+correlation matrix (section 2) and all stage bars from PRD section 7. Awaiting
+owner sign-off on (1) trait dimensions, (2) the freeze.
