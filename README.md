@@ -35,12 +35,21 @@ data/           generated people and transcripts (never committed)
 
 ## Running it
 
-Python 3.11 or newer. No dependencies yet beyond the standard library and `pytest`.
+Python 3.11 or newer. Dependencies: `numpy` (population sampling) and `pytest`.
 
 ```bash
 python3 -m venv .venv
-./.venv/bin/pip install pytest
+./.venv/bin/pip install numpy pytest
 ./.venv/bin/python -m pytest tests/ -q
+```
+
+Mint a population (the truth directory is passed in, never hardcoded):
+
+```bash
+./.venv/bin/python -m src.personas.factory --n 500 --seed 42 \
+    --out-truth <truth dir> --out-public data/public
+./.venv/bin/python -m src.personas.ingest \
+    --completions <gemma completions.jsonl> --out-truth <truth dir>
 ```
 
 The tests are the thing to run first and after every change. The Wall test is part of them, so a change that leaks the truth fails the suite.
