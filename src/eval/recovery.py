@@ -31,6 +31,12 @@ What it does, in order:
 
 5. **Per-stratum item recovery** (near / same-domain / far). Reported, no bar.
 
+6. **A robustness path**, only when ``--exclude-items`` names some. The item
+   statistics are computed a second time with those items left out and written
+   to ``robustness_item_exclusion``. It sits beside the confirmatory numbers and
+   never replaces them; the trait-recovery, blur-honesty and weak-item-ordering
+   bars are computed on the full sets and the flag does not touch them.
+
 The verdict block at the top of the output JSON is the whole gate in one place.
 """
 
@@ -64,6 +70,11 @@ PLANTED_SIGMA = np.array(
 BAR_TRAIT_R = 0.8  # every dimension, held-out personas
 BAR_ITEM_R = 0.7  # median across held-out items
 BAR_COVERAGE = (0.60, 0.75)  # blur honesty band
+
+#: Filename stem for the report and the two pictures written into ``--out``.
+#: Override it with ``--out-prefix`` so a second grading run sits beside the
+#: first instead of on top of it.
+DEFAULT_OUT_PREFIX = "stage2"
 
 #: Named in the Stage-2 brief as things to look at whatever the bars say.
 WATCH_SIGN_ITEMS = ("q229", "q234")
@@ -576,6 +587,26 @@ def correlation_block(theta: np.ndarray) -> dict[str, Any]:
     }
 
 
+def item_recovery_without(
+    fitted: np.ndarray,
+    item_ids: Sequence[str],
+    excluded: set[str],
+    bank: dict[str, dict[str, Any]],
+) -> tuple[dict[str, Any], list[str]]:
+    """Item recovery over the same rows again, minus the named items.
+
+    Returns the recomputed block and the ids that were actually dropped, so the
+    report can say plainly which of the requested exclusions bit on this set.
+    """
+    dropped = [iid for iid in item_ids if iid in excluded]
+    kept_rows = [row for row, iid in enumerate(item_ids) if iid not in excluded]
+    kept_ids = [item_ids[row] for row in kept_rows]
+    if not kept_ids:
+        return {"n_items": 0, "note": "every item on this set was excluded"}, dropped
+    block = item_recovery(fitted[kept_rows], designed_matrix(bank, kept_ids), kept_ids)
+    return block, dropped
+
+
 def stratum_summary(
     per_item: dict[str, dict[str, float]], strata: dict[str, str]
 ) -> dict[str, Any]:
@@ -670,8 +701,10 @@ def grade(
     splits_path: Path,
     out_dir: Path,
     *,
+    out_prefix: str = DEFAULT_OUT_PREFIX,
     diagnostics_path: Path | None = None,
     answers_path: Path | None = None,
+    exclude_items: Sequence[str] = (),
     make_plots: bool = True,
 ) -> dict[str, Any]:
     out_dir = Path(out_dir)
@@ -727,6 +760,56 @@ def grade(
 
     # ---- 5. strata --------------------------------------------------------
     strata = stratum_summary(items["per_item"], splits.get("strata", {}))
+
+    # ---- 6. robustness: the item statistics again, without named items ----
+    robustness = None
+    wanted = {str(iid).strip() for iid in exclude_items if str(iid).strip()}
+    if wanted:
+        holdout_block, holdout_dropped = item_recovery_without(
+            loadings_holdout, holdout_items, wanted, bank
+        )
+        train_block, train_dropped = item_recovery_without(
+            loadings_train, train_items, wanted, bank
+        )
+        robustness = {
+            "requested": sorted(wanted),
+            "dropped_from_holdout_items": sorted(holdout_dropped),
+            "dropped_from_training_items": sorted(train_dropped),
+            "not_in_the_fitted_set": sorted(
+                wanted - set(holdout_items) - set(train_items)
+            ),
+            "holdout": {k: v for k, v in holdout_block.items() if k != "per_item"},
+            "holdout_by_stratum": stratum_summary(
+                holdout_block.get("per_item", {}), splits.get("strata", {})
+            ),
+            "training_for_context": {
+                k: v for k, v in train_block.items() if k != "per_item"
+            },
+            "confirmatory_for_comparison": {
+                "holdout_median_r": items["median_r"],
+                "holdout_median_cosine": items["median_cosine"],
+                "holdout_n_items": items["n_items"],
+                "training_median_r": train_item_recovery["median_r"],
+                "training_n_items": train_item_recovery["n_items"],
+            },
+            "delta_holdout_median_r": (
+                holdout_block["median_r"] - items["median_r"]
+                if "median_r" in holdout_block
+                else None
+            ),
+            "bars_untouched_by_this_flag": [
+                "trait_recovery",
+                "blur_honesty",
+                "weak_item_ordering",
+            ],
+            "note": (
+                "sensitivity check only. The graded Gate-2 item-recovery number "
+                "is the one in verdict.bars.item_recovery, computed on every "
+                "held-out item; nothing here replaces it. Trait recovery, blur "
+                "honesty and weak-item ordering are computed on the full sets "
+                "and this flag does not reach them."
+            ),
+        }
 
     # ---- extras: blur without the metric fix, and wobble ------------------
     unlinked = None
@@ -848,6 +931,7 @@ def grade(
             "holdout": corr_holdout,
         },
         "item_recovery_by_stratum": strata,
+        "robustness_item_exclusion": robustness,
         "wobble_relationship": wobble_block,
         "fitted_discrimination_all_items": discrimination,
         "counts": {
@@ -863,16 +947,16 @@ def grade(
             Path(diagnostics_path).read_text(encoding="utf-8")
         )
 
-    json_path = out_dir / "stage2_recovery.json"
+    json_path = out_dir / f"{out_prefix}_recovery.json"
     json_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
     if make_plots:
-        draw_heatmap(corr_train, corr_holdout, out_dir / "stage2_heatmap.png")
+        draw_heatmap(corr_train, corr_holdout, out_dir / f"{out_prefix}_heatmap.png")
         draw_scatter(
             theta_holdout,
             theta_true_holdout,
             traits["per_dimension_r"],
-            out_dir / "stage2_scatter.png",
+            out_dir / f"{out_prefix}_scatter.png",
         )
 
     return report
@@ -951,6 +1035,29 @@ def render(report: dict[str, Any]) -> str:
         f"{report['correlations']['holdout']['max_abs_delta_offdiagonal']:.3f} at "
         f"{'-'.join(report['correlations']['holdout']['max_abs_delta_cell'])} (held-out)"
     )
+    robust = report.get("robustness_item_exclusion")
+    if robust:
+        held = robust["holdout"]
+        train = robust["training_for_context"]
+        lines.append("")
+        lines.append(
+            "robustness (NOT the graded number), excluding "
+            f"{', '.join(robust['requested'])}:"
+        )
+        lines.append(
+            f"    held-out median r {held.get('median_r', float('nan')):.4f} on "
+            f"{held.get('n_items', 0)} items, against the graded "
+            f"{robust['confirmatory_for_comparison']['holdout_median_r']:.4f} on "
+            f"{robust['confirmatory_for_comparison']['holdout_n_items']} "
+            f"({len(robust['dropped_from_holdout_items'])} dropped here)"
+        )
+        lines.append(
+            f"    training median r {train.get('median_r', float('nan')):.4f} on "
+            f"{train.get('n_items', 0)} items, against "
+            f"{robust['confirmatory_for_comparison']['training_median_r']:.4f} on "
+            f"{robust['confirmatory_for_comparison']['training_n_items']} "
+            f"({len(robust['dropped_from_training_items'])} dropped here)"
+        )
     lines.append("")
     return "\n".join(lines)
 
@@ -966,8 +1073,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--splits", type=Path, required=True, help="frozen splits manifest")
     parser.add_argument("--out", type=Path, required=True, help="results directory")
     parser.add_argument(
+        "--out-prefix", default=DEFAULT_OUT_PREFIX,
+        help=(
+            "filename stem for the report and the two pictures written into "
+            f"--out, so a second run can sit beside the first (default: "
+            f"{DEFAULT_OUT_PREFIX}, giving {DEFAULT_OUT_PREFIX}_recovery.json)"
+        ),
+    )
+    parser.add_argument(
         "--answers", type=Path, default=None,
         help="noised answers, for the answer-matrix ceiling comparison",
+    )
+    parser.add_argument(
+        "--exclude-items", default="",
+        help=(
+            "comma-separated item ids. The item-recovery statistics are computed "
+            "a second time without them, into robustness_item_exclusion. The "
+            "confirmatory numbers and the other three bars are untouched."
+        ),
     )
     parser.add_argument("--no-plots", action="store_true")
     args = parser.parse_args(argv)
@@ -977,12 +1100,14 @@ def main(argv: list[str] | None = None) -> int:
         args.truth,
         args.splits,
         args.out,
+        out_prefix=args.out_prefix,
         diagnostics_path=args.diagnostics,
         answers_path=args.answers,
+        exclude_items=[part for part in args.exclude_items.split(",") if part.strip()],
         make_plots=not args.no_plots,
     )
     print(render(report))
-    print(f"report -> {args.out / 'stage2_recovery.json'}")
+    print(f"report -> {args.out / f'{args.out_prefix}_recovery.json'}")
     return 0
 
 

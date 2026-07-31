@@ -9,6 +9,7 @@ shortfall on the real answer matrix is about the data rather than the code.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -393,3 +394,132 @@ def test_subset_keeps_labels_and_cells_together(population) -> None:
     assert small.codes[0, 0] == data.codes[5, 3]
     assert small.codes[1, 1] == data.codes[1, 0]
     assert small.item_kinds == [data.item_kinds[3], data.item_kinds[0]]
+
+
+# --------------------------------------------------------------------------
+# where the run writes its files
+# --------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def tiny_inputs(tmp_path_factory) -> Path:
+    """A miniature answers file, item bank and splits manifest on disk.
+
+    Small enough that ``run`` finishes in a moment; the point here is the
+    filenames it writes, not the quality of the fit.
+    """
+    folder = tmp_path_factory.mktemp("mirt_run_inputs")
+    data, _, _ = make_population(n_personas=60, n_likert=8, n_binary=4, dims=2, seed=7)
+
+    (folder / "bank.json").write_text(
+        json.dumps(
+            {
+                "items": [
+                    {
+                        "item_id": item_id,
+                        "type": kind,
+                        "options": [
+                            {"value": v, "label": str(v)}
+                            for v in (range(1, 6) if kind == mirt.LIKERT else (0, 1))
+                        ],
+                    }
+                    for item_id, kind in zip(data.item_ids, data.item_kinds)
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    lines = []
+    for row, pid in enumerate(data.persona_ids):
+        for col, (item_id, kind) in enumerate(zip(data.item_ids, data.item_kinds)):
+            code = int(data.codes[row, col])
+            answer = code + 1 if kind == mirt.LIKERT else ("yes" if code else "no")
+            lines.append(
+                json.dumps({"pid": pid, "item_id": item_id, "round": "main", "answer": answer})
+            )
+    (folder / "answers.jsonl").write_text("\n".join(lines), encoding="utf-8")
+
+    (folder / "splits.json").write_text(
+        json.dumps(
+            {
+                "persona_holdout": data.persona_ids[-15:],
+                "item_holdout": data.item_ids[:2] + data.item_ids[-1:],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return folder
+
+
+def tiny_run(inputs: Path, out_dir: Path, **kwargs) -> dict:
+    return mirt.run(
+        inputs / "answers.jsonl",
+        inputs / "bank.json",
+        inputs / "splits.json",
+        out_dir,
+        dims=2,
+        seeds=(0, 1),
+        max_iters=120,
+        skip_dim_curve=True,
+        verbose=False,
+        **kwargs,
+    )
+
+
+def test_run_writes_the_default_filenames(tiny_inputs, tmp_path) -> None:
+    """Without the flag, the names are what every earlier run produced."""
+    out_dir = tmp_path / "default"
+    diagnostics = tiny_run(tiny_inputs, out_dir)
+
+    assert sorted(p.name for p in out_dir.iterdir()) == [
+        "stage2_fit.npz",
+        "stage2_fit_diagnostics.json",
+    ]
+    assert diagnostics["artifacts"]["fit"] == str(out_dir / "stage2_fit.npz")
+
+
+def test_out_prefix_moves_every_file_and_nothing_else(tiny_inputs, tmp_path) -> None:
+    """The flag renames the outputs; the numbers inside them are untouched."""
+    plain = tiny_run(tiny_inputs, tmp_path / "plain")
+    prefixed_dir = tmp_path / "prefixed"
+    prefixed = tiny_run(tiny_inputs, prefixed_dir, out_prefix="stage2_v2")
+
+    assert sorted(p.name for p in prefixed_dir.iterdir()) == [
+        "stage2_v2_fit.npz",
+        "stage2_v2_fit_diagnostics.json",
+    ]
+    assert not (prefixed_dir / "stage2_fit.npz").exists()
+    assert prefixed["artifacts"]["fit"] == str(prefixed_dir / "stage2_v2_fit.npz")
+
+    # same fit, written under a different name
+    left = np.load(tmp_path / "plain" / "stage2_fit.npz", allow_pickle=False)
+    right = np.load(prefixed_dir / "stage2_v2_fit.npz", allow_pickle=False)
+    assert sorted(left.files) == sorted(right.files)
+    for key in left.files:
+        assert np.array_equal(left[key], right[key], equal_nan=left[key].dtype.kind == "f"), (
+            f"{key} changed when the outputs were redirected"
+        )
+    assert plain["restart_agreement"] == prefixed["restart_agreement"]
+
+
+def test_the_cli_passes_the_prefix_through(tiny_inputs, tmp_path) -> None:
+    out_dir = tmp_path / "cli"
+    code = mirt.main(
+        [
+            "--answers", str(tiny_inputs / "answers.jsonl"),
+            "--bank", str(tiny_inputs / "bank.json"),
+            "--splits", str(tiny_inputs / "splits.json"),
+            "--out", str(out_dir),
+            "--out-prefix", "stage2_v2",
+            "--dims", "2",
+            "--seeds", "0",
+            "--max-iters", "60",
+            "--skip-dim-curve",
+            "--quiet",
+        ]
+    )
+    assert code == 0
+    assert (out_dir / "stage2_v2_fit.npz").is_file()
+    assert (out_dir / "stage2_v2_fit_diagnostics.json").is_file()
+    assert not (out_dir / "stage2_fit.npz").exists()

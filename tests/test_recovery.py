@@ -358,6 +358,33 @@ def test_the_grader_writes_its_report_and_both_plots(graded) -> None:
     assert "failed_bars" in payload["verdict"]
 
 
+def test_out_prefix_renames_the_report_and_both_plots(graded) -> None:
+    """A second grading run can sit beside the first instead of on top of it."""
+    _, workspace = graded
+    out = workspace / "prefixed"
+    again = recovery.grade(
+        workspace / "fit.npz",
+        workspace / "planted",
+        workspace / "splits.json",
+        out,
+        out_prefix="stage2_v2",
+        make_plots=True,
+    )
+
+    assert (out / "stage2_v2_recovery.json").is_file()
+    assert (out / "stage2_v2_heatmap.png").stat().st_size > 5000
+    assert (out / "stage2_v2_scatter.png").stat().st_size > 5000
+    assert not (out / "stage2_recovery.json").exists()
+
+    # the redirect moves files; it does not touch a number
+    payload = json.loads((out / "stage2_v2_recovery.json").read_text(encoding="utf-8"))
+    assert payload["verdict"] == again["verdict"]
+    baseline = json.loads(
+        (workspace / "out" / "stage2_recovery.json").read_text(encoding="utf-8")
+    )
+    assert payload["verdict"] == baseline["verdict"]
+
+
 def test_the_report_carries_every_block_the_gate_asks_for(graded) -> None:
     report, _ = graded
     for key in (
@@ -387,6 +414,95 @@ def test_the_alignment_really_was_learned_on_the_training_personas(graded) -> No
     expected = recovery.procrustes_rotation(fit["theta_train"], planted_train)
     assert np.allclose(np.array(report["alignment"]["rotation"]), expected)
     assert abs(abs(report["alignment"]["rotation_determinant"]) - 1.0) < 1e-8
+
+
+def test_the_exclusion_flag_is_off_unless_it_is_asked_for(graded) -> None:
+    report, _ = graded
+    assert "robustness_item_exclusion" in report
+    assert report["robustness_item_exclusion"] is None
+
+
+def test_excluding_items_reports_beside_the_confirmatory_numbers(graded) -> None:
+    """The flag adds a second set of item numbers. It changes no graded value."""
+    report, workspace = graded
+    fit = np.load(workspace / "fit.npz", allow_pickle=False)
+    dropped_holdout = [str(x) for x in fit["item_holdout_ids"]][:3]
+    dropped_train = [str(x) for x in fit["item_train_ids"]][:2]
+
+    again = recovery.grade(
+        workspace / "fit.npz",
+        workspace / "planted",
+        workspace / "splits.json",
+        workspace / "out_excluded",
+        exclude_items=dropped_holdout + dropped_train + ["q-not-a-real-item"],
+        make_plots=False,
+    )
+
+    # the four bars are bit-identical: this flag is not allowed near them
+    assert again["verdict"] == report["verdict"]
+    assert again["item_recovery_holdout"]["median_r"] == report["item_recovery_holdout"]["median_r"]
+    assert again["weak_item_ordering"] == report["weak_item_ordering"]
+    assert again["trait_recovery_holdout"] == report["trait_recovery_holdout"]
+
+    block = again["robustness_item_exclusion"]
+    assert block["requested"] == sorted(dropped_holdout + dropped_train + ["q-not-a-real-item"])
+    assert block["dropped_from_holdout_items"] == sorted(dropped_holdout)
+    assert block["dropped_from_training_items"] == sorted(dropped_train)
+    assert block["not_in_the_fitted_set"] == ["q-not-a-real-item"]
+
+    n_holdout = report["item_recovery_holdout"]["n_items"]
+    assert block["holdout"]["n_items"] == n_holdout - len(dropped_holdout)
+    assert set(block["holdout_by_stratum"]) == {"near", "same-domain", "far"}
+    assert "median_r" in block["holdout"] and "median_cosine" in block["holdout"]
+    assert block["confirmatory_for_comparison"]["holdout_median_r"] == pytest.approx(
+        report["item_recovery_holdout"]["median_r"]
+    )
+    assert block["delta_holdout_median_r"] == pytest.approx(
+        block["holdout"]["median_r"] - report["item_recovery_holdout"]["median_r"]
+    )
+    for id_ in dropped_holdout:
+        assert id_ not in block["holdout_by_stratum"]["near"]
+
+    # and it is written to disk under the same label
+    payload = json.loads(
+        (workspace / "out_excluded" / "stage2_recovery.json").read_text(encoding="utf-8")
+    )
+    assert payload["robustness_item_exclusion"]["requested"] == block["requested"]
+
+
+def test_excluding_nothing_is_the_same_as_not_using_the_flag(graded) -> None:
+    report, workspace = graded
+    again = recovery.grade(
+        workspace / "fit.npz",
+        workspace / "planted",
+        workspace / "splits.json",
+        workspace / "out_empty_exclusion",
+        exclude_items=["", "  "],
+        make_plots=False,
+    )
+    assert again["robustness_item_exclusion"] is None
+    assert again["item_recovery_holdout"]["median_r"] == report["item_recovery_holdout"]["median_r"]
+
+
+def test_item_recovery_without_drops_only_the_named_rows() -> None:
+    rng = np.random.default_rng(12)
+    designed = np.zeros((12, 8))
+    for row in range(12):
+        designed[row, row % 8] = 1.0
+    fitted = designed * 1.5 + rng.normal(0, 0.05, designed.shape)
+    ids = [f"q{i:03d}" for i in range(12)]
+    bank = {
+        iid: {"loadings": {DIMS[row % 8]: 1.0}, "strength_class": "strong"}
+        for row, iid in enumerate(ids)
+    }
+
+    block, dropped = recovery.item_recovery_without(fitted, ids, {"q002", "q404"}, bank)
+    assert dropped == ["q002"]
+    assert block["n_items"] == 11
+    assert "q002" not in block["per_item"]
+
+    empty, all_dropped = recovery.item_recovery_without(fitted, ids, set(ids), bank)
+    assert empty["n_items"] == 0 and sorted(all_dropped) == ids
 
 
 def test_grading_survives_a_solution_that_is_rotated_before_it_arrives(graded) -> None:

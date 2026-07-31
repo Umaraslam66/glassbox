@@ -6,6 +6,11 @@
         --splits experiments/splits_v1.json \
         --out results/stage2
 
+Everything is written into ``--out`` under one filename stem, ``stage2`` by
+default: ``stage2_fit.npz`` and ``stage2_fit_diagnostics.json``. Pass
+``--out-prefix`` to change that stem, so a second run of the same stage lands
+beside the first instead of on top of it.
+
 System-side code. It sees three things and nothing else: the noised answer
 matrix, the public item bank (item id, type, options) and the frozen splits
 manifest (which persona ids and which item ids are held out). It never sees a
@@ -87,6 +92,11 @@ DEFAULT_DIM_GRID = (2, 4, 6, 8, 10, 12)
 
 #: Answer round used for fitting. The retest round is a Gate-1 artifact.
 MAIN_ROUND = "main"
+
+#: Filename stem for everything this module writes into ``--out``. Override it
+#: with ``--out-prefix`` to keep a second run's files beside the first's
+#: instead of on top of them.
+DEFAULT_OUT_PREFIX = "stage2"
 
 LIKERT = "likert5"
 BINARY = "binary"
@@ -910,6 +920,7 @@ def run(
     splits_path: Path,
     out_dir: Path,
     *,
+    out_prefix: str = DEFAULT_OUT_PREFIX,
     dims: int = DEFAULT_DIMS,
     ridge: float = DEFAULT_RIDGE,
     seeds: Sequence[int] = DEFAULT_SEEDS,
@@ -1035,7 +1046,7 @@ def run(
     train_payload = _params_payload(item_params, train_items)
     ho_payload = _params_payload(ho_item_params, holdout_items)
 
-    npz_path = out_dir / "stage2_fit.npz"
+    npz_path = out_dir / f"{out_prefix}_fit.npz"
     np.savez_compressed(
         npz_path,
         dims=np.array(dims),
@@ -1149,7 +1160,7 @@ def run(
         "artifacts": {"fit": str(npz_path)},
     }
 
-    diag_path = out_dir / "stage2_fit_diagnostics.json"
+    diag_path = out_dir / f"{out_prefix}_fit_diagnostics.json"
     diag_path.write_text(json.dumps(diagnostics, indent=2) + "\n", encoding="utf-8")
     if verbose:
         print(f"\nfit      -> {npz_path}")
@@ -1167,6 +1178,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--bank", type=Path, required=True, help="public item bank json")
     parser.add_argument("--splits", type=Path, required=True, help="frozen splits manifest")
     parser.add_argument("--out", type=Path, required=True, help="results directory")
+    parser.add_argument(
+        "--out-prefix", default=DEFAULT_OUT_PREFIX,
+        help=(
+            "filename stem for everything written into --out, so a second run "
+            f"can sit beside the first (default: {DEFAULT_OUT_PREFIX}, giving "
+            f"{DEFAULT_OUT_PREFIX}_fit.npz and {DEFAULT_OUT_PREFIX}_fit_diagnostics.json)"
+        ),
+    )
     parser.add_argument("--dims", type=int, default=DEFAULT_DIMS)
     parser.add_argument("--ridge", type=float, default=DEFAULT_RIDGE)
     parser.add_argument("--seeds", type=int, nargs="+", default=list(DEFAULT_SEEDS))
@@ -1181,6 +1200,7 @@ def main(argv: list[str] | None = None) -> int:
         args.bank,
         args.splits,
         args.out,
+        out_prefix=args.out_prefix,
         dims=args.dims,
         ridge=args.ridge,
         seeds=args.seeds,
