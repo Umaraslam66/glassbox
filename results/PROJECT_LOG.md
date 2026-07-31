@@ -210,3 +210,30 @@ measured from the persona model itself, and makes the planted wobble true by
 construction. The band stays the frozen bar; layer parameters are the
 Stage-1 tuning knob, recorded in the experiment config at freeze. Tuning
 happens offline on recorded logprobs — no GPU cost per knob turn.
+
+## 2026-07-31 — Full sweep: Gate 1 PASSES all five bars on 500 personas
+
+Full sweep (job 51200138, 10.75 core-hours; 141,000 answer cells, 16,920
+reused byte-identical from the pilot cache, 0 parse rejects, 0 missing
+logprobs). Noise layer frozen at a=1.2, b=4.0, T_noise=16, temperature 0.7,
+seed-base 548 — addendum recorded in PREREGISTRATION §5.
+
+Gate 1, noised (confirmatory, results/full_sweep_qa.json):
+max pairwise agreement 0.746 (bar ≤ 0.95) PASS; median pairwise 0.389
+(bar ≤ 0.80) PASS; participation ratio 29.4 (bar ≥ 5) PASS; obedience median
+0.827, all 8 dims ≥ 0.753 (bar ≥ 0.5) PASS; pooled test–retest 0.7934 in
+70–90 band PASS (binary exact 0.823 vs chance 0.50; Likert ±1 0.779 vs
+chance 0.52).
+
+Raw (un-noised) comparison kept in results/full_sweep_raw_qa.json: retest
+0.979 (FAIL — robots), wobble gradient +0.04 (meaningless), 267/500 personas
+perfectly self-consistent, one zero-variance item (q246). After the layer:
+gradient +0.627, 2/500 at perfect consistency, zero flat items.
+
+Honesty note for any reader: the noised participation ratio (29.4 vs raw
+13.0) partly measures the isotropic noise floor, not richer planted
+structure. The bar is frozen and passes either way; do not cite 29.4 as
+evidence of latent richness — the raw 13.0 is the structural number.
+
+Stage-1 compute total: 43.4 core-hours across six jobs (incl. 5.69 lost to a
+GPU-memory leak on one failed attempt, since fixed in the sbatch pattern).

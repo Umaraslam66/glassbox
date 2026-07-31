@@ -128,6 +128,15 @@ Every evaluation reports lift over baseline; raw accuracy alone is never reporte
   Gate 1, recorded here at freeze-time as an addendum line, and never changed
   afterward. All "true answer distribution" estimates in every later stage use
   this temperature.
+  **Addendum (recorded at Gate 1, 2026-07-31; mechanical-layer design awaiting
+  owner ratification in the Gate 1 report):** responder generation temperature
+  = 0.7. Responder inconsistency is produced by the seeded mechanical noise
+  layer (src/personas/noise_layer.py) at config a = 1.2, b = 4.0, T_noise = 16,
+  seed-base 548, applied to the responder's recorded answer-token
+  distributions. "True answer distribution" estimates (§5, 50 samples per
+  item) are operationalized as independent seeded applications of this frozen
+  layer to the responder's recorded answer distribution at the frozen
+  temperature.
 - **Fixed splits:** held-out sets are created once, before Stage 2, with a
   recorded seed: 20% of personas and 20% of items are held out. The same
   held-out sets are used for all confirmatory results in Stages 2–5. Open-ended
