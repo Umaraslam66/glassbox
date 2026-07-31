@@ -16,8 +16,14 @@ What it measures
 ----------------
 Three non-RL strategies -- random order, the Stage 3 scripted order, and the
 information-gain heuristic -- on the 100 ORIGINAL held-out personas, over
-independent seeded episodes. (The RL policy is added later; it plugs into the
-same interface and is graded by the same code.) For each episode the strategy
+independent seeded episodes, plus the Stage 5 RL policy when ``--policy`` is
+given: it plugs into the same :class:`~src.interview.strategies.PolicyStrategy`
+seam, runs in the same simulator and is graded by this same code, with the same
+replicate structure and its own independently drawn ``ep_policy_<replicate>``
+sittings. It acts greedily, so the graded arm is deterministic given the
+weights. Only the confirmatory arm can be loaded (owner RULING 2); the
+exploratory oracle-reward weights are refused by
+:func:`src.rl.policy.load_confirmatory`. For each episode the strategy
 asks one closed training item at a time, the persona answers through the frozen
 noise layer, and the sequential posterior is updated
 (:mod:`src.model.sequential_posterior`). After every question the point estimate
@@ -80,7 +86,7 @@ from typing import Any, Sequence
 import numpy as np
 
 from ..interview.episodes import AnswerBank, EpisodeSimulator, episode_seed, round_tag
-from ..interview.strategies import FixedOrder, InfoGain, RandomOrder
+from ..interview.strategies import FixedOrder, InfoGain, PolicyStrategy, RandomOrder
 from ..model import mirt
 from ..model.person_encoder import item_params_from_fit
 from ..model.sequential_posterior import (
@@ -171,6 +177,23 @@ DEFAULT_OUT_PREFIX = "stage5"
 STRATEGIES = ("random", "fixed", "heuristic")
 ADAPTIVE = "heuristic"
 BASELINE = "random"
+
+#: The learned interviewer's arm name, present only when a policy is supplied.
+POLICY = "policy"
+
+POLICY_LABEL = (
+    "The Stage 5 RL interviewer: a small MLP over the interview state "
+    "(point estimate, per-dimension blur, answered mask, step index), trained by "
+    "REINFORCE on the system's own declared posterior-variance reduction minus a "
+    "per-question cost (owner RULING 2 -- planted truth never touched the reward, "
+    "the gradient or any weight; the training personas are the fresh RL batch, "
+    "never these held-out ones). It acts GREEDILY here -- the arg-max unasked "
+    "item -- so the graded arm is deterministic given the weights, exactly as the "
+    "info-gain heuristic is deterministic given the fit, and a replicate's spread "
+    "is spread in the interview rather than in the interviewer. Only the "
+    "confirmatory arm can be loaded (src.rl.policy.load_confirmatory); the "
+    "exploratory oracle-reward weights are refused."
+)
 
 
 # --------------------------------------------------------------------------
@@ -278,6 +301,18 @@ def run_episode(task: dict[str, Any]) -> dict[str, Any]:
     dims = theta_true_holdout.shape[1]
     n_holdout = theta_true_holdout.shape[0]
 
+    # Which rows fit the Procrustes rotation and which rows are scored. The
+    # defaults are the confirmatory convention -- rotation on the training
+    # block, scoring on the held-out block. They are overridable only so that a
+    # development smoke run can score the training personas without a second
+    # copy of this function; nothing confirmatory passes them.
+    fit_rows = np.asarray(
+        task.get("fit_rows", np.arange(n_train)), dtype=np.int64
+    )
+    score_rows = np.asarray(
+        task.get("score_rows", np.arange(n_train, n_personas)), dtype=np.int64
+    )
+
     bank = AnswerBank(codes, task["round"])
     posterior = SequentialPosterior(params, n_personas, hessian=task["hessian"])
 
@@ -288,6 +323,18 @@ def run_episode(task: dict[str, Any]) -> dict[str, Any]:
         strategy = InfoGain(n_personas, params)
     elif name == "fixed":
         strategy = FixedOrder(n_personas, n_items, task["scripted_columns"])
+    elif name == POLICY:
+        # the only loader that may put weights into a graded result: it refuses
+        # the exploratory oracle-reward arm (owner RULING 2).
+        from ..rl.policy import load_confirmatory
+
+        policy, _ = load_confirmatory(task["policy_path"])
+        if policy.n_items != n_items:
+            raise ValueError(
+                f"the policy was trained on {policy.n_items} candidate items, "
+                f"this bank has {n_items}"
+            )
+        strategy = PolicyStrategy(n_personas, n_items, policy, name=POLICY)
     else:  # pragma: no cover -- guarded by the caller
         raise ValueError(f"unknown strategy {name!r}")
 
@@ -299,8 +346,8 @@ def run_episode(task: dict[str, Any]) -> dict[str, Any]:
     iterations = np.zeros(n_steps, dtype=np.int32)
 
     def score(theta: np.ndarray, cov: np.ndarray) -> tuple[np.ndarray, ...]:
-        rotation = procrustes_rotation(theta[:n_train], theta_true_train)
-        estimate = theta[n_train:] @ rotation
+        rotation = procrustes_rotation(theta[fit_rows], theta_true_train)
+        estimate = theta[score_rows] @ rotation
         error = estimate - theta_true_holdout
         rotated = rotate_covariances(cov, rotation)
         raw_blur = np.sqrt(np.maximum(np.diagonal(rotated, axis1=1, axis2=2), 0.0))
@@ -310,7 +357,7 @@ def run_episode(task: dict[str, Any]) -> dict[str, Any]:
 
     def on_step(step: int, state: SequentialPosterior) -> None:
         k = step - 1
-        error, raw_blur, cal_blur = score(state.theta, state.cov[n_train:])
+        error, raw_blur, cal_blur = score(state.theta, state.cov[score_rows])
         rmse[k] = np.sqrt(np.mean(error**2, axis=0))
         pooled[k] = float(np.sqrt(np.mean(error**2)))
         blur[k] = raw_blur.mean(axis=0)
@@ -324,7 +371,7 @@ def run_episode(task: dict[str, Any]) -> dict[str, Any]:
     # the full-bank reference for the fraction measure: the same sitting's
     # answers, every candidate item asked.
     full = solve(bank.full_matrix_for_scoring(), params, hessian=task["hessian"])
-    full_error, _, _ = score(full.theta, full.cov[n_train:])
+    full_error, _, _ = score(full.theta, full.cov[score_rows])
 
     return {
         "strategy": name,
@@ -568,9 +615,13 @@ _COLOURS = {
     "random": "#4C72B0",
     "fixed": "#8172B2",
     "heuristic": "#C44E52",
+    "policy": "#55A868",
     "cold_start_random": "#7BA3D0",
     "cold_start_heuristic": "#DD8452",
 }
+
+#: Drawn on the bar and watch panels, in this order, when the arm is present.
+_PLOTTED = ("random", "fixed", "heuristic", "policy")
 
 
 def draw_rmse_vs_n(report: dict[str, Any], path: Path) -> None:
@@ -584,7 +635,7 @@ def draw_rmse_vs_n(report: dict[str, Any], path: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(13.5, 5.2))
 
     ax = axes[0]
-    for name in ("random", "fixed", "heuristic"):
+    for name in _PLOTTED:
         arm = arms.get(name)
         if arm is None:
             continue
@@ -650,7 +701,7 @@ def draw_blur_vs_truth(report: dict[str, Any], path: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(13.5, 5.2))
 
     ax = axes[0]
-    for name in ("random", "fixed", "heuristic"):
+    for name in _PLOTTED:
         arm = arms.get(name)
         if arm is None:
             continue
@@ -666,7 +717,7 @@ def draw_blur_vs_truth(report: dict[str, Any], path: Path) -> None:
     ax.legend(fontsize=7)
 
     ax = axes[1]
-    for name in ("random", "fixed", "heuristic"):
+    for name in _PLOTTED:
         rows = watch.get(name)
         if rows is None:
             continue
@@ -695,6 +746,49 @@ def draw_blur_vs_truth(report: dict[str, Any], path: Path) -> None:
 # --------------------------------------------------------------------------
 
 
+def load_episode_caches(paths: Path | Sequence[Path]) -> dict[str, Any]:
+    """One episode cache, or several stacked into one.
+
+    Several, because the RL arm's sittings are drawn after the non-RL ones and
+    there is no reason to redraw 153 rounds to add 51. Round tags are unique per
+    strategy and a cell's draw depends only on its tag, so stacking two caches
+    gives exactly what one combined draw would have given. The personas and the
+    candidate items have to match across files, and a repeated round tag is an
+    error rather than a silent overwrite.
+    """
+    if isinstance(paths, (str, Path)):
+        paths = [Path(paths)]
+    paths = [Path(p) for p in paths]
+
+    codes: list[np.ndarray] = []
+    rounds: list[str] = []
+    persona_ids: list[str] | None = None
+    item_ids: list[str] | None = None
+    for path in paths:
+        archive = np.load(path, allow_pickle=False)
+        these_personas = [str(p) for p in archive["persona_ids"]]
+        these_items = [str(i) for i in archive["item_ids"]]
+        if persona_ids is None:
+            persona_ids, item_ids = these_personas, these_items
+        elif these_personas != persona_ids or these_items != item_ids:
+            raise ValueError(
+                f"{path} was drawn on different personas or items than {paths[0]}"
+            )
+        for name in (str(r) for r in archive["rounds"]):
+            if name in rounds:
+                raise ValueError(f"round {name!r} appears in more than one cache")
+            rounds.append(name)
+        codes.append(np.asarray(archive["codes"]))
+
+    return {
+        "codes": np.concatenate(codes, axis=0),
+        "rounds": np.array(rounds),
+        "persona_ids": np.array(persona_ids),
+        "item_ids": np.array(item_ids),
+        "sources": [str(p) for p in paths],
+    }
+
+
 def build_tasks(
     *,
     episodes: Any,
@@ -709,6 +803,7 @@ def build_tasks(
     replicates: int,
     cold_replicates: int,
     hessian: str,
+    policy_path: Path | None = None,
 ) -> list[dict[str, Any]]:
     """One task per episode: the answers, the parameters, and nothing else."""
     codes = episodes["codes"]
@@ -739,12 +834,16 @@ def build_tasks(
                 "n_train": n_train,
                 "n_steps": n_max,
                 "hessian": hessian,
+                "policy_path": str(policy_path) if policy_path is not None else None,
             }
         )
 
     for strategy in STRATEGIES:
         for replicate in range(replicates):
             add(strategy, strategy, replicate, params)
+    if policy_path is not None:
+        for replicate in range(replicates):
+            add(POLICY, POLICY, replicate, params)
     if cold_params is not None:
         for strategy in ("random", "heuristic"):
             for replicate in range(cold_replicates):
@@ -782,7 +881,7 @@ def execute(tasks: Sequence[dict[str, Any]], workers: int, *, verbose: bool = Tr
 
 
 def grade(
-    episodes_path: Path,
+    episodes_path: Path | Sequence[Path],
     fit_path: Path,
     backbone_path: Path,
     splits_path: Path,
@@ -795,6 +894,7 @@ def grade(
     cold_replicates: int = DEFAULT_COLD_REPLICATES,
     judgments_path: Path | None = None,
     embeddings_path: Path | None = None,
+    policy_path: Path | None = None,
     hessian: str = "analytic",
     workers: int = 1,
     make_plots: bool = True,
@@ -804,7 +904,7 @@ def grade(
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    episodes = np.load(episodes_path, allow_pickle=False)
+    episodes = load_episode_caches(episodes_path)
     fit = np.load(fit_path, allow_pickle=False)
     backbone = np.load(backbone_path, allow_pickle=False)
     splits = json.loads(Path(splits_path).read_text(encoding="utf-8"))
@@ -851,6 +951,7 @@ def grade(
         replicates=replicates,
         cold_replicates=cold_replicates,
         hessian=hessian,
+        policy_path=policy_path,
     )
     if verbose:
         print(
@@ -872,6 +973,9 @@ def grade(
     }
 
     # ---- the frozen bar --------------------------------------------------
+    # the RL arm joins the frozen-bar blocks only when a policy was supplied;
+    # everything else about the bar is unchanged.
+    graded = list(STRATEGIES) + ([POLICY] if POLICY in curves else [])
     key = f"{BAR_RMSE:.2f}"
     frozen = {
         "target": {
@@ -887,11 +991,11 @@ def grade(
         "population_curve_crossing": {
             arm: {k: v for k, v in curves[arm]["questions_to_target"][key].items()
                   if k != "per_persona"}
-            for arm in STRATEGIES
+            for arm in graded
         },
         "secondary_lens_per_persona_crossing": {
             arm: curves[arm]["questions_to_target"][key]["per_persona"]
-            for arm in STRATEGIES
+            for arm in graded
         },
         "comparison": {
             "heuristic_vs_random": ratio_comparison(
@@ -909,6 +1013,20 @@ def grade(
             "and is reported exactly as written, not reinterpreted"
         ),
     }
+    if POLICY in curves:
+        # Gate 5 bar (b), PREREGISTRATION section 6: the RL policy must be at
+        # least as good as the heuristic on questions-to-target. A match is
+        # acceptable and a heuristic win is reported as such.
+        frozen["comparison"]["policy_vs_random"] = ratio_comparison(
+            curves[POLICY]["questions_to_target"][key],
+            curves[BASELINE]["questions_to_target"][key],
+        )
+        frozen["comparison"]["policy_vs_heuristic"] = ratio_comparison(
+            curves[POLICY]["questions_to_target"][key],
+            curves[ADAPTIVE]["questions_to_target"][key],
+            bar=1.0,
+        )
+        frozen["policy_label"] = POLICY_LABEL
     frozen["verdict"] = frozen["comparison"]["heuristic_vs_random"]["verdict"]
 
     # ---- pre-declared exploratory ---------------------------------------
@@ -932,6 +1050,21 @@ def grade(
                 "fixed_vs_random": ratio_comparison(
                     curves["fixed"]["questions_to_target"][f"{value:.2f}"],
                     curves[BASELINE]["questions_to_target"][f"{value:.2f}"],
+                ),
+                **(
+                    {
+                        "policy_vs_random": ratio_comparison(
+                            curves[POLICY]["questions_to_target"][f"{value:.2f}"],
+                            curves[BASELINE]["questions_to_target"][f"{value:.2f}"],
+                        ),
+                        "policy_vs_heuristic": ratio_comparison(
+                            curves[POLICY]["questions_to_target"][f"{value:.2f}"],
+                            curves[ADAPTIVE]["questions_to_target"][f"{value:.2f}"],
+                            bar=1.0,
+                        ),
+                    }
+                    if POLICY in curves
+                    else {}
                 ),
             }
             for value in EXPLORATORY_THRESHOLDS
@@ -984,7 +1117,7 @@ def grade(
         "schema": SCHEMA,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "inputs": {
-            "episodes": str(episodes_path),
+            "episodes": episodes.get("sources", [str(episodes_path)]),
             "fit": str(fit_path),
             "backbone": str(backbone_path),
             "splits": str(splits_path),
@@ -1088,7 +1221,8 @@ def render(report: dict[str, Any]) -> str:
     lines: list[str] = []
     add = lines.append
     design = report["design"]
-    add("GATE 5 -- adaptive interviewing, non-RL strategies")
+    arms = ", ".join(design.get("strategies_evaluated", []))
+    add(f"GATE 5 -- adaptive interviewing ({arms})")
     add(
         f"  {design['n_replicates']} replicates x {design['n_personas_holdout']} "
         f"held-out personas, budget N = {design['question_budget']}, "
@@ -1109,15 +1243,22 @@ def render(report: dict[str, Any]) -> str:
                 f"  {arm:<10} median {block['median']:.0f} questions "
                 f"({block['n_reached']}/{block['n_replicates']} replicates reached)"
             )
-    comparison = report["frozen_bar"]["comparison"]["heuristic_vs_random"]
-    add(f"  heuristic vs random: {comparison['verdict']}"
-        + (f" (ratio {comparison['ratio']:.3f}, bar <= {comparison['bar']})"
-           if comparison["ratio"] is not None else f" -- {comparison['why']}"))
+    for label, key in (
+        ("heuristic vs random", "heuristic_vs_random"),
+        ("RL policy vs random", "policy_vs_random"),
+        ("RL policy vs heuristic  [frozen bar (b)]", "policy_vs_heuristic"),
+    ):
+        comparison = report["frozen_bar"]["comparison"].get(key)
+        if comparison is None:
+            continue
+        add(f"  {label}: {comparison['verdict']}"
+            + (f" (ratio {comparison['ratio']:.3f}, bar <= {comparison['bar']})"
+               if comparison["ratio"] is not None else f" -- {comparison['why']}"))
     add("")
     add("EXPLORATORY threshold grid (pre-declared, labeled)")
     for value, block in report["exploratory"]["threshold_grid"].items():
         row = [f"  RMSE <= {value}:"]
-        for arm in ("random", "fixed", "heuristic"):
+        for arm in _PLOTTED:
             stats = block["per_strategy"].get(arm)
             if stats is None:
                 continue
@@ -1154,7 +1295,13 @@ def main(argv: list[str] | None = None) -> int:
         description="Grade the Stage 5 question-picking strategies against the frozen bar.",
         allow_abbrev=False,
     )
-    parser.add_argument("--episodes", type=Path, required=True)
+    parser.add_argument(
+        "--episodes",
+        type=Path,
+        required=True,
+        nargs="+",
+        help="one or more episode caches, stacked; round tags must not repeat",
+    )
     parser.add_argument("--fit", type=Path, required=True)
     parser.add_argument("--backbone", type=Path, required=True)
     parser.add_argument("--splits", type=Path, required=True)
@@ -1166,6 +1313,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cold-replicates", type=int, default=DEFAULT_COLD_REPLICATES)
     parser.add_argument("--judgments", type=Path, default=None)
     parser.add_argument("--embeddings", type=Path, default=None)
+    parser.add_argument(
+        "--policy",
+        type=Path,
+        default=None,
+        help=("the trained RL interviewer's weights. Only the confirmatory arm "
+              "loads (owner RULING 2); the episode cache must hold the "
+              "ep_policy_<replicate> sittings."),
+    )
     parser.add_argument("--hessian", default="analytic", choices=("analytic", "central"))
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--no-plots", action="store_true")
@@ -1184,6 +1339,7 @@ def main(argv: list[str] | None = None) -> int:
         cold_replicates=args.cold_replicates,
         judgments_path=args.judgments,
         embeddings_path=args.embeddings,
+        policy_path=args.policy,
         hessian=args.hessian,
         workers=args.workers,
     )
