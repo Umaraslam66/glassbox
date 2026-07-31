@@ -184,3 +184,29 @@ round + temperature — uncoupled and reproducible) plus per-record temperature;
 clean rerun at t ∈ {0.7, 1.0, 1.3} in one job before touching the wobble
 mechanism. p0314's card cleared on attempt 3 with a vocabulary-ban line —
 cards now 500/500.
+
+## 2026-07-31 — Pilot round 2 (clean seeds): temperature is not the knob; noise-layer decision
+
+Controlled rerun (same prompt files, per-record seeds, three temperatures,
+job 51189257, 7.26 core-hours): test–retest 0.9778 / 0.9789 / 0.9778 at
+t = 0.7 / 1.0 / 1.3 — flat, all far above the frozen band. The seed fix did
+real work (3–4% of individual answers flipped vs round 1) but the pooled number
+did not move: the responder is genuinely near-deterministic. Cross-temperature
+agreement 0.94–0.95 confirms enormous logit gaps. All other Gate-1 bars pass in
+every arm (obedience median 0.837–0.841, all dims > 0.5; PR 10.7; pairwise max
+0.84, median 0.47). Two items are genuinely zero-variance in all arms (q044,
+q246) — watch at the full sweep; q141 recovered variance with clean seeds.
+
+DESIGN DECISION (to be ratified by owner at Gate 1): the prompt-side wobble
+instruction measurably does nothing; responder inconsistency will instead be
+injected by a seeded mechanical noise layer driven by the responder's own
+answer-token distribution (recorded logprobs). Noise-event probability =
+wobble × (base slip + ambivalence boost × (1 − answer conviction)); on an
+event the answer is resampled from the model's own flattened answer
+distribution. Why this is not a pre-registration deviation: frozen §2 defines
+wobble as "how often it flips or shifts answers on items it is lukewarm
+about" — the layer implements that sentence literally, with lukewarmness
+measured from the persona model itself, and makes the planted wobble true by
+construction. The band stays the frozen bar; layer parameters are the
+Stage-1 tuning knob, recorded in the experiment config at freeze. Tuning
+happens offline on recorded logprobs — no GPU cost per knob turn.
