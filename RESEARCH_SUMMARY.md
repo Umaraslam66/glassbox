@@ -109,7 +109,8 @@ the uncertainty model — finding 1 again, in a third place — not reward hacki
 
 Two things came out of it. A general recipe: before concluding your agent gamed a proxy,
 check what an untrained baseline does to the same proxy. And we trained a forbidden version
-using real answers as reward — it beat the legal version by **at most 0.0242**, i.e.
+using real answers as reward — the two stay within **0.0242** of each other at every
+interview length, and the forbidden version's best advantage anywhere is 0.0144, i.e.
 nothing. **You can train the thing that decides what to ask next without ever knowing the
 right answer.** That is the finding with the most direct product consequence here.
 
@@ -137,9 +138,9 @@ pattern was predicted in writing before Gates 3, 4 and 5 ran, and held every tim
 
 The Gate 5 target being unreachable was flagged as a real possibility *before* that stage's
 compute was spent, with the fallback analysis pre-authorised — the only reason the fallback
-is worth anything. The project cost about 128 core-hours of GPU and roughly two cents of
-API spend, of which ~8% of the compute went to two operational mistakes named in the full
-report.
+is worth anything. The project cost about 124 GPU core-hours (≈129 total including the CPU
+stages) and roughly two cents of API spend, and ~8% of the GPU compute went to two
+operational mistakes named in the full report.
 
 ## What this does not prove
 
