@@ -927,3 +927,22 @@ verdicts. Hard stop at Gate 6 for owner review. Drafting delegated;
 orchestrator owns final editorial verification: every REPORT.md number
 against its result file (result file wins), every frozen-bar sentence
 against PREREGISTRATION.md.
+
+## 2026-08-01 — Stage 6 verification corrections (result files win over this log)
+
+The adversarial verification pass over the Stage 6 documents re-derived
+every number from its result file. Three values in earlier log entries
+are superseded by the files (the entries above stay as written; this
+note is the correction, per the rule that the log is never the source
+of truth for a number): (1) the heuristic's declared-vs-true gap at
+N=25 held-out is 0.254 (stage5_rl_proxy_watch.json), not 0.255;
+(2) the Gate 3 monotonicity shrinkage range 0.19–0.42 was the
+CLOSED-ONLY track — the confirmatory fused track shrinks 0.176–0.300,
+and the uptick figures (0.00228, 15.2%) were fused all along;
+(3) Stage-5 CPU accounting: the COSTS.md CPU rows sum to 5.35
+core-hours (a 1.5 core-hour strategy-sweep row was dropped from the
+earlier ~3.9 figure), so the project total is 123.83 GPU + 5.35 CPU
+≈ 129.2 core-hours. Also: the Gate 5 random-vs-heuristic ratio at
+RMSE ≤ 0.60 is exactly 0.566 (the random median is uncensored), not
+"≤ 0.566". The owner's fixed gate verdicts are untouched by all four
+corrections — none of these numbers appear in them.
