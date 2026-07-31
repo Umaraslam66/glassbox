@@ -24,3 +24,9 @@ accordingly if it is ever used for bulk development calls.
 | 2026-07-31 | 1 | FULL SWEEP — 500 personas × (252 main + 30 retest) at t=0.7 with logprobs; 16,920 cells reused from job 51194936, 124,080 rendered (job 51200138, 1 node × 20m09s) | 10.75 core-hours | 10.75 core-h |
 | 2026-07-31 | 2 | MIRT fit — 3 restarts at d=8 plus the d ∈ {2..12} dimensionality curve, held-out persona scoring and held-out item fitting (local, numpy, single core) | local CPU, 59s wall, no GPU, no API | 0 |
 | 2026-07-31 | 2 | Recovery grading, plots and diagnostics | local CPU, 2s wall | 0 |
+| 2026-07-31 | 2-fix | Card regeneration v2 — TWO-PASS (write + self-check/revise), 500 personas, both passes + bridge in one job (job 51317905, 1 node × 15m00s) | 8.00 core-hours | 8.00 core-h |
+| 2026-07-31 | 2-fix | FULL SWEEP v2 on the regenerated cards — 500 personas × (252 main + 30 retest) at t=0.7 with top-20 logprobs, 141,000 answers, nothing reused (job 51324033, 1 node × 19m43s, boost_qos_dbg after a queue-congestion resubmit) | 10.52 core-hours | 10.52 core-h |
+| 2026-07-31 | 2-fix | Gate 1 v2 QA pipeline — parse, frozen noise layer, population QA on noised and raw answers | local CPU, ~10s wall, no GPU, no API | 0 |
+| 2026-07-31 | 2-fix | MIRT fit v2 on the regenerated cards — same frozen settings as attempt 1 (d=8, ridge 0.01, seeds 0/1/2, max-iters 6000, dimensionality curve d ∈ {2..12}) | local CPU, 57.9s wall, no GPU, no API | 0 |
+| 2026-07-31 | 2-fix | Recovery grading v2 — two passes (confirmatory, then again with --exclude-items q229,q234 for the robustness block), plots and diagnostics | local CPU, 2.7s wall total, no GPU, no API | 0 |
+| 2026-07-31 | 2-fix | Gate 2 second-attempt analysis — correlation-matrix comparison, model-free TRU–RSK, exploratory blur decomposition (read-only over existing artifacts) | local CPU, ~30s wall, no GPU, no API | 0 |

@@ -289,3 +289,114 @@ recoverable; data alone would choose 6–8). Recovered correlation matrix ≈
 0.71 × planted (r = 0.77), heatmap in results/.
 
 Gate 2 is a hard stop: decision goes to the owner (report delivered in chat).
+
+## 2026-07-31 — Gate 2 fix round: owner decisions executed
+
+Owner ordered, in this order: (1) regenerate all 500 cards via the PRD §10
+two-pass fallback with per-dimension independence guidance; (2) correct the
+q229/q234 designed labels (legitimate only because the bank verifier flagged
+both BEFORE any fitting — see the KNOWN INSTRUMENT LIMITATIONS list in the
+"Question bank PLANTED" entry above); (3) accept distractor discrimination as
+a finding, not a defect; (4) if blur still fails, report the honest fail plus
+an exploratory inflation analysis; (5) mandatory checks (TRU–RSK, full
+correlation heatmap, watch items) in the report; (6) create
+results/STAGE6_NOTES.md (SocSci210 forward note — nothing actioned).
+
+Card regeneration v2 (jobs 51317905): prompts rebuilt at version 2.0 — same
+planted θ (verified byte-identical for all 500 before anything was written),
+seed 548, truth files untouched. New in the prompt: an independence block
+(the eight sides are independent facts; one side is never evidence of
+another; surprising combinations stay as given — with behavioural contrast
+examples de-entangling institution-trust from financial caution in both
+directions) and a vocabulary-ban rule using invented labels so the prompt
+contains nothing the leak checker hunts. Pass 2: Gemma re-reads its own draft
+against the same guidance, checks direction, strength and cross-bleed per
+side, and rewrites. Result: 500/500 pass-1 drafts, 500/500 revisions (489
+biographies actually changed, mostly full rewrites), ingest kept 500/500 with
+ZERO leak rejects and zero warnings (v1: 6 leak rejects). Orchestrator spot
+review confirmed the de-entangling (e.g. a persona who distrusts officials
+AND insures everything, each shown through its own details). 8.00 core-hours.
+
+q229/q234 amendment: designed loadings flipped (q229 TEC +0.25 → −0.25, q234
+PRC +0.25 → −0.25), recorded in a machine-readable "amendments" block inside
+bank_truth.json citing the pre-fit flag; validators extended to accept and
+check the block, and the amendment log added to the private-only keys so it
+can never reach the public side. Both items are TRAINING items, so the
+confirmatory held-out item-recovery bar is bit-identical with or without the
+correction — it is housekeeping, not a rescue. Their `negatively_keyed` flags
+were deliberately left untouched (metadata-only inconsistency; obedience uses
+the loading sign and excludes weak items, so no measurement reads the flag).
+The grader gained an --exclude-items robustness path; results carry item
+recovery both with the corrected labels (confirmatory) and with the two items
+excluded (robustness) — identical on held-out by construction.
+
+## 2026-07-31 — Full sweep v2 + Gate 1 second run: all five bars PASS
+
+All 141,000 answer cells regenerated from the v2 cards (job 51324033, 10.52
+core-hours, boost_qos_dbg after a queue-congestion resubmit; nothing reused
+from v1 — the driver's resume cache keys on record identity, not prompt text,
+so the sweep ran in a fresh run directory to make stale reuse impossible).
+Frozen noise layer applied unchanged (a=1.2, b=4.0, T_noise=16, t=0.7, seed
+548). Gate 1, noised, confirmatory (results/full_sweep_v2_qa.json): max
+pairwise 0.754 (≤0.95) PASS; median pairwise 0.385 (≤0.80) PASS;
+participation ratio 31.7 (≥5) PASS; obedience median 0.830, all dims ≥ 0.783
+(≥0.5) PASS; test–retest 0.794 in 70–90 band PASS. Raw comparison in
+results/full_sweep_v2_raw_qa.json (retest 0.981; PR 13.9 is the structural
+number, same honesty note as v1). Watch items: q246 still answered "3" by all
+500 raw (content-free, unmoved by new cards); q044 still near-dead (488/500
+"no" raw). Note: the v2 responder is slightly MORE deterministic raw (288/500
+perfectly self-consistent vs 267) — the frozen layer still lands the pooled
+number in band. Obedience moved little (median +0.003 noised); the weakest
+dimension RSK rose 0.753 → 0.783. 25% of raw cells changed vs v1 — the cards
+are genuinely different; the transmission ceiling just did not move much.
+
+## 2026-07-31 — Stage 2 second attempt: Gate 2 FAILS the same 2 of 4 bars
+
+Same frozen splits (seed 2026), same fit settings, same pipeline; results in
+results/stage2_v2_recovery.json (+ fit npz, diagnostics, heatmap, scatter).
+
+Bars: trait recovery FAIL — 6/8 dims clear 0.80; RSK 0.7983 and SOC 0.7996
+miss by 0.0017 and 0.0004 (v1: 3 dims under, worst 0.781). Every dimension
+improved; mean r 0.819 → 0.839. Item recovery PASS (median held-out r 0.922).
+Blur honesty FAIL (coverage 0.358 vs 60–75 band; v1 0.339). Weak-item
+ordering PASS (same qualitative caveat as v1). The fit is at the answer
+ceiling again (matches or beats model-free obedience on 5/8 dims, worst
+shortfall 0.029; restart agreement r 0.9997; split-half reliability 0.933).
+The dimensionality curve now peaks at the planted d=8 (v1: 6–8 tie).
+
+Mandatory checks. TRU–RSK (planted 0.00): recovered −0.270 held-out (v1
+−0.283); model-free answer-score correlation −0.375 (v1 −0.437) — the card
+confound shrank ~14% but survives the two-pass writer. Correlation-structure
+recovery got WORSE while per-trait recovery got better: slope of recovered on
+planted 0.65 (v1 0.71), r 0.74 (v1 0.77) — the v2 cards transmit individual
+traits more faithfully and between-trait structure less. q229/q234 fitted
+signs now match the corrected labels (−0.495 and −0.337 vs designed −0.25);
+neither is held-out, so the amendment moves no bar. q235 again fits strong
+(3.74) — "labeled weak, not written weak" stands. q044 remains a dead strong
+item (455/500 "no" noised) and is what drags the strong-primary minimum down.
+
+Blur exploratory block (EXPLORATORY — no confirmatory number recalibrated):
+nominal 68% coverage would need σ × 2.18 (v1 2.23); band entry ×1.89. The
+overconfidence decomposes as 88% card-rendering-induced / 12% noise-layer-
+induced (v1 90/10); pricing the noise-layer share alone would reach coverage
+0.435 (still fail), pricing both would reach 0.748 (in band). The posterior
+is honest about answer noise and blind to card distortion, exactly as in v1;
+the v2 cards cut the card share only ~4% relative.
+
+DISTRACTOR FINDING (owner decision: documented as a finding, not a defect):
+distractors fit real discrimination (median ‖a‖ 0.578 vs strong 1.998; 4/15
+material, top q249 "stairs-vs-lift" at 1.69 loading on TEC). Verified again:
+no planted value reaches the system side; this is coherent-biography colouring
+of nominally neutral preferences — the synthetic analogue of the everything-
+correlates "crud factor" in real survey data, where no human's "neutral"
+preferences are truly orthogonal to their traits. It goes in the final report
+in those terms. The standing leakage trigger STAYS ARMED for Stages 3–5:
+any distractor whose discrimination GROWS materially at a later stage, or any
+new route by which distractor answers could see planted values, is a hunt.
+
+Wobble-recovery relationship flipped to the sensible sign in v2 (wobblier
+personas now recover slightly worse, r +0.23; v1 showed −0.10, unexplained).
+
+Fix-round cost: 8.00 + 10.52 core-hours GPU + local CPU ≈ 18.5 core-hours
+(orchestrator estimate was ~17). Gate 2 second attempt is the ordered hard
+stop: verdict to the owner, no third attempt, no bar moves.
