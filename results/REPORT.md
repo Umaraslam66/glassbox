@@ -235,11 +235,13 @@ The banked finding, in the owner's wording:
 
 > "uncertainty calibrated only against observable data understates error against latent
 > ground truth when the persona-rendering step is lossy (measured here: 88% card-induced /
-> 12% noise-induced). Honest confidence models need truth-anchored feedback"
+> 12% noise-induced). Honest confidence models need truth-anchored feedback — connect to
+> Simile's confidence-model direction in the writeup"
 
-*(The 88/12 split is cited as recorded, not recomputed: it appears in the owner-accepted
-Gate 2 verdict and in the PROJECT_LOG exploratory block at the Gate 2 second attempt, and
-is not persisted in a result JSON.)*
+*(The 88/12 split is cited as recorded, not recomputed: it appears in the owner's banked
+Gate 2 finding in `results/STAGE6_NOTES.md`, which is the sentence quoted above, and in the
+PROJECT_LOG exploratory block at the Gate 2 second attempt. It is not persisted in a result
+JSON, and it does not appear in the owner-accepted Gate 2 verdict quoted earlier.)*
 
 The same blind spot reappears in the adaptive interviewer, measured a third way. Over a
 150-question interview the system declares away 76% of its uncertainty (declared blur falls
@@ -267,8 +269,9 @@ deployed system almost never has.
 The public-profile-only ridge baseline selected the intercept-only model in
 cross-validation. It predicts the training mean for every persona, and its RMSE equals the
 population spread (stage3_gate3.json -> tracks.fused.bars.lift.baseline_is_intercept_only,
-with `baseline_rmse_per_dimension` and `population_rms_per_dimension` matching to three
-decimals). At Gate 4 the same baseline scores +0.1% Brier lift over the zero-information
+with `baseline_rmse_per_dimension` and `population_rms_per_dimension` matching on 7 of 8
+dimensions to three decimals, PRC to two). At Gate 4 the same baseline scores +0.1% Brier
+lift over the zero-information
 marginal — indistinguishable (stage4_gate4.json -> arms.profile.brier 0.08590 against
 arms.marginal.brier 0.08601).
 
@@ -339,8 +342,9 @@ answer distributions for all 50 probe items (15,000 predictions, 0 parse failure
 | Our model (15 + 3 interview) | 0.06269 | 0.684 | 0.0137 |
 
 Source: stage4_gate4.json -> arms. The LLM is **34.8% worse than predicting the population
-average**. It tilts per-person in directions that add error, and its calibration is five
-times worse than the marginal's.
+average**. It tilts per-person in directions that add error, and its calibration is far
+worse than either reference: ECE 0.0704, which is 6.4 times the marginal's 0.0110 and 5.1
+times our model's 0.0137.
 
 This is the direct evidence against "just prompt an LLM with a persona description". On
 this population that approach is worse than a lookup table — and the profile-only ridge
@@ -432,8 +436,9 @@ exploratory.fraction_of_full_matrix):
 | 15 | 0.419 | 0.508 | 0.684 | 0.652 |
 | 25 | 0.565 | — | 0.787 | 0.801 |
 
-**RL ties the heuristic.** RL-to-heuristic ratios across the grid: 1.09, 0.93, 1.04 — a tie
-in both directions, and the never-trained info-gain heuristic is not beaten. Per the PRD a
+**RL ties the heuristic.** RL-to-heuristic ratios, in the order of the threshold table
+above (0.70 / 0.65 / 0.60): 1.04, 0.93, 1.09 — a tie in both directions, and the
+never-trained info-gain heuristic is not beaten. Per the PRD a
 match is acceptable and the heuristic winning would have been a legitimate finding.
 
 **The interesting part is *how* the RL policy wins.** Deployed greedily, the trained policy
@@ -488,7 +493,7 @@ the trained policy's own gap from +0.142 at initialisation to +0.239 at N=25
 (stage5_rl_proxy_watch.json -> checkpoints).
 
 That looks damning until you run the control. On identical sittings the **never-trained**
-info-gain heuristic shows a *larger* gap than the trained policy: +0.255 against +0.239 at
+info-gain heuristic shows a *larger* gap than the trained policy: +0.254 against +0.239 at
 N=25 (stage5_rl_proxy_watch.json -> gate5_harness_watch.heuristic and checkpoints[-1]). The
 trained policy ends with the same error and *more* declared uncertainty than the heuristic.
 
@@ -740,11 +745,13 @@ cases both readings are stored in the result file so the call can be re-made by 
   percentile of strong primaries) passes at 0.825; the full distributions are in the file,
   and 13 of the 15 weak items sit above the weakest strong item.
 - **Gate 3 blur monotonicity** — "blur shrinks monotonically **in expectation**". The
-  orchestrator ruled PASS on the "in expectation" wording: mean-blur curves shrink by
-  0.19-0.42 with a worst uptick of 0.00228 (0.9% of that dimension's shrinkage), and the
-  fixed-theta control is exactly monotone, so the upticks are MAP relocation rather than
-  information loss. The grader's two mechanical readings both record FAIL in the result
-  file, and 15.2% of individual steps rise. Both are printed in the scoreboard above.
+  orchestrator ruled PASS on the "in expectation" wording: on the confirmatory fused track
+  the mean-blur curves shrink by 0.176-0.300 with a worst uptick of 0.00228 (0.9% of that
+  dimension's shrinkage) and 15.2% of individual steps rising; the closed-only track shrinks
+  0.19-0.42, which is the range the log records. The fixed-theta control is exactly
+  monotone, so the upticks are MAP relocation rather than information loss. The grader's two
+  mechanical readings both record FAIL in the result file. Both are printed in the
+  scoreboard above.
 
 ---
 
@@ -815,7 +822,9 @@ the repository root. They are a separate deliverable and are not tested here.
 
 Recorded so nobody rediscovers them as findings. Item q246 is answered "3" by all 500
 personas raw and is content-free. Item q044 is near-dead (488 of 500 answer "no" raw) and
-is a designed-strong item, which drags the strong-item minimum down. Four price-sensitivity
+is a designed-strong item, so it sits near the bottom of the strong-primary distribution:
+it fits 0.5713, eleventh-lowest of all 252 items, though the strong-primary minimum of
+0.4498 belongs to a different item. Four price-sensitivity
 items share one syntactic frame — a possible method factor. Locality has a six-item "would
 you live elsewhere" cluster, within-dimension redundancy. Demographic combinations in the
 cards are occasionally odd (a 79-year-old barista with children at home); no frozen bar
@@ -835,8 +844,13 @@ tests demographic realism.
 | 4 — end-to-end prediction | 7.12 | the LLM-no-interview baseline job only; everything else local CPU |
 | 5 — adaptive interviewing + RL | 20.00 | includes 4.60 lost to the staging mistake (5.7) |
 | **GPU total** | **123.83** | summed from COSTS.md |
-| CPU (Stage 5 episodes, RL training, grading) | ~3.9 | includes 0.18 for the abandoned gamma=1 run |
-| **Project total** | **~127.7 core-hours** | |
+| CPU (Stage 5 episodes, RL training, grading) | 5.35 | 1.5 first Gate-5 strategy sweep + 1.3 RL training (incl. 0.18 for the abandoned gamma=1 run) + 2.55 Gate-5 re-grade with the RL arm |
+| **Project total** | **~129.2 core-hours** | |
+
+*(The CPU row is summed from every CPU line in COSTS.md. An earlier figure of ~3.9 left out
+the 1.5 core-hours of the first Gate-5 strategy sweep, which the later re-grade reproduced
+bit-exactly but did not un-spend. Same rule as everywhere else: compute that was spent is
+counted.)*
 
 **API spend: about $0.02 for the entire project.** One question-bank generation run on
 `gemini-3.5-flash-lite` (~44k input tokens) plus two trivial verification calls (COSTS.md).
