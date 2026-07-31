@@ -820,3 +820,69 @@ cost +0.03–0.07 pooled RMSE and move the 0.65 crossing 40 → 76
 (heuristic) / 81 → 144 (random); the full-bank floor rises 0.525 →
 0.550. Suite 686 green. RL trainer build in progress; confirmatory
 training on the r batch is next.
+
+## 2026-08-01 — Stage 5 run: Gate 5 verdict — frozen bars undefined at the frozen target; heuristic and RL tie on the pre-declared grid
+
+RL POLICY (all committed; numpy only, no new dependencies): 219→64→202
+MLP over (θ̂, blur, answered mask, step), REINFORCE with moving-average
+baseline, entropy bonus, Adam; reward = declared posterior-variance
+reduction minus per-question cost, blur-only per RULING 2 — an
+AST-level test proves src/rl imports nothing truth-side. DESIGN FIX
+found by the smoke run, recorded here honestly: with an undiscounted
+fixed-horizon return the objective is ORDER-INVARIANT (every step's
+return equals total trace removed minus what is left at the horizon;
+the constant per-question cost cancels from the gradient), so the smoke
+policy learned a good 25-item SET asked in arbitrary order — matching
+random early. γ=0.9 discounting restores urgency; it changes return
+aggregation, not the reward, so RULING 2 is untouched. The γ=1 run was
+abandoned at ~1,200 iterations (0.18 core-hours, logged). Confirmatory
+training on the r batch only: 3,000 iterations × 64 episodes × 25
+questions = 192,000 simulated interviews, return 3.77→4.12, stable,
+entropy 2.25→0.11, 0.45 core-hours. Training-batch guard checks
+persona ids.
+
+GATE 5 (results/stage5_strategies.json; 100 original held-out personas,
+51 replicates, greedy policy; the five pre-existing arms reproduce
+bit-exactly under the new code path):
+- Frozen bar (a): UNDEFINED — no strategy (random, fixed, heuristic,
+  RL) reaches per-dimension RMSE ≤ 0.5 at any N ≤ 150; the full bank
+  floors at pooled 0.525 / worst dim 0.56. Reported exactly as written
+  per RULING 1; the comparison the bar asks for does not exist at the
+  frozen threshold.
+- Frozen bar (b): UNDEFINED at the frozen target; on the pre-declared
+  exploratory grid it is a TIE — 0.60: heuristic 77 / RL 84 (1.09);
+  0.65: RL 37 / heuristic 40 (0.93); 0.70: heuristic 24 / RL 25 (1.04).
+  Match is acceptable per the PRD; the heuristic is not beaten. Both
+  adaptive arms roughly halve random (heuristic 0.462/0.494/≤0.566,
+  RL 0.48/0.46/0.62 at 0.70/0.65/0.60). Pooled RMSE at N=5/10/15/25:
+  RL 0.802/0.709/0.675/0.612 (best arm at its training horizon 25),
+  heuristic 0.794/0.699/0.660/0.616, random 0.873/0.817/0.774/0.711.
+
+PROXY-GAMING VERDICT (RULING 2 watch, run to ground): training on the
+blur proxy widens the policy's own declared-vs-true gap (+0.14 at init
+→ +0.24 trained at N=25), BUT the gap is a property of the POSTERIOR,
+not of reward hacking: on identical sittings the never-trained
+heuristic shows a LARGER gap than the trained policy (held-out +0.255
+vs +0.239 at N=25) — the policy ends with the same error and MORE
+declared uncertainty. The Stage-2/3 card-transmission blind spot is
+the whole story; RL adds nothing malign to it. And the oracle-reward
+exploratory arm (identical trainer, truth-side error-reduction reward,
+weights quarantined with a loader-refusal test) lands within ±0.014
+RMSE of the confirmatory policy at every N — THE DEPLOYABLE PROXY
+REWARD COSTS NOTHING MEASURABLE. Together: the proxy is honest about
+ordering decisions and dishonest only about absolute confidence,
+exactly as the pre-registered watch framed it.
+
+ADDITIONAL FINDING: greedily deployed, both trained policies converge
+to a near-STATIC 25-question order (the heuristic spreads 118 distinct
+items over the same personas) — the RL win is "learned a good fixed
+order", not per-person adaptation; past its training horizon it
+spreads out again (152/202 items by N=150). Kept for the report next
+to the Stage-3 D-optimal note.
+
+Costs, Stage 5: 20.0 GPU core-hours (RL batch: cards 9.35 incl. a 4.60
+staging mistake, sweep 10.65) + 3.9 CPU core-hours (training 1.30 incl.
+the abandoned run, grading + instrumentation 2.6) — all episode
+simulation and RL training on CPU as ordered. Suite 716 green. Project
+total ~127.7 core-hours. Gate 5 is a hard stop: verdict delivered,
+decision with the owner.
