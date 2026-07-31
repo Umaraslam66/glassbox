@@ -850,7 +850,7 @@ baseline already has.
 
 ### 9.1 Freeze order
 
-1. Item bank written and independently verified (§4.7).
+1. Item bank written and independently verified (§4.2, rule 7).
 2. Vehicle map, banned-context lists and correlation budget recorded.
 3. Interview/probe pool split, scripted interview order, probe stratification —
    all fixed with a recorded seed.
