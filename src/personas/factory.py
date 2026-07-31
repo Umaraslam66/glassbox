@@ -3,6 +3,12 @@
     python -m src.personas.factory --n 500 --seed 42 \\
         --out-truth <planted-truth dir> --out-public <public dir>
 
+A second batch minted for a different purpose takes its own ``--pid-prefix``
+(``r`` for the Stage 5 RL training batch, say). The prefix consumes no
+randomness -- it only names the people -- so the ids of two batches can never
+collide in a filename, in a job driver's resume cache, or in the per-record
+sampling seeds, which are hashed from the pid.
+
 Two output trees, and the split between them is the Wall:
 
   planted-truth dir           public dir
@@ -53,6 +59,7 @@ from pathlib import Path
 
 from .card_prompts import CARD_PROMPT_VERSION, build_card_prompt
 from .sampler import (
+    DEFAULT_PID_PREFIX,
     DEFAULT_WOBBLE_RANGE,
     DIMENSIONS,
     SAMPLER_VERSION,
@@ -111,6 +118,7 @@ def write_batch(
     out_truth: Path,
     out_public: Path,
     wobble_range: tuple[float, float],
+    pid_prefix: str = DEFAULT_PID_PREFIX,
 ) -> dict[str, object]:
     """Write one sampled batch to the two trees. Returns the manifest."""
     out_truth = Path(out_truth)
@@ -132,6 +140,7 @@ def write_batch(
     manifest = {
         "n": len(people),
         "seed": seed,
+        "pid_prefix": pid_prefix,
         "wobble_range": [wobble_range[0], wobble_range[1]],
         "sampler_version": SAMPLER_VERSION,
         "dimensions": list(DIMENSIONS),
@@ -231,8 +240,9 @@ def _regen_main(people: list[Persona], args: argparse.Namespace, wobble_range: t
     if problems:
         print(
             f"REFUSING to rewrite the card prompts: the population sampled from "
-            f"--n {args.n} --seed {args.seed} (wobble {wobble_range[0]}-"
-            f"{wobble_range[1]}) does not match the batch on disk. "
+            f"--n {args.n} --seed {args.seed} --pid-prefix {args.pid_prefix} "
+            f"(wobble {wobble_range[0]}-{wobble_range[1]}) does not match the "
+            f"batch on disk. "
             f"{len(problems)} mismatch(es); nothing was written."
         )
         for problem in problems[:_PROBLEMS_SHOWN]:
@@ -288,6 +298,18 @@ def main(argv: list[str] | None = None) -> int:
         help=f"high end of the response-noise range (default {DEFAULT_WOBBLE_RANGE[1]})",
     )
     parser.add_argument(
+        "--pid-prefix",
+        default=DEFAULT_PID_PREFIX,
+        help=(
+            f"namespace for the persona ids (default {DEFAULT_PID_PREFIX}, so "
+            f"{DEFAULT_PID_PREFIX}0001...). Lowercase letters only. A batch "
+            "minted for a different purpose takes its own prefix, so its ids "
+            "can never collide with an existing batch's in a filename, a "
+            "resume cache or a per-record sampling seed. Recorded in the "
+            "manifest, and part of what --regen-cards-only checks."
+        ),
+    )
+    parser.add_argument(
         "--regen-cards-only",
         action="store_true",
         help=(
@@ -302,15 +324,23 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     wobble_range = (args.wobble_min, args.wobble_max)
-    people = sample_population(args.n, args.seed, wobble_range=wobble_range)
+    try:
+        people = sample_population(
+            args.n, args.seed, wobble_range=wobble_range, pid_prefix=args.pid_prefix
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
 
     if args.regen_cards_only:
         return _regen_main(people, args, wobble_range)
 
-    manifest = write_batch(people, args.seed, args.out_truth, args.out_public, wobble_range)
+    manifest = write_batch(
+        people, args.seed, args.out_truth, args.out_public, wobble_range, args.pid_prefix
+    )
 
     print(
         f"minted {manifest['n']} personas from seed {manifest['seed']} "
+        f"as {people[0].pid}...{people[-1].pid} "
         f"(sampler {manifest['sampler_version']}, wobble "
         f"{wobble_range[0]}-{wobble_range[1]})"
     )

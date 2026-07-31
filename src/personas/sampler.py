@@ -65,6 +65,15 @@ THETA_CLIP = 2.0
 #: is a default argument, never a constant baked into the draw.
 DEFAULT_WOBBLE_RANGE = (0.10, 0.45)
 
+#: Default persona-id prefix. A batch minted for a different purpose takes a
+#: different one so its ids can never collide with an existing batch's -- not
+#: in a filename, not in a resume cache, and not in the per-record sampling
+#: seeds, which are hashed from the pid. Only letters, so ``{prefix}{index:04d}``
+#: always splits back into prefix and number unambiguously.
+DEFAULT_PID_PREFIX = "p"
+
+_PID_PREFIX_ALLOWED = set("abcdefghijklmnopqrstuvwxyz")
+
 AGE_RANGE = (18, 79)
 
 CITY_SIZES: tuple[str, ...] = ("village", "small town", "mid-size city", "big city")
@@ -287,6 +296,7 @@ def sample_population(
     n: int,
     seed: int,
     wobble_range: tuple[float, float] = DEFAULT_WOBBLE_RANGE,
+    pid_prefix: str = DEFAULT_PID_PREFIX,
 ) -> list[Persona]:
     """Draw ``n`` personas from the frozen population, reproducibly.
 
@@ -297,9 +307,20 @@ def sample_population(
 
     ``wobble_range`` is the Stage 1 tuning knob; pass it explicitly in an
     experiment config rather than editing the default.
+
+    ``pid_prefix`` names the batch. It consumes no randomness and touches
+    nothing else, so two batches minted from the same seed under two prefixes
+    are the same people under different names -- and two batches minted from
+    different seeds under different prefixes can be stored, cached and seeded
+    side by side with no chance of one being mistaken for the other.
     """
     if n <= 0:
         raise ValueError(f"n must be positive, got {n}")
+
+    if not pid_prefix or not set(pid_prefix) <= _PID_PREFIX_ALLOWED:
+        raise ValueError(
+            f"pid_prefix must be one or more lowercase letters, got {pid_prefix!r}"
+        )
 
     low, high = float(wobble_range[0]), float(wobble_range[1])
     if not 0.0 <= low < high <= 1.0:
@@ -326,7 +347,7 @@ def sample_population(
 
         people.append(
             Persona(
-                pid=persona_id(index),
+                pid=persona_id(index, pid_prefix),
                 theta=theta,
                 wobble=wobble,
                 age=age,
@@ -339,9 +360,14 @@ def sample_population(
     return people
 
 
-def persona_id(index: int) -> str:
-    """Persona id for a 1-based position in the batch: 1 -> ``p0001``."""
-    return f"p{index:04d}"
+def persona_id(index: int, prefix: str = DEFAULT_PID_PREFIX) -> str:
+    """Persona id for a 1-based position in the batch: 1 -> ``p0001``.
+
+    ``prefix`` is the batch's namespace; the number is always the position in
+    the draw, so ``r0001`` is the first person of the ``r`` batch, not the
+    501st of anything.
+    """
+    return f"{prefix}{index:04d}"
 
 
 def theta_matrix(people: list[Persona]) -> np.ndarray:

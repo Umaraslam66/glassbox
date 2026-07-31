@@ -87,6 +87,26 @@ def test_ids_are_zero_padded_from_one() -> None:
     assert [p.pid for p in people] == ["p0001", "p0002", "p0003"]
 
 
+def test_a_prefix_renames_the_batch_and_changes_nothing_else() -> None:
+    """A second batch's ids must not collide with the first's, anywhere."""
+    default = sampler.sample_population(5, 1)
+    renamed = sampler.sample_population(5, 1, pid_prefix="r")
+
+    assert [p.pid for p in renamed] == ["r0001", "r0002", "r0003", "r0004", "r0005"]
+    assert not {p.pid for p in renamed} & {p.pid for p in default}
+
+    # The prefix consumes no randomness: same seed, same people, new names.
+    for one, other in zip(default, renamed):
+        assert one.as_dict() | {"pid": other.pid} == other.as_dict()
+
+
+@pytest.mark.parametrize("bad", ["", "R", "r1", "rl_", "p 2", "0"])
+def test_a_bad_prefix_is_refused(bad) -> None:
+    """Letters only, so ``{prefix}{index:04d}`` always splits back apart."""
+    with pytest.raises(ValueError):
+        sampler.sample_population(3, 1, pid_prefix=bad)
+
+
 def test_wobble_range_is_a_knob_not_a_constant() -> None:
     people = sampler.sample_population(200, 11, wobble_range=(0.05, 0.20))
     values = [p.wobble for p in people]
@@ -300,6 +320,7 @@ def test_factory_writes_every_file(batch) -> None:
     manifest = json.loads((hidden / "batch_manifest.json").read_text(encoding="utf-8"))
     assert manifest["n"] == 12
     assert manifest["seed"] == 42
+    assert manifest["pid_prefix"] == sampler.DEFAULT_PID_PREFIX
     assert manifest["wobble_range"] == list(sampler.DEFAULT_WOBBLE_RANGE)
     assert manifest["sampler_version"] == sampler.SAMPLER_VERSION
     assert manifest["date"]
@@ -346,6 +367,47 @@ def test_no_planted_truth_leaks_into_any_public_file(batch) -> None:
             for rendering in (str(value), f"{value:.2f}", f"{value:.1f}"):
                 assert rendering not in text, f"{path.name} contains a trait value"
         assert str(person.wobble) not in text
+
+
+def test_the_factory_writes_a_prefixed_batch_and_records_the_prefix(tmp_path) -> None:
+    """A second batch lands in the same layout under ids of its own."""
+    hidden = tmp_path / "hidden"
+    public = tmp_path / "public"
+    factory.main(
+        [
+            "--n", "4",
+            "--seed", "549",
+            "--pid-prefix", "r",
+            "--out-truth", str(hidden),
+            "--out-public", str(public),
+        ]
+    )
+
+    for index in range(1, 5):
+        pid = f"r{index:04d}"
+        assert (hidden / "theta" / f"{pid}.json").is_file()
+        assert (hidden / "noise" / f"{pid}.json").is_file()
+        assert (hidden / "card_prompts" / f"{pid}.json").is_file()
+        assert (public / "profiles" / f"{pid}.json").is_file()
+    assert not list((hidden / "theta").glob("p*.json"))
+
+    manifest = json.loads((hidden / "batch_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["pid_prefix"] == "r"
+    assert manifest["seed"] == 549
+
+
+def test_the_factory_refuses_a_bad_prefix(tmp_path) -> None:
+    with pytest.raises(SystemExit):
+        factory.main(
+            [
+                "--n", "2",
+                "--seed", "1",
+                "--pid-prefix", "R1",
+                "--out-truth", str(tmp_path / "hidden"),
+                "--out-public", str(tmp_path / "public"),
+            ]
+        )
+    assert not (tmp_path / "hidden").exists()
 
 
 def test_the_factory_has_no_default_for_the_hidden_tree(tmp_path) -> None:
