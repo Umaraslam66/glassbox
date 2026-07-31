@@ -756,3 +756,67 @@ defines the frozen Gate 5 target. The earlier execution note's
 zero-shot was mandatory. One labeled-exploratory arm reruns the loop
 with item-encoder-predicted parameters as the product cold-start
 comparison.
+
+## 2026-07-31 — Stage 5: RL batch minted in band; sequential machinery built; non-RL strategies measured
+
+RL TRAINING BATCH (per the owner's execution order): 500 fresh personas,
+mint seed 549, new pid namespace r0001–r0500 (factory gained a
+--pid-prefix flag; ids disjoint from p0001–p0500 in filenames, resume
+caches, and every per-record seed hash — seed-base 548 unchanged for
+that reason). v2 two-pass cards: 500/500 ingested, ZERO leak rejects,
+no retry round. Full sweep 141,000 cells, 0 parse rejects, 0 missing
+logprobs. QA sanity (results/rl_batch_qa.json, frozen layer unchanged):
+all five Gate-1 metrics in band and within a few thousandths of the
+confirmatory batch (max pairwise 0.746, median 0.385, PR 34.0,
+obedience median 0.834 all dims ≥ 0.766, retest 0.798). Raw retest
+0.983 sits above band exactly as in v1/v2 — same honesty note; watch
+items q246/q044 behave identically. Truth tree at data/truth_rl/
+(separate directory, same layout — protects the seed-548 manifest from
+overwrite). Cost 20.0 core-hours across three GPU jobs, of which 4.60
+was a staging mistake on the first card job (pass 2 had no input; the
+resume-safe driver made recovery one engine init). Confirmatory eval
+personas remain the original held-out 100, untouched by anything here.
+
+SEQUENTIAL MACHINERY: incremental Bayesian posterior reproduces the
+Stage-3 closed-only backbone at every N=1..15 to ~1e-10 (mandatory
+integrity test, both Hessian modes; the analytic form is the sweep
+default, validated against the Stage-3 central-difference recipe).
+Episode simulator = frozen noise layer on recorded distributions with
+per-episode round tags (fresh sitting per episode, Gemma never
+re-queried); strategies are architecturally blind to everything but
+(chosen item, returned answer) — enforced by tests including an AST
+check. Grader choices recorded: random = fresh permutation per persona;
+fixed = the Stage-3 scripted order, censored at its own 15 items;
+info-gain = A-optimality (trace) with plug-in answer probabilities;
+blur-calibration constants from Stage 3 applied unchanged, never
+refitted.
+
+NON-RL RESULTS (results/stage5_strategies.json; 51 replicates,
+held-out 100, N up to 150): the frozen Gate 5 target (all dims RMSE
+≤ 0.5) is reached by NO strategy at ANY N — 0/51 replicates for
+random, fixed, and heuristic; the full 202-item bank through the same
+machinery bottoms out at pooled 0.525 / worst dim 0.56. Per RULING 1
+the frozen bar (a) is reported exactly as written: unmet/undefined —
+the comparison it asks for does not exist at threshold 0.5. The
+pre-declared exploratory grid carries the efficiency result: questions-
+to-target medians (random vs heuristic) 52 vs 24 at RMSE ≤ 0.70 (ratio
+0.462), 81 vs 40 at ≤ 0.65 (0.494), ≥136 vs 77 at ≤ 0.60 (≤ 0.566,
+conservative — 15/51 random replicates never crossed). Fraction of
+full-matrix information at N=5/10/15/25: heuristic 0.37/0.59/0.68/0.79,
+fixed 0.25/0.43/0.51/—, random 0.19/0.32/0.42/0.57. The heuristic
+reaches random's N=52 accuracy in 24 questions and random's N=150
+accuracy in ~60; the win is efficiency, not a higher ceiling (both
+converge to the 0.525 floor).
+
+PROXY-GAMING WATCH (RULING 2) FIRES BEFORE ANY RL EXISTS: declared blur
+falls to 24% of its start (heuristic; 27% random) while truth-side
+error falls only to 55%; the gap widens monotonically to ~0.31 at
+N=150. This is the coverage-decay blind spot expressed in the adaptive
+loop: the posterior prices answer noise, not card distortion, so the
+deployable reward is measurably optimistic. First-class finding for
+the report; full tracking arrays stored. Exploratory cold-start arm:
+encoder-predicted loadings (in-sample LOO, cosine 0.868 vs fitted)
+cost +0.03–0.07 pooled RMSE and move the 0.65 crossing 40 → 76
+(heuristic) / 81 → 144 (random); the full-bank floor rises 0.525 →
+0.550. Suite 686 green. RL trainer build in progress; confirmatory
+training on the r batch is next.
