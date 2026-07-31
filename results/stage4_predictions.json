@@ -1,0 +1,96 @@
+{
+  "schema": "glassbox.stage4.predictor/1",
+  "module": "src.model.predictor",
+  "generated": "2026-07-31T17:32:38+00:00",
+  "response_function": "graded response for Likert-5, 2PL for binary -- identical to src.model.mirt, proven numerically in tests/test_predictor.py",
+  "confirmatory_arm": {
+    "name": "model",
+    "theta_hat": "fused person-encoder posterior at N = 15, posterior mean + calibrated covariance K Sigma K",
+    "loadings": "zero-shot item encoder (direction head x magnitude head)",
+    "thresholds": "trained on the 400 training personas, see threshold_ruling",
+    "integration": "Monte Carlo, 512 seeded draws per persona, seed 2026"
+  },
+  "threshold_ruling": "Item intercepts/thresholds for the 50 probe items (CONFIRMATORY design choice by the orchestrator): fit per-item by maximum likelihood on the 400 TRAINING personas' noised main-round answers on that item, with training-persona theta FIXED at stage2_v2_fit.npz theta_train and loadings FROZEN at the encoder predictions; optimize intercepts/thresholds only. Rationale: threshold information is exactly what the population-marginal baseline already sees; person-specific signal stays with the zero-shot loadings and theta-hat.",
+  "threshold_fit": {
+    "n_training_personas": 400,
+    "n_items": 50,
+    "loglik": -20234.52573518274,
+    "iters": 210,
+    "converged": true,
+    "max_abs_gradient_at_optimum": 0.0008182849596262719,
+    "loss_curve_sampled": [
+      20971.89590021441,
+      20234.525735398594,
+      20234.525735197596
+    ]
+  },
+  "exploratory_text_threshold_head": {
+    "label": "EXPLORATORY",
+    "what": "ridge from item text features onto the FITTED cut points of the 202 training items, applied zero-shot to the 50 probe items",
+    "features": [
+      "wording (4)",
+      "topic one-hot",
+      "reduced embeddings (16)"
+    ],
+    "embedding_source": "/Users/umaraslam/Projects/GLASSBOX/data/runs/stage3_qwen/item_embeddings.npz",
+    "embed_components": 16,
+    "likert_head": {
+      "n_train_items": 133,
+      "lambda": 316.22776601683796,
+      "loo_mse": 1.1484015761786248
+    },
+    "binary_head": {
+      "n_train_items": 69,
+      "lambda": 1778.2794100389228,
+      "loo_mse": 1.66218149191989
+    },
+    "holdout_cut_rmse_vs_fitted": {
+      "likert_thresholds": 1.084472276453694,
+      "binary_difficulty": 1.1667721545152316
+    },
+    "ordering_note": "predicted Likert thresholds are sorted ascending"
+  },
+  "arms": {
+    "model": "CONFIRMATORY",
+    "model_plugin": "EXPLORATORY -- posterior collapsed to its mean",
+    "model_text_thresholds": "EXPLORATORY -- item side fully zero-shot",
+    "dec_fused_encoder": "EXPLORATORY -- 2x2 decomposition cell (plug-in)",
+    "dec_fused_fitted": "EXPLORATORY -- 2x2 decomposition cell (plug-in)",
+    "dec_full_encoder": "EXPLORATORY -- 2x2 decomposition cell (plug-in)",
+    "dec_full_fitted": "EXPLORATORY -- 2x2 decomposition cell (plug-in)",
+    "full_matrix_posterior": "EXPLORATORY -- Gate 2 theta with its own posterior"
+  },
+  "integrity": {
+    "calibrated_covariance_diagonal_matches_published_blur": true,
+    "encoder_prediction_order_matches_probe_items": true,
+    "kappa_per_dim": [
+      1.0100135522295073,
+      0.9056278815080143,
+      1.051678349681692,
+      1.0766286460655148,
+      1.0645308926699453,
+      1.0692083949155322,
+      1.0134527397077622,
+      0.9924633756402731
+    ]
+  },
+  "counts": {
+    "holdout_personas": 100,
+    "train_personas": 400,
+    "probe_items": 50,
+    "n_draws": 512,
+    "seed": 2026
+  },
+  "inputs": {
+    "fit": "/Users/umaraslam/Projects/GLASSBOX/results/stage2_v2_fit.npz",
+    "fused": "/Users/umaraslam/Projects/GLASSBOX/results/stage3_person_fused.npz",
+    "item_predictions": "/Users/umaraslam/Projects/GLASSBOX/data/runs/stage3_qwen/item_encoder_predictions.npz",
+    "answers": "/Users/umaraslam/Projects/GLASSBOX/data/runs/full_sweep_v2/answers_noised.jsonl",
+    "bank": "/Users/umaraslam/Projects/GLASSBOX/data/public/bank_items.json",
+    "embeddings": "/Users/umaraslam/Projects/GLASSBOX/data/runs/stage3_qwen/item_embeddings.npz"
+  },
+  "artifacts": {
+    "predictions": "/Users/umaraslam/Projects/GLASSBOX/results/stage4_predictions.npz"
+  },
+  "runtime_seconds": 1.0836100578308105
+}
