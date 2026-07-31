@@ -30,3 +30,6 @@ accordingly if it is ever used for bulk development calls.
 | 2026-07-31 | 2-fix | MIRT fit v2 on the regenerated cards — same frozen settings as attempt 1 (d=8, ridge 0.01, seeds 0/1/2, max-iters 6000, dimensionality curve d ∈ {2..12}) | local CPU, 57.9s wall, no GPU, no API | 0 |
 | 2026-07-31 | 2-fix | Recovery grading v2 — two passes (confirmatory, then again with --exclude-items q229,q234 for the robustness block), plots and diagnostics | local CPU, 2.7s wall total, no GPU, no API | 0 |
 | 2026-07-31 | 2-fix | Gate 2 second-attempt analysis — correlation-matrix comparison, model-free TRU–RSK, exploratory blur decomposition (read-only over existing artifacts) | local CPU, ~30s wall, no GPU, no API | 0 |
+| 2026-07-31 | 3 | Scripted interview closed answers — 500 personas × 15 frozen items drawn from the v2 sweep's recorded material by the frozen noise layer (round tag interview1); no model call, the responder is never re-queried | local CPU, 1.5s wall, no GPU, no API | 0 |
+| 2026-07-31 | 3 | Stage 3 transcript assembly (closed part) — 500 transcripts, 7,500 turns | local CPU, ~2s wall, no GPU, no API | 0 |
+| 2026-07-31 | 3 | Open-ended interview answers — 500 personas × 3 frozen open prompts = 1,500 generations at t=0.7, max 250 tokens (job 51333926, 1 node × 8m02s, boost_qos_dbg) | 4.28 core-hours | 4.28 core-h |

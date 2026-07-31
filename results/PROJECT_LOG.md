@@ -442,3 +442,49 @@ fresh Gemma generations (persona side, batched, cached). Item encoder and
 person encoder run system-side on the frozen Qwen3.6-27B; architectures
 to be proposed by subagents and decided by the orchestrator before any
 training.
+
+## 2026-07-31 — Stage 3 design decided; pre-measurement projection filed
+
+PROJECTION, FILED BEFORE ANY STAGE 3 MEASUREMENT (a prediction, not a
+result): from Stage 2's own numbers, the Gate 3 person-encoder RMSE bar
+(≤ 0.5 per dimension at N=15) is projected unreachable — the full
+252-item fit already sits at RMSE 0.458–0.580 with 5/8 dimensions above
+0.50, the transmission ceiling puts 4/8 dimensions above the bar even
+with infinite interview data, and Fisher-information plus a direct
+15-item MAP scoring of held-out personas (two independent methods that
+agree) put N=15 at RMSE 0.70–0.81 on every dimension. Projected lift
+from closed items alone: ~23% vs the 30% bar (the open answers are the
+only legal lever); projected coverage ~0.60 — near the band floor, with
+the anticipation-note blind spot expected to surface as N grows rather
+than at N=15. Bars do not move; the stage runs and is measured against
+them as frozen. Exploratory Stage-5 note: a D-optimal 15-item set would
+carry ~33% lift vs the frozen set's ~23% — the frozen interview set
+stays frozen; this is headroom for the adaptive interviewer, nothing
+else.
+
+ORCHESTRATOR WALL RULINGS: (1) the PREREGISTRATION §2 pole descriptions
+are committed public design text and may be used as system-side prompt
+scaffolding — guarded by a byte-identity test against the frozen file,
+and never reworded in response to encoder errors; (2) the Gate 3 item
+bars are graded against the FITTED parameters of held-out items (the
+PRD's wording and the only Wall-clean reading; cosine is
+rotation-invariant so all system-side work stays in the fitted basis —
+the truth-derived Procrustes rotation is off-limits system-side);
+(3) the system-side logprob ban stands — encoder confidence comes from
+sampled-score spread, not token probabilities.
+
+ARCHITECTURE DECISIONS (from the proposal in the session scratchpad):
+item encoder = hybrid — prompt-elicited Qwen judgments against the
+eight pole descriptions → small ridge head for loading DIRECTION;
+a separate head on judgments + reduced embeddings + wording features
+for discrimination MAGNITUDE (a design-class oracle only reaches
+r≈0.57 vs the 0.60 bar, so magnitude is the risk and is measured, not
+assumed). Person encoder = MIRT posterior over the answered closed
+items as the backbone (their fitted parameters are system-side
+quantities; blur monotonicity in N holds by construction) + the three
+open answers fused as a learned pseudo-item block in the likelihood
+(trained on the 400 training personas against fitted θ̂; blur
+calibrated on training-split residuals only). Full-LLM extraction and
+amortized inference are ablation arms, not the primary. Qwen3.6-27B has
+never run on this cluster in this project: the first Stage 3 GPU job is
+a smoke test.

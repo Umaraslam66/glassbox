@@ -305,6 +305,43 @@ def logprob_index(rows: Sequence[Mapping[str, Any]]) -> dict[tuple[str, str, str
     return found
 
 
+def recorded_distributions(
+    path: str | Path,
+    item_ids: Iterable[str] | None = None,
+    rounds: Iterable[str] | None = None,
+) -> dict[tuple[str, str, str], dict[str, float]]:
+    """Same index as :func:`logprob_index`, read a line at a time and filtered.
+
+    A full-sweep completions file is tens of megabytes and an interview needs a
+    handful of items out of it, so this never holds the whole file in memory.
+    ``item_ids`` and ``rounds`` are the filters; ``None`` means "everything".
+    """
+    wanted_items = {str(i) for i in item_ids} if item_ids is not None else None
+    wanted_rounds = {str(r) for r in rounds} if rounds is not None else None
+
+    found: dict[tuple[str, str, str], dict[str, float]] = {}
+    source = Path(path)
+    if not source.is_file():
+        return found
+
+    with source.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            item_id = str(row.get("item_id"))
+            if wanted_items is not None and item_id not in wanted_items:
+                continue
+            round_name = str(row.get("round") or "main")
+            if wanted_rounds is not None and round_name not in wanted_rounds:
+                continue
+            recorded = row.get("logprobs")
+            if recorded:
+                key = (str(row.get("pid")), item_id, round_name)
+                found[key] = {str(k): float(v) for k, v in recorded.items()}
+    return found
+
+
 def design_classes(bank_design: Mapping[str, Any]) -> dict[str, str]:
     """Item id -> design class, for the by-class breakdown in the stats file.
 
@@ -461,6 +498,65 @@ def apply_noise(
         "by_design_class": per_class,
         "by_persona": {pid: per_persona[pid] for pid in sorted(per_persona)},
     }
+    return out, stats
+
+
+def draw_round(
+    answers: Sequence[Mapping[str, Any]],
+    distributions: Mapping[tuple[str, str, str], Mapping[str, float]],
+    wobbles: Mapping[str, float],
+    types: Mapping[str, str],
+    config: NoiseConfig,
+    seed_base: int,
+    round_name: str,
+    source_round: str = "main",
+    item_ids: Sequence[str] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """One fresh, independently seeded application of the layer, as a new round.
+
+    This is how a persona answers a closed item in an interview (the
+    consistency rule in ``src/interview/__init__.py``): the recorded answer and
+    the recorded distribution both come from the sweep that already happened,
+    the responder is never asked again, and only the seed is new.
+
+    The seed is new because :func:`cell_seed` folds the round name in, and the
+    rows handed to :func:`apply_noise` carry ``round_name`` rather than the
+    round they were recorded in. That is the same mechanism that makes the main
+    pass and the retest wobble independently, used once more.
+
+    ``item_ids`` restricts the round to those items and fixes their order --
+    for the scripted interview that is the frozen question order. Rows whose
+    distribution is missing are passed through untouched and counted in the
+    stats, exactly as in :func:`apply_noise`.
+    """
+    rank = (
+        {str(item_id): position for position, item_id in enumerate(item_ids)}
+        if item_ids is not None
+        else None
+    )
+
+    rows: list[dict[str, Any]] = []
+    for row in answers:
+        pid, item_id, seen_round = cell_key(row)
+        if seen_round != source_round:
+            continue
+        if rank is not None and item_id not in rank:
+            continue
+
+        fresh = {k: v for k, v in row.items() if k not in ("logprobs", "raw")}
+        fresh["round"] = round_name
+        recorded = row.get("logprobs") or distributions.get((pid, item_id, source_round))
+        if recorded:
+            fresh["logprobs"] = dict(recorded)
+        rows.append(fresh)
+
+    if rank is not None:
+        rows.sort(key=lambda r: (str(r.get("pid")), rank[str(r.get("item_id"))]))
+
+    out, stats = apply_noise(rows, {}, wobbles, types, config, seed_base)
+    stats["round"] = str(round_name)
+    stats["source_round"] = str(source_round)
+    stats["n_items"] = len(rank) if rank is not None else None
     return out, stats
 
 

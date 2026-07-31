@@ -40,7 +40,7 @@ from typing import Any, Iterable, Mapping, Sequence
 import numpy as np
 
 from ..bank.schema import DIMENSIONS
-from .responder_prompts import ROUNDS, build_answer_prompt, session_id
+from .responder_prompts import CLOSED_ROUNDS, build_answer_prompt, session_id
 
 #: Items re-asked per persona in the retest round. Frozen in
 #: PREREGISTRATION.md section 5: "re-ask 30 fixed items per persona".
@@ -408,9 +408,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--round",
-        choices=ROUNDS,
+        choices=CLOSED_ROUNDS,
         default="main",
-        help="main pass over the bank, or the fixed retest re-ask (default main)",
+        help=(
+            "main pass over the bank, or the fixed retest re-ask (default "
+            "main). These are the only two: an interview round is never "
+            "emitted here, because a closed interview answer is drawn from "
+            "what these rounds recorded, not asked again (consistency rule)."
+        ),
     )
     parser.add_argument(
         "--session-seed",

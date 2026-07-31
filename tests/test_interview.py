@@ -22,7 +22,14 @@ from pathlib import Path
 import pytest
 
 from src.bank.schema import DIMENSIONS, options_for
-from src.interview import emit_answer_jobs, parse_answers, responder_prompts
+from src.interview import (
+    assemble_transcripts,
+    emit_answer_jobs,
+    emit_open_jobs,
+    parse_answers,
+    parse_open_answers,
+    responder_prompts,
+)
 from src.personas.card_prompts import build_noise_instruction
 
 # --------------------------------------------------------------------------
@@ -612,3 +619,385 @@ def test_answers_close_the_loop_with_the_emitter(tmp_path: Path) -> None:
 
     emit_answer_jobs.main(args)
     assert prompt_rows(run_dir) == []
+
+
+# --------------------------------------------------------------------------
+# 5. the Stage 3 interview: rounds, open prompts, transcripts
+# --------------------------------------------------------------------------
+
+OPEN_ITEMS = [
+    {"item_id": "oe01", "text": "Tell me about a time you dealt with a bank."},
+    {"item_id": "oe15", "text": "Tell me about handing a job over to a new device."},
+    {"item_id": "oe16", "text": "Tell me about a gathering you keep going back to."},
+]
+
+SCRIPTED_OPEN = ["oe01", "oe16", "oe15"]
+
+
+def write_public_bank_with_open(tmp_path: Path, scripted_closed: list[str]) -> Path:
+    """A public bank carrying both the closed items and the open prompts."""
+    payload = {
+        "bank_version": 1,
+        "items": [
+            {"item_id": item_id, "text": f"Statement {item_id}.", "type": "likert5",
+             "options": options_for("likert5"), "topic_domain": "money"}
+            for item_id in scripted_closed
+        ],
+        "open_ended": OPEN_ITEMS,
+    }
+    path = tmp_path / "bank_items.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def write_splits(tmp_path: Path, scripted_closed: list[str]) -> Path:
+    path = tmp_path / "splits.json"
+    path.write_text(
+        json.dumps({"interview_closed": scripted_closed, "interview_open": SCRIPTED_OPEN}),
+        encoding="utf-8",
+    )
+    return path
+
+
+def write_profiles(tmp_path: Path, pids: list[str]) -> Path:
+    profiles = tmp_path / "profiles"
+    profiles.mkdir(parents=True, exist_ok=True)
+    for index, pid in enumerate(pids, start=1):
+        (profiles / f"{pid}.json").write_text(
+            json.dumps({
+                "pid": pid, "age": 30 + index, "occupation": "barista",
+                "city_size": "small town", "household": "alone",
+                "region_type": "urban",
+            }),
+            encoding="utf-8",
+        )
+    return profiles
+
+
+# ---- the round tags ------------------------------------------------------
+
+
+def test_the_interview_round_is_a_session_of_its_own() -> None:
+    main = responder_prompts.session_id("p0001", "main", 548)
+    retest = responder_prompts.session_id("p0001", "retest", 548)
+    interview = responder_prompts.session_id("p0001", "interview1", 548)
+    assert len({main, retest, interview}) == 3
+    assert interview.startswith("interview1-")
+    assert interview == responder_prompts.session_id("p0001", "interview1", 548)
+
+
+def test_the_closed_emitter_refuses_an_interview_round(tmp_path: Path) -> None:
+    """A closed interview answer is drawn from the sweep, never asked again."""
+    public_bank, design, _ = write_bank(tmp_path)
+    cards_dir, noise_dir = write_personas(tmp_path)
+    with pytest.raises(SystemExit):
+        emit_answer_jobs.main([
+            "--cards-dir", str(cards_dir), "--noise-dir", str(noise_dir),
+            "--public-bank", str(public_bank), "--out", str(tmp_path / "run"),
+            "--round", "interview1",
+        ])
+
+
+def test_the_closed_rounds_are_exactly_two() -> None:
+    assert responder_prompts.CLOSED_ROUNDS == ("main", "retest")
+    assert "interview1" in responder_prompts.INTERVIEW_ROUNDS
+    assert set(responder_prompts.ROUNDS) == {"main", "retest", "interview1"}
+
+
+# ---- the open-ended prompts ---------------------------------------------
+
+
+def test_the_open_instruction_replaces_the_one_token_one() -> None:
+    system = responder_prompts.build_system_prompt(CARD, 0.2, "open")
+    assert "your own words" in system
+    assert "Output ONLY the digit." not in system
+    assert "yes or no" not in system
+    assert "no explanation, no extra words" not in system, (
+        "the terse line cancels the open instruction above it"
+    )
+    assert CARD["biography"] in system
+    assert build_noise_instruction(0.2) in system
+
+
+def test_open_prompts_carry_the_card_the_question_and_the_session_line() -> None:
+    session = responder_prompts.session_id("p0001", "interview1", 548)
+    prompt = emit_open_jobs.build_open_prompt(CARD, 0.2, OPEN_ITEMS[0], session)
+    assert prompt["user"].startswith(f"Session: {session}")
+    assert OPEN_ITEMS[0]["text"] in prompt["user"]
+    assert CARD["biography"] in prompt["system"]
+
+
+def test_emit_open_writes_one_prompt_per_persona_and_question(tmp_path: Path) -> None:
+    cards_dir, noise_dir = write_personas(tmp_path, n=4)
+    public_bank = write_public_bank_with_open(tmp_path, ["q001"])
+    splits = write_splits(tmp_path, ["q001"])
+    run_dir = tmp_path / "run"
+
+    assert emit_open_jobs.main([
+        "--cards-dir", str(cards_dir), "--noise-dir", str(noise_dir),
+        "--public-bank", str(public_bank), "--splits", str(splits),
+        "--out", str(run_dir),
+    ]) == 0
+
+    rows = [json.loads(line) for line in
+            (run_dir / "prompts_open.jsonl").read_text().splitlines()]
+    assert len(rows) == 4 * 3
+    assert all(set(row) == {"pid", "item_id", "round", "system", "user"} for row in rows)
+    assert {row["round"] for row in rows} == {"interview1"}
+    # scripted order, repeated per persona
+    assert [row["item_id"] for row in rows[:3]] == SCRIPTED_OPEN
+    assert len({row["pid"] for row in rows}) == 4
+
+    manifest = json.loads((run_dir / "open_manifest.json").read_text())
+    assert manifest["emitted"] == 12
+    assert manifest["prompt_ids"] == SCRIPTED_OPEN
+    assert manifest["session_seed"] == 548
+
+
+def test_emit_open_skips_what_is_already_answered(tmp_path: Path) -> None:
+    cards_dir, noise_dir = write_personas(tmp_path, n=2)
+    public_bank = write_public_bank_with_open(tmp_path, ["q001"])
+    splits = write_splits(tmp_path, ["q001"])
+    run_dir = tmp_path / "run"
+    args = ["--cards-dir", str(cards_dir), "--noise-dir", str(noise_dir),
+            "--public-bank", str(public_bank), "--splits", str(splits),
+            "--out", str(run_dir)]
+
+    emit_open_jobs.main(args)
+    (run_dir / "open_answers.jsonl").write_text(
+        json.dumps({"pid": "p0001", "prompt_id": "oe01", "round": "interview1",
+                    "answer": "It went badly and I never went back."}) + "\n",
+        encoding="utf-8",
+    )
+    emit_open_jobs.main(args)
+
+    rows = [json.loads(line) for line in
+            (run_dir / "prompts_open.jsonl").read_text().splitlines()]
+    assert len(rows) == 5
+    assert ("p0001", "oe01") not in {(row["pid"], row["item_id"]) for row in rows}
+
+
+def test_emit_open_refuses_a_prompt_that_is_not_in_the_public_bank(tmp_path: Path) -> None:
+    cards_dir, noise_dir = write_personas(tmp_path, n=1)
+    public_bank = write_public_bank_with_open(tmp_path, ["q001"])
+    splits = tmp_path / "splits.json"
+    splits.write_text(json.dumps({"interview_closed": ["q001"],
+                                  "interview_open": ["oe01", "oe99"]}))
+    with pytest.raises(ValueError, match="not in the public bank"):
+        emit_open_jobs.main([
+            "--cards-dir", str(cards_dir), "--noise-dir", str(noise_dir),
+            "--public-bank", str(public_bank), "--splits", str(splits),
+            "--out", str(tmp_path / "run"),
+        ])
+
+
+# ---- parsing the open answers -------------------------------------------
+
+
+def test_open_answers_are_tidied() -> None:
+    answer, reason = parse_open_answers.clean_answer(
+        '  "The bank lost my form twice.\n\n\n  I gave up and walked in."  '
+    )
+    assert reason == ""
+    assert answer == "The bank lost my form twice.\nI gave up and walked in."
+
+
+def test_an_echoed_session_line_is_dropped() -> None:
+    answer, _ = parse_open_answers.clean_answer(
+        "Session: interview1-abc123\n\nThey kept me waiting for an hour, so I left."
+    )
+    assert "Session:" not in answer
+    assert answer.startswith("They kept me waiting")
+
+
+@pytest.mark.parametrize("raw", ["", "   ", "Sure.", "Okay, will do."])
+def test_empty_and_too_short_open_answers_are_rejected(raw: str) -> None:
+    answer, reason = parse_open_answers.clean_answer(raw)
+    assert answer == ""
+    assert reason
+
+
+def test_parsing_open_answers_never_duplicates_a_cell(tmp_path: Path) -> None:
+    run_dir = tmp_path / "run"
+    completions = tmp_path / "completions_open.jsonl"
+    completions.write_text(
+        json.dumps({"pid": "p0001", "item_id": "oe01", "round": "interview1",
+                    "completion": "The queue was long and nobody knew the rules."}) + "\n",
+        encoding="utf-8",
+    )
+    first = parse_open_answers.parse_file(completions, run_dir)
+    second = parse_open_answers.parse_file(completions, run_dir)
+
+    assert first["kept"] == 1 and second["kept"] == 0
+    assert second["duplicates"] == 1
+    rows = [json.loads(line) for line in
+            (run_dir / "open_answers.jsonl").read_text().splitlines()]
+    assert len(rows) == 1
+    assert set(rows[0]) == {"pid", "prompt_id", "round", "answer"}
+
+
+def test_an_open_reject_leaves_the_queue_once_it_is_answered(tmp_path: Path) -> None:
+    run_dir = tmp_path / "run"
+    bad = tmp_path / "bad.jsonl"
+    bad.write_text(json.dumps({"pid": "p0001", "item_id": "oe01",
+                               "round": "interview1", "completion": "Yes."}) + "\n")
+    summary = parse_open_answers.parse_file(bad, run_dir)
+    assert summary["rejected"] == 1 and summary["outstanding"] == 1
+
+    good = tmp_path / "good.jsonl"
+    good.write_text(json.dumps({
+        "pid": "p0001", "item_id": "oe01", "round": "interview1",
+        "completion": "I queued for an hour and then the office shut."}) + "\n")
+    summary = parse_open_answers.parse_file(good, run_dir)
+    assert summary["kept"] == 1
+    assert (run_dir / "open_answer_rejects.jsonl").read_text().strip() == ""
+
+
+# ---- assembling the transcript ------------------------------------------
+
+
+SCRIPTED_CLOSED = ["q003", "q001", "q002"]
+
+
+def transcript_fixture(tmp_path: Path, pids: list[str] | None = None) -> dict:
+    pids = pids or ["p0001", "p0002"]
+    public_bank = write_public_bank_with_open(tmp_path, SCRIPTED_CLOSED)
+    splits = write_splits(tmp_path, SCRIPTED_CLOSED)
+    profiles = write_profiles(tmp_path, pids)
+
+    answers = tmp_path / "answers_interview1.jsonl"
+    answers.write_text("".join(
+        json.dumps({"pid": pid, "item_id": item_id, "round": "interview1",
+                    "answer": 4}) + "\n"
+        for pid in pids for item_id in SCRIPTED_CLOSED), encoding="utf-8")
+
+    return {"public_bank": public_bank, "splits": splits, "profiles": profiles,
+            "answers": answers, "pids": pids, "out": tmp_path / "transcripts.jsonl"}
+
+
+def run_assembler(fixture: dict, extra: list[str] | None = None) -> list[dict]:
+    assemble_transcripts.main([
+        "--profiles-dir", str(fixture["profiles"]),
+        "--public-bank", str(fixture["public_bank"]),
+        "--splits", str(fixture["splits"]),
+        "--answers", str(fixture["answers"]),
+        "--out", str(fixture["out"]),
+        *(extra or []),
+    ])
+    return [json.loads(line) for line in fixture["out"].read_text().splitlines()]
+
+
+def test_the_transcript_has_the_stage_three_schema(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path)
+    records = run_assembler(fixture)
+
+    assert [r["pid"] for r in records] == fixture["pids"]
+    record = records[0]
+    assert set(record) == {"pid", "profile", "turns", "open"}
+    assert set(record["profile"]) == {"pid", "age", "occupation", "city_size",
+                                      "household", "region_type"}
+    assert [t["n"] for t in record["turns"]] == [1, 2, 3]
+    assert all(set(t) == {"n", "item_id", "question", "answer"} for t in record["turns"])
+    assert record["open"] == []
+
+
+def test_the_turns_follow_the_scripted_order_not_the_file_order(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path, pids=["p0001"])
+    # rewrite the answers in a deliberately wrong order
+    fixture["answers"].write_text("".join(
+        json.dumps({"pid": "p0001", "item_id": item_id, "round": "interview1",
+                    "answer": 4}) + "\n"
+        for item_id in reversed(SCRIPTED_CLOSED)), encoding="utf-8")
+    records = run_assembler(fixture)
+    assert [t["item_id"] for t in records[0]["turns"]] == SCRIPTED_CLOSED
+
+
+def test_the_transcript_carries_the_public_question_text(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path)
+    records = run_assembler(fixture)
+    assert records[0]["turns"][0]["question"] == f"Statement {SCRIPTED_CLOSED[0]}."
+
+
+def test_the_open_block_fills_in_on_a_second_run(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path, pids=["p0001"])
+    assert run_assembler(fixture)[0]["open"] == []
+
+    open_answers = tmp_path / "open_answers.jsonl"
+    open_answers.write_text("".join(
+        json.dumps({"pid": "p0001", "prompt_id": prompt_id, "round": "interview1",
+                    "answer": f"Something happened about {prompt_id} and I dealt with it."}) + "\n"
+        for prompt_id in SCRIPTED_OPEN), encoding="utf-8")
+
+    records = run_assembler(fixture, ["--open-answers", str(open_answers)])
+    block = records[0]["open"]
+    assert [entry["prompt_id"] for entry in block] == SCRIPTED_OPEN
+    assert all(set(entry) == {"prompt_id", "question", "answer"} for entry in block)
+    assert block[0]["question"] == OPEN_ITEMS[0]["text"]
+    assert records[0]["turns"], "the closed part must survive the second run"
+
+
+def test_a_leaking_open_answer_is_dropped_and_counted(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path, pids=["p0001"])
+    open_answers = tmp_path / "open_answers.jsonl"
+    open_answers.write_text("".join(json.dumps(row) + "\n" for row in [
+        {"pid": "p0001", "prompt_id": "oe01", "round": "interview1",
+         "answer": "My institution trust is low, so I never go to the bank."},
+        {"pid": "p0001", "prompt_id": "oe16", "round": "interview1",
+         "answer": "We eat at my sister's every Sunday and I would hate a change."},
+    ]), encoding="utf-8")
+
+    records = run_assembler(fixture, ["--open-answers", str(open_answers)])
+    kept = records[0]["open"]
+    assert [entry["prompt_id"] for entry in kept] == ["oe16"]
+    assert "institution trust" not in json.dumps(records[0])
+
+    report = json.loads(Path(str(fixture["out"]) + ".report.json").read_text())
+    assert report["open_answers_kept"] == 1
+    assert report["open_answers_rejected_for_leaks"] == 1
+    assert report["open_leak_rejects"][0]["pid"] == "p0001"
+    assert report["open_leak_rejects"][0]["prompt_id"] == "oe01"
+    assert "answer" not in report["open_leak_rejects"][0], (
+        "the rejected text must not be stored either"
+    )
+
+
+def test_an_unexpected_profile_key_stops_the_run(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path, pids=["p0001"])
+    path = fixture["profiles"] / "p0001.json"
+    record = json.loads(path.read_text())
+    record["wobble"] = 0.31
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="allowlist"):
+        run_assembler(fixture)
+
+
+def test_a_persona_without_a_public_profile_is_skipped(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path, pids=["p0001", "p0002"])
+    (fixture["profiles"] / "p0002.json").unlink()
+    records = run_assembler(fixture)
+    assert [r["pid"] for r in records] == ["p0001"]
+    report = json.loads(Path(str(fixture["out"]) + ".report.json").read_text())
+    assert report["personas_without_a_public_profile"] == ["p0002"]
+
+
+def test_a_short_script_is_reported(tmp_path: Path) -> None:
+    fixture = transcript_fixture(tmp_path, pids=["p0001"])
+    rows = [json.loads(line) for line in fixture["answers"].read_text().splitlines()]
+    fixture["answers"].write_text(
+        "".join(json.dumps(row) + "\n" for row in rows[:2]), encoding="utf-8")
+    records = run_assembler(fixture)
+    assert [t["n"] for t in records[0]["turns"]] == [1, 2]
+    report = json.loads(Path(str(fixture["out"]) + ".report.json").read_text())
+    assert report["incomplete_personas"] == ["p0001"]
+    assert report["turns_expected_per_persona"] == 3
+
+
+def test_a_forbidden_field_is_refused_even_if_it_gets_that_far() -> None:
+    """The last line of defence: nothing named like planted truth is written."""
+    record = {"pid": "p0001", "profile": {"pid": "p0001"},
+              "turns": [{"n": 1, "item_id": "q001", "question": "?", "answer": 4}],
+              "open": [{"prompt_id": "oe01", "question": "?", "answer": "x",
+                        "wobble": 0.3}]}
+    assert assemble_transcripts.banned_keys_in(record) == {"wobble"}
+    assert assemble_transcripts.banned_keys_in({"pid": "p1"}) == set()

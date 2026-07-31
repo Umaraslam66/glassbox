@@ -451,3 +451,247 @@ def test_noised_output_is_readable_by_the_population_qa_matrix_builder(tmp_path)
     assert pids == ["p1"]
     assert len(item_ids) == 50
     assert not np.isnan(matrix).any()
+
+# --------------------------------------------------------------------------
+# the interview round (Stage 3 consistency rule)
+# --------------------------------------------------------------------------
+#
+# These live here rather than in tests/test_interview.py because the thing
+# under test is one seeded application of the noise layer, and the fixtures
+# have to carry the responder's recorded answer distributions -- which is
+# exactly what the Wall keeps out of the interview package and its tests.
+
+
+def _distributions(pids, item_ids, round_name, logprobs):
+    return {(pid, item_id, round_name): logprobs
+            for pid in pids for item_id in item_ids}
+
+
+def test_recorded_distributions_filters_by_item_and_round(tmp_path):
+    path = tmp_path / "completions.jsonl"
+    path.write_text("".join(json.dumps(row) + "\n" for row in [
+        {"pid": "p1", "item_id": "q1", "round": "main", "logprobs": CONFIDENT},
+        {"pid": "p1", "item_id": "q2", "round": "main", "logprobs": TORN},
+        {"pid": "p1", "item_id": "q1", "round": "retest", "logprobs": TORN},
+    ]))
+    found = nl.recorded_distributions(path, item_ids=["q1"], rounds=["main"])
+    assert set(found) == {("p1", "q1", "main")}
+    assert found[("p1", "q1", "main")] == CONFIDENT
+
+    assert len(nl.recorded_distributions(path)) == 3
+    assert nl.recorded_distributions(tmp_path / "nope.jsonl") == {}
+
+
+def test_recorded_distributions_skips_records_with_nothing_recorded(tmp_path):
+    path = tmp_path / "completions.jsonl"
+    path.write_text("".join(json.dumps(row) + "\n" for row in [
+        {"pid": "p1", "item_id": "q1", "round": "main", "completion": "4"},
+        {"pid": "p2", "item_id": "q1", "round": "main", "logprobs": CONFIDENT},
+    ]))
+    assert set(nl.recorded_distributions(path)) == {("p2", "q1", "main")}
+
+
+def test_draw_round_relabels_the_round_and_drops_truth_side_fields():
+    rows = [_cell("p1", "q1", "main", 4)]
+    out, stats = nl.draw_round(
+        rows, _distributions(["p1"], ["q1"], "main", CONFIDENT),
+        {"p1": 0.3}, {"q1": "likert5"}, nl.NoiseConfig(), 548,
+        round_name="interview1",
+    )
+    assert set(out[0]) == {"pid", "item_id", "round", "answer"}
+    assert out[0]["round"] == "interview1"
+    assert stats["round"] == "interview1"
+    assert stats["source_round"] == "main"
+
+
+def test_draw_round_is_reproducible():
+    items = [f"q{i}" for i in range(60)]
+    rows = [_cell("p1", item_id, "main", 4) for item_id in items]
+    index = _distributions(["p1"], items, "main", TORN)
+    types = {item_id: "likert5" for item_id in items}
+    kwargs = dict(round_name="interview1")
+
+    first, _ = nl.draw_round(rows, index, {"p1": 0.4}, types,
+                             nl.NoiseConfig(a=1.2, b=4.0, t_noise=16.0), 548, **kwargs)
+    second, _ = nl.draw_round(rows, index, {"p1": 0.4}, types,
+                              nl.NoiseConfig(a=1.2, b=4.0, t_noise=16.0), 548, **kwargs)
+    assert [r["answer"] for r in first] == [r["answer"] for r in second]
+
+
+def test_the_interview_round_is_a_different_draw_from_main_and_retest():
+    """A fresh sitting: same recorded material, a seed nobody else used."""
+    items = [f"q{i}" for i in range(150)]
+    rows = [_cell("p1", item_id, "main", 4) for item_id in items]
+    index = _distributions(["p1"], items, "main", TORN)
+    types = {item_id: "likert5" for item_id in items}
+    config = nl.NoiseConfig(a=1.2, b=4.0, t_noise=16.0)
+
+    def answers(round_name):
+        out, _ = nl.draw_round(rows, index, {"p1": 0.45}, types, config, 548,
+                               round_name=round_name)
+        return [r["answer"] for r in out]
+
+    interview = answers("interview1")
+    main = answers("main")
+    retest = answers("retest")
+
+    assert sum(1 for a, b in zip(interview, main) if a != b) > 10, \
+        "the interview is tracking the main round -- the seeds are coupled"
+    assert sum(1 for a, b in zip(interview, retest) if a != b) > 10, \
+        "the interview is tracking the retest -- the seeds are coupled"
+
+
+def test_drawing_the_main_round_again_reproduces_the_main_answers():
+    """The round tag is the only new thing: same tag, same answers."""
+    items = [f"q{i}" for i in range(80)]
+    rows = [_cell("p1", item_id, "main", 4, TORN) for item_id in items]
+    types = {item_id: "likert5" for item_id in items}
+    config = nl.NoiseConfig(a=1.2, b=4.0, t_noise=16.0)
+
+    direct, _ = nl.apply_noise(rows, {}, {"p1": 0.45}, types, config, 548)
+    redrawn, _ = nl.draw_round(rows, {}, {"p1": 0.45}, types, config, 548,
+                               round_name="main")
+    assert [r["answer"] for r in direct] == [r["answer"] for r in redrawn]
+
+
+def test_draw_round_keeps_the_scripted_item_order():
+    scripted = ["q9", "q2", "q5"]
+    rows = [_cell("p2", "q5", "main", 4), _cell("p1", "q2", "main", 4),
+            _cell("p1", "q9", "main", 4), _cell("p1", "q5", "main", 4),
+            _cell("p1", "q7", "main", 4),  # not scripted, must be dropped
+            _cell("p2", "q9", "main", 4), _cell("p2", "q2", "main", 4)]
+    index = _distributions(["p1", "p2"], scripted, "main", CONFIDENT)
+    types = {item_id: "likert5" for item_id in scripted + ["q7"]}
+    out, stats = nl.draw_round(rows, index, {"p1": 0.2, "p2": 0.2}, types,
+                               nl.NoiseConfig(), 548, round_name="interview1",
+                               item_ids=scripted)
+    assert [(r["pid"], r["item_id"]) for r in out] == [
+        ("p1", "q9"), ("p1", "q2"), ("p1", "q5"),
+        ("p2", "q9"), ("p2", "q2"), ("p2", "q5"),
+    ]
+    assert stats["n_items"] == 3
+
+
+def test_draw_round_only_reads_the_source_round():
+    rows = [_cell("p1", "q1", "main", 4), _cell("p1", "q1", "retest", 2)]
+    out, _ = nl.draw_round(rows, _distributions(["p1"], ["q1"], "main", CONFIDENT),
+                           {"p1": 0.0}, {"q1": "likert5"}, nl.NoiseConfig(), 548,
+                           round_name="interview1", source_round="main")
+    assert [(r["item_id"], r["answer"]) for r in out] == [("q1", 4)]
+
+
+# --------------------------------------------------------------------------
+# the interview-answer CLI
+# --------------------------------------------------------------------------
+
+
+def _interview_fixture(tmp_path, scripted=("q3", "q1", "q2"), n_personas=3):
+    """Everything the interview CLI needs, written to disk."""
+    pids = [f"p{i:04d}" for i in range(1, n_personas + 1)]
+    items = ["q1", "q2", "q3", "q4"]
+
+    bank = {"items": [{"item_id": i, "text": f"Statement {i}.", "type": "likert5"}
+                      for i in items]}
+    (tmp_path / "bank_items.json").write_text(json.dumps(bank))
+
+    noise_dir = tmp_path / "noise"
+    noise_dir.mkdir()
+    for pid in pids:
+        (noise_dir / f"{pid}.json").write_text(json.dumps({"pid": pid, "wobble": 0.45}))
+
+    answers = tmp_path / "answers.jsonl"
+    answers.write_text("".join(
+        json.dumps({"pid": pid, "item_id": item_id, "round": "main",
+                    "answer": 4, "raw": "4"}) + "\n"
+        for pid in pids for item_id in items))
+
+    completions = tmp_path / "completions.jsonl"
+    completions.write_text("".join(
+        json.dumps({"pid": pid, "item_id": item_id, "round": "main",
+                    "completion": "4", "logprobs": TORN}) + "\n"
+        for pid in pids for item_id in items))
+
+    splits = tmp_path / "splits.json"
+    splits.write_text(json.dumps({"interview_closed": list(scripted),
+                                  "interview_open": ["oe01"]}))
+    return {"bank": tmp_path / "bank_items.json", "noise": noise_dir,
+            "answers": answers, "completions": completions, "splits": splits,
+            "pids": pids, "scripted": list(scripted)}
+
+
+def _run_interview_cli(fixture, out, extra=()):
+    from src.interview import interview_answers
+
+    return interview_answers.main([
+        "--answers", str(fixture["answers"]),
+        "--recorded", str(fixture["completions"]),
+        "--noise-dir", str(fixture["noise"]),
+        "--public-bank", str(fixture["bank"]),
+        "--splits", str(fixture["splits"]),
+        "--out", str(out),
+        *extra,
+    ])
+
+
+def test_interview_cli_writes_the_scripted_answers(tmp_path, capsys):
+    fixture = _interview_fixture(tmp_path)
+    out = tmp_path / "answers_interview1.jsonl"
+
+    assert _run_interview_cli(fixture, out) == 0
+    rows = [json.loads(line) for line in out.read_text().splitlines()]
+
+    assert len(rows) == len(fixture["pids"]) * len(fixture["scripted"])
+    assert {r["round"] for r in rows} == {"interview1"}
+    assert all(set(r) == {"pid", "item_id", "round", "answer"} for r in rows)
+    # scripted order, per persona, and nothing outside the scripted set
+    assert [r["item_id"] for r in rows[:3]] == fixture["scripted"]
+    assert capsys.readouterr().out.count("interview1") >= 1
+
+
+def test_interview_cli_uses_the_frozen_settings(tmp_path):
+    fixture = _interview_fixture(tmp_path)
+    out = tmp_path / "answers_interview1.jsonl"
+    _run_interview_cli(fixture, out)
+
+    stats = json.loads((tmp_path / "answers_interview1.jsonl.stats.json").read_text())
+    assert stats["config"] == {"a": 1.2, "b": 4.0, "t_noise": 16.0}
+    assert stats["seed_base"] == 548
+    assert stats["round"] == "interview1"
+    assert stats["items"] == fixture["scripted"]
+
+
+def test_interview_cli_has_no_way_to_change_the_frozen_settings(tmp_path):
+    """The consistency rule, enforced by there being no flag for it."""
+    fixture = _interview_fixture(tmp_path)
+    out = tmp_path / "answers_interview1.jsonl"
+    for flag in ("--a", "--b", "--t-noise", "--seed-base"):
+        with pytest.raises(SystemExit):
+            _run_interview_cli(fixture, out, extra=[flag, "1"])
+
+
+def test_interview_cli_is_deterministic(tmp_path):
+    fixture = _interview_fixture(tmp_path, n_personas=20)
+    first, second = tmp_path / "a.jsonl", tmp_path / "b.jsonl"
+    _run_interview_cli(fixture, first)
+    _run_interview_cli(fixture, second)
+    assert first.read_text() == second.read_text()
+
+
+def test_interview_cli_refuses_a_splits_file_without_the_interview_set(tmp_path):
+    from src.interview import interview_answers
+
+    fixture = _interview_fixture(tmp_path)
+    bad = tmp_path / "not_splits.json"
+    bad.write_text(json.dumps({"persona_holdout": ["p0001"]}))
+    with pytest.raises(ValueError, match="interview_closed"):
+        interview_answers.interview_items(bad)
+
+
+def test_interview_cli_refuses_an_item_that_is_not_in_the_bank(tmp_path):
+    from src.interview import interview_answers
+
+    fixture = _interview_fixture(tmp_path, scripted=("q1", "q99"))
+    with pytest.raises(ValueError, match="not in the public bank"):
+        interview_answers.draw(
+            fixture["answers"], fixture["completions"], fixture["noise"],
+            fixture["bank"], ["q1", "q99"], "interview1")

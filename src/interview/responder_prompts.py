@@ -27,18 +27,39 @@ from typing import Any, Mapping, Sequence
 
 from ..personas.card_prompts import build_noise_instruction
 
-#: The two rounds a persona is ever asked in: the main pass over the bank, and
-#: the fixed re-ask that feeds the test-retest number (PREREGISTRATION.md 5).
-ROUNDS: tuple[str, ...] = ("main", "retest")
+#: The two rounds in which a persona is ever asked a CLOSED item: the main pass
+#: over the bank, and the fixed re-ask that feeds the test-retest number
+#: (PREREGISTRATION.md 5). Nothing may add to this. From Stage 3 on, a closed
+#: interview answer is drawn from what these two rounds already recorded -- see
+#: the consistency rule in ``src/interview/__init__.py`` -- so a third closed
+#: round would be the responder being asked the same question twice.
+CLOSED_ROUNDS: tuple[str, ...] = ("main", "retest")
 
-#: How an answer must be written, per item type. Frozen wording: the parser in
-#: ``parse_answers.py`` is tuned against exactly these two instructions.
+#: Rounds that exist only for open-ended interview answers, which ARE fresh
+#: generations because there is no recorded distribution to re-draw from.
+INTERVIEW_ROUNDS: tuple[str, ...] = ("interview1",)
+
+#: Every round tag the session line understands.
+ROUNDS: tuple[str, ...] = CLOSED_ROUNDS + INTERVIEW_ROUNDS
+
+#: Item types answered with one token, which the closed-form parser reads.
+CLOSED_TYPES: tuple[str, ...] = ("likert5", "binary")
+
+#: How an answer must be written, per item type. Frozen wording for the two
+#: closed types: the parser in ``parse_answers.py`` is tuned against exactly
+#: these two instructions.
 FORMAT_INSTRUCTIONS: dict[str, str] = {
     "likert5": (
         "Answer with a single digit 1-5 where 1=strongly disagree, "
         "5=strongly agree. Output ONLY the digit."
     ),
     "binary": "Answer only yes or no.",
+    "open": (
+        "Answer in your own words, the way you would say it out loud: three or "
+        "four sentences about what actually happened to you and what you made "
+        "of it. Plain prose -- no lists, no headings, do not repeat the "
+        "question back, and do not describe yourself from the outside."
+    ),
 }
 
 _ROLE_LEAD = (
@@ -101,7 +122,11 @@ def build_system_prompt(card: Mapping[str, Any], wobble: float, item_type: str) 
         parts += ["", "HOW YOU TALK", speech_style]
 
     parts += ["", "HOW STEADY YOU ARE", build_noise_instruction(wobble)]
-    parts += ["", "HOW TO ANSWER", format_instruction(item_type), _TERSE]
+    parts += ["", "HOW TO ANSWER", format_instruction(item_type)]
+    # The one-answer-and-nothing-else line belongs to the closed items only; on
+    # an open prompt it would cancel the instruction above it.
+    if item_type in CLOSED_TYPES:
+        parts.append(_TERSE)
     return "\n".join(parts)
 
 

@@ -290,7 +290,10 @@ def test_noised_answer_files_carry_no_pre_noise_fields() -> None:
         pytest.skip("no run directory in this checkout -- nothing to check")
 
     offenders: list[str] = []
-    for path in sorted(runs.rglob("answers_noised.jsonl")):
+    answer_files = sorted(
+        set(runs.rglob("answers_noised.jsonl")) | set(runs.rglob("answers_interview*.jsonl"))
+    )
+    for path in answer_files:
         with path.open(encoding="utf-8") as fh:
             for lineno, line in enumerate(fh, start=1):
                 record = json.loads(line)
@@ -303,5 +306,162 @@ def test_noised_answer_files_carry_no_pre_noise_fields() -> None:
 
     assert not offenders, (
         "pre-noise fields found in system-side answer files:\n"
+        + "\n".join(f"  - {o}" for o in offenders)
+    )
+
+
+# --------------------------------------------------------------------------
+# Stage 3 transcripts
+# --------------------------------------------------------------------------
+#
+# A transcript is the interviewer's, the person encoder's and the predictor's
+# whole view of a persona, so it is the artifact with the most to gain from a
+# leak. The assembler builds every field by hand; these checks read what
+# actually landed on disk and hold it to the same allowlist from the outside.
+
+#: The only top-level keys a transcript record may have.
+TRANSCRIPT_KEYS = {"pid", "profile", "turns", "open"}
+
+#: The only keys a public profile may carry into one.
+TRANSCRIPT_PROFILE_KEYS = {
+    "pid", "age", "occupation", "city_size", "household", "region_type"
+}
+
+#: The only keys a closed turn and an open answer may have.
+TRANSCRIPT_TURN_KEYS = {"n", "item_id", "question", "answer"}
+TRANSCRIPT_OPEN_KEYS = {"prompt_id", "question", "answer"}
+
+#: Field names that must not appear anywhere in a transcript, at any depth.
+#: Cards and their pieces, the planted noise parameter, the latent vector, the
+#: item design, the responder's answer distribution, the pre-noise answer.
+TRANSCRIPT_BANNED_KEYS = {
+    "theta", "thetas", "wobble", "noise", "noise_level",
+    "biography", "quirks", "speech_style", "card",
+    "raw", "logprobs", "logprob",
+    "loadings", "target_dims", "strength_class", "negatively_keyed",
+    "system", "prompt", "completion",
+}
+
+
+def transcript_files() -> list[Path]:
+    """Every assembled transcript on the system side of the Wall."""
+    runs = REPO_ROOT.joinpath(*RUNS_DIR)
+    if not runs.is_dir():
+        return []
+    return sorted(runs.rglob("transcripts.jsonl"))
+
+
+def _keys_at_every_depth(value) -> set[str]:
+    found: set[str] = set()
+    if isinstance(value, dict):
+        for key, inner in value.items():
+            found.add(str(key).lower())
+            found |= _keys_at_every_depth(inner)
+    elif isinstance(value, list):
+        for inner in value:
+            found |= _keys_at_every_depth(inner)
+    return found
+
+
+def test_transcripts_carry_only_the_allowed_fields() -> None:
+    """Field-level allowlist, checked on the file rather than in the builder."""
+    import json
+
+    found = transcript_files()
+    if not found:
+        pytest.skip("no transcripts in this checkout -- nothing to check")
+
+    offenders: list[str] = []
+    for path in found:
+        relative = path.relative_to(REPO_ROOT)
+        before = len(offenders)
+        with path.open(encoding="utf-8") as fh:
+            for lineno, line in enumerate(fh, start=1):
+                if not line.strip():
+                    continue
+                record = json.loads(line)
+
+                extra = set(record) - TRANSCRIPT_KEYS
+                if extra:
+                    offenders.append(f"{relative}: line {lineno} top-level {sorted(extra)}")
+                extra = set(record.get("profile") or {}) - TRANSCRIPT_PROFILE_KEYS
+                if extra:
+                    offenders.append(f"{relative}: line {lineno} profile {sorted(extra)}")
+                for turn in record.get("turns") or []:
+                    extra = set(turn) - TRANSCRIPT_TURN_KEYS
+                    if extra:
+                        offenders.append(f"{relative}: line {lineno} turn {sorted(extra)}")
+                for entry in record.get("open") or []:
+                    extra = set(entry) - TRANSCRIPT_OPEN_KEYS
+                    if extra:
+                        offenders.append(f"{relative}: line {lineno} open {sorted(extra)}")
+                if len(offenders) > before:
+                    break  # one finding per file is enough
+
+    assert not offenders, (
+        "transcripts carry fields that are not on the allowlist:\n"
+        + "\n".join(f"  - {o}" for o in offenders)
+    )
+
+
+def test_transcripts_name_nothing_that_belongs_to_the_planted_truth() -> None:
+    """Independent of the allowlist: no truth-shaped field name, at any depth."""
+    import json
+
+    found = transcript_files()
+    if not found:
+        pytest.skip("no transcripts in this checkout -- nothing to check")
+
+    offenders: list[str] = []
+    for path in found:
+        relative = path.relative_to(REPO_ROOT)
+        with path.open(encoding="utf-8") as fh:
+            for lineno, line in enumerate(fh, start=1):
+                if not line.strip():
+                    continue
+                bad = _keys_at_every_depth(json.loads(line)) & TRANSCRIPT_BANNED_KEYS
+                if bad:
+                    offenders.append(f"{relative}: line {lineno} has {sorted(bad)}")
+                    break
+
+    assert not offenders, (
+        "planted-truth field names found in transcripts:\n"
+        + "\n".join(f"  - {o}" for o in offenders)
+    )
+
+
+def test_transcript_open_answers_pass_the_leak_check() -> None:
+    """Free text is the one thing the persona writes itself, so it is checked.
+
+    The assembler drops any open answer that names a trait dimension or carries
+    a number that reads as a trait value. This verifies the end state: what is
+    actually stored is clean, whoever assembled it.
+    """
+    import json
+
+    from src.personas.ingest import leak_reasons
+
+    found = transcript_files()
+    if not found:
+        pytest.skip("no transcripts in this checkout -- nothing to check")
+
+    offenders: list[str] = []
+    for path in found:
+        relative = path.relative_to(REPO_ROOT)
+        with path.open(encoding="utf-8") as fh:
+            for lineno, line in enumerate(fh, start=1):
+                if not line.strip():
+                    continue
+                record = json.loads(line)
+                for entry in record.get("open") or []:
+                    reasons = leak_reasons(str(entry.get("answer", "")))
+                    if reasons:
+                        offenders.append(
+                            f"{relative}: line {lineno} prompt "
+                            f"{entry.get('prompt_id')} -- {reasons[0]}"
+                        )
+
+    assert not offenders, (
+        "open answers in a transcript leak planted truth:\n"
         + "\n".join(f"  - {o}" for o in offenders)
     )
