@@ -43,6 +43,23 @@ the dropdown:
 Pass and fail are read out of the report's own verdict block. The page never decides
 them, so it cannot disagree with the run that produced the file.
 
+## What page 2 (Recovery) shows
+
+Pick the page in the sidebar. Page 2 reads `results/stage2_recovery.json` plus the two
+pictures the recovery run writes next to it. Top of the page is the Gate 2 verdict
+table — each frozen bar, its rule, the threshold, the number and pass or fail — under a
+banner that states the report's own verdict in plain words, including when it is a
+fail. Below that: the θ̂-vs-θ scatter and the recovered-vs-planted correlation heatmap;
+trait recovery per dimension as bars with the 0.8 line drawn and any dimension under it
+coloured red; the dimensionality curve with the in-sample and split-half lines together
+and the fitted number of dimensions marked; item recovery split into the near,
+same-domain and far strata with the pooled median beside it; the pooled blur coverage
+against its 60–75% band with the variance ratio that explains the miss; and a watch
+list of the things worth suspecting — distractors carrying real discrimination, items
+fitted against their designed sign, the planted-zero trait pair, and items that came
+out near-flat in the raw answers. Every panel checks for its file first, so a clone
+with no Stage 2 run shows the command that produces the report, not an error.
+
 ## Producing the files it reads
 
 ```bash
@@ -54,6 +71,12 @@ them, so it cannot disagree with the run that produced the file.
     --answers <answers.jsonl> --truth <truth dir> \
     --public-bank data/public/bank_items.json \
     --out results/population_qa.json
+
+./.venv/bin/python -m src.eval.recovery \
+    --fit results/stage2_fit.npz \
+    --diagnostics results/stage2_fit_diagnostics.json \
+    --truth <truth dir> --splits experiments/splits_v1.json \
+    --answers <answers_noised.jsonl> --out results
 ```
 
 ## The Wall
@@ -64,5 +87,5 @@ the suite if it ever does. The export CLI above is the only bridge: it lives in
 `src/eval/`, reads the planted values, and writes out bin counts — no persona ids, no
 individual values.
 
-Later pages (recovery, person encoder, calibration, interviewer) get added as each
-stage produces the data they show. See PRD section 8.
+Later pages (person encoder, calibration, interviewer) get added as each stage produces
+the data they show. See PRD section 8.

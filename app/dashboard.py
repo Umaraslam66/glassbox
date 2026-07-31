@@ -1,12 +1,14 @@
-"""GLASSBOX monitoring dashboard -- page 1, Population.
+"""GLASSBOX monitoring dashboard -- page 1 Population, page 2 Recovery.
 
     streamlit run app/dashboard.py
 
-This file sits outside the Wall on purpose. It opens exactly two things:
-``results/*.json`` (what the grader-side code writes) and ``data/public/``
-(what every model is allowed to see anyway). It never reaches for planted
-values, and ``tests/test_wall.py`` scans this file and fails the suite if it
-ever starts to.
+Pick the page in the sidebar.
+
+This file sits outside the Wall on purpose. It opens exactly three things:
+``results/*.json`` and the PNGs next to them (what the grader-side code
+writes) and ``data/public/`` (what every model is allowed to see anyway). It
+never reaches for planted values, and ``tests/test_wall.py`` scans this file
+and fails the suite if it ever starts to.
 
 Everything on screen is read straight out of those files. Nothing is
 recomputed here, so a number in the browser is the same number in the JSON --
@@ -33,6 +35,9 @@ RESULTS_DIR = REPO_ROOT / "results"
 PUBLIC_DIR = REPO_ROOT / "data" / "public"
 SUMMARY_PATH = RESULTS_DIR / "population_summary.json"
 COSTS_PATH = RESULTS_DIR / "COSTS.md"
+RECOVERY_PATH = RESULTS_DIR / "stage2_recovery.json"
+SCATTER_PATH = RESULTS_DIR / "stage2_scatter.png"
+HEATMAP_PATH = RESULTS_DIR / "stage2_heatmap.png"
 
 #: Results files that count as "an experiment run" and can be picked below.
 QA_PATTERN = "*_qa.json"
@@ -44,6 +49,12 @@ MAX_PAIR_AGREEMENT_BAR = 0.95
 MEDIAN_PAIR_AGREEMENT_BAR = 0.80
 OBEDIENCE_BAR = 0.5
 RETEST_BAND = (0.70, 0.90)
+
+#: The frozen Gate 2 bars (PREREGISTRATION.md section 6), drawn as reference
+#: lines only. Same rule as above: pass and fail come out of the report.
+TRAIT_RECOVERY_BAR = 0.8
+ITEM_RECOVERY_BAR = 0.7
+BLUR_COVERAGE_BAND = (0.60, 0.75)
 
 INK = "#4c78a8"
 MARK = "#d1495b"
@@ -555,18 +566,389 @@ def qa_section(reports: list[Path]) -> None:
 
 
 # --------------------------------------------------------------------------
+# recovery: Stage 2, from results/stage2_recovery.json and its two PNGs
+# --------------------------------------------------------------------------
+
+
+RECOVERY_HINT = (
+    "No Stage 2 recovery report in results/ yet. Produce it with:\n\n"
+    "```\n"
+    "python -m src.eval.recovery \\\n"
+    "    --fit results/stage2_fit.npz \\\n"
+    "    --diagnostics results/stage2_fit_diagnostics.json \\\n"
+    "    --truth <planted dir> --splits experiments/splits_v1.json \\\n"
+    "    --answers <noised answers.jsonl> --out results\n"
+    "```"
+)
+
+
+def bar_threshold(value: Any) -> str:
+    """The frozen threshold of one bar, however the report wrote it down."""
+    if isinstance(value, (list, tuple)) and len(value) == 2:
+        return f"{fmt(value[0], 2)}-{fmt(value[1], 2)}"
+    if isinstance(value, (int, float)):
+        return fmt(value, 2)
+    return str(value) if value is not None else "--"
+
+
+def gate2_verdict_panel(verdict: dict[str, Any] | None) -> None:
+    st.subheader("Gate 2 verdict")
+    bars = (verdict or {}).get("bars") or {}
+    if not bars:
+        st.info("This report has no verdict block.")
+        return
+
+    rows = []
+    caveats = []
+    for key, entry in bars.items():
+        if entry.get("pass") is True:
+            mark = "PASS"
+        elif entry.get("pass") is False:
+            mark = "FAIL"
+        else:
+            mark = "not evaluated"
+        label = entry.get("value_label")
+        rows.append(
+            {
+                "bar": key.replace("_", " "),
+                "rule": entry.get("statement", ""),
+                "must be": bar_threshold(entry.get("bar")),
+                "value": fmt(entry.get("value")) + (f" ({label})" if label else ""),
+                "verdict": mark,
+            }
+        )
+        if entry.get("caveat"):
+            caveats.append(f"**{key.replace('_', ' ')}:** {entry['caveat']}")
+    table(rows)
+
+    failed = [name.replace("_", " ") for name in (verdict or {}).get("failed_bars") or []]
+    if (verdict or {}).get("all_bars_pass"):
+        st.success("Gate 2: PASS -- every frozen bar is met.")
+    elif failed:
+        st.error(f"Gate 2: FAIL -- {len(failed)} of {len(bars)} bars missed: {', '.join(failed)}.")
+    else:
+        st.error("Gate 2: FAIL -- at least one frozen bar is missed or not evaluated.")
+
+    for caveat in caveats:
+        st.caption(caveat)
+
+
+def picture_panel(correlations: dict[str, Any] | None) -> None:
+    st.subheader("Pictures")
+    left, right = st.columns(2)
+
+    with left:
+        st.markdown("**Estimated vs planted trait, per dimension**")
+        if SCATTER_PATH.is_file():
+            st.image(str(SCATTER_PATH), width="stretch")
+        else:
+            st.info(f"{SCATTER_PATH.name} not found -- the recovery run writes it unless --no-plots.")
+
+    with right:
+        st.markdown("**Recovered vs planted trait correlations**")
+        if HEATMAP_PATH.is_file():
+            st.image(str(HEATMAP_PATH), width="stretch")
+        else:
+            st.info(f"{HEATMAP_PATH.name} not found -- the recovery run writes it unless --no-plots.")
+
+        holdout = (correlations or {}).get("holdout") or {}
+        if holdout:
+            cell = holdout.get("max_abs_delta_cell") or []
+            where = f" ({'-'.join(str(part) for part in cell)})" if cell else ""
+            st.caption(
+                f"Held-out personas: largest off-diagonal miss "
+                f"**{fmt(holdout.get('max_abs_delta_offdiagonal'))}**{where}, mean off-diagonal miss "
+                f"{fmt(holdout.get('mean_abs_delta_offdiagonal'))}."
+            )
+
+
+def trait_recovery_panel(holdout: dict[str, Any], train: dict[str, Any]) -> None:
+    st.subheader("Trait recovery per dimension")
+    per_dimension = holdout.get("per_dimension_r") or {}
+    rows = [
+        {"dimension": dimension, "r": float(value)}
+        for dimension, value in per_dimension.items()
+        if value is not None
+    ]
+    if not rows:
+        st.info("This report has no per-dimension trait recovery.")
+        return
+
+    frame = pd.DataFrame(rows)
+    order = [row["dimension"] for row in rows]
+    bars = (
+        alt.Chart(frame)
+        .mark_bar()
+        .encode(
+            x=alt.X("dimension:N", title=None, sort=order),
+            y=alt.Y("r:Q", title="r(estimated, planted)"),
+            color=alt.condition(
+                alt.datum.r < TRAIT_RECOVERY_BAR, alt.value(MARK), alt.value(INK)
+            ),
+            tooltip=[alt.Tooltip("dimension:N"), alt.Tooltip("r:Q", format=".3f")],
+        )
+    )
+    rule = (
+        alt.Chart(pd.DataFrame({"v": [TRAIT_RECOVERY_BAR]}))
+        .mark_rule(color=MARK, strokeDash=[5, 4], size=2)
+        .encode(y=alt.Y("v:Q"))
+    )
+
+    st.caption(
+        f"Held-out personas ({holdout.get('n_personas', 0)}). Mean **{fmt(holdout.get('mean_r'))}**, "
+        f"worst **{fmt(holdout.get('min_r'))}** on {holdout.get('min_r_dimension', '?')}. The bar is "
+        f"{TRAIT_RECOVERY_BAR} on every dimension (dashed); red bars miss it. Training personas "
+        f"({train.get('n_personas', 0)}) sit at mean {fmt(train.get('mean_r'))}, worst "
+        f"{fmt(train.get('min_r'))} on {train.get('min_r_dimension', '?')}."
+    )
+    show(alt.layer(bars, rule).properties(height=260))
+
+
+def dimensionality_panel(curve: list[dict[str, Any]] | None, fitted_dims: Any = None) -> None:
+    st.subheader("How many dimensions the answers support")
+    points = curve or []
+    rows = []
+    for point in points:
+        dims = point.get("dims")
+        if dims is None:
+            continue
+        if point.get("train_loglik_per_cell") is not None:
+            rows.append(
+                {"dims": dims, "line": "in-sample", "loglik": float(point["train_loglik_per_cell"])}
+            )
+        if point.get("split_half_loglik_per_cell") is not None:
+            rows.append(
+                {
+                    "dims": dims,
+                    "line": "split-half",
+                    "loglik": float(point["split_half_loglik_per_cell"]),
+                }
+            )
+    if not rows:
+        st.info("This report carries no dimensionality curve.")
+        return
+
+    frame = pd.DataFrame(rows)
+    line = (
+        alt.Chart(frame)
+        .mark_line(point=alt.OverlayMarkDef(size=35))
+        .encode(
+            x=alt.X("dims:Q", title="dimensions fitted"),
+            y=alt.Y("loglik:Q", title="log-likelihood per answer", scale=alt.Scale(zero=False)),
+            color=alt.Color(
+                "line:N",
+                title=None,
+                scale=alt.Scale(domain=["in-sample", "split-half"], range=[INK, MARK]),
+            ),
+            tooltip=[
+                alt.Tooltip("dims:Q", title="dimensions"),
+                alt.Tooltip("line:N", title="line"),
+                alt.Tooltip("loglik:Q", format=".4f"),
+            ],
+        )
+    )
+    layers: list[Any] = [line]
+    if fitted_dims is not None:
+        layers.append(
+            alt.Chart(pd.DataFrame({"v": [float(fitted_dims)]}))
+            .mark_rule(color=BAND, size=2)
+            .encode(x=alt.X("v:Q"))
+        )
+
+    st.caption(
+        "Higher is better. The in-sample line can only improve as dimensions are added; the "
+        "split-half line is the one that can fall, because it scores answers the fit did not see."
+        + (f" The green line marks the {fitted_dims} dimensions actually fitted." if fitted_dims else "")
+    )
+    show(alt.layer(*layers).properties(height=260))
+
+
+def item_recovery_panel(
+    by_stratum: dict[str, Any],
+    holdout: dict[str, Any],
+    blur: dict[str, Any],
+) -> None:
+    st.subheader("Item recovery and blur")
+    left, right = st.columns([3, 2])
+
+    with left:
+        st.markdown("**Held-out items, by how far they sit from the training items**")
+        rows = []
+        for name, block in by_stratum.items():
+            rows.append(
+                {
+                    "stratum": name,
+                    "items": block.get("n"),
+                    "median r": fmt((block.get("r") or {}).get("median")),
+                    "median cosine": fmt((block.get("cosine") or {}).get("median")),
+                    "median fitted strength": fmt((block.get("fitted_norm") or {}).get("median")),
+                }
+            )
+        if rows:
+            table(rows)
+            st.caption(
+                f"Pooled median per-item r **{fmt(holdout.get('median_r'))}** over "
+                f"{(holdout.get('r_summary') or {}).get('n', 0)} of {holdout.get('n_items', 0)} "
+                f"held-out items; the bar is {ITEM_RECOVERY_BAR}. "
+                f"{holdout.get('n_items_with_no_designed_loading', 0)} items have no designed "
+                "loading at all, so they carry no r."
+            )
+        else:
+            st.info("This report has no per-stratum item recovery.")
+
+    with right:
+        st.markdown("**Blur honesty**")
+        coverage = blur.get("pooled_coverage")
+        band = blur.get("band") or list(BLUR_COVERAGE_BAND)
+        if coverage is None:
+            st.info("This report has no blur coverage.")
+            return
+        st.metric(
+            "Pooled coverage",
+            f"{float(coverage):.1%}",
+            help=f"share of {blur.get('n_cells', 0)} cells whose planted value sits inside +-1 blur",
+        )
+        st.caption(
+            f"The pre-registered band is {float(band[0]):.0%}-{float(band[1]):.0%}. "
+            f"Mean blur {fmt(blur.get('mean_blur'))} against mean absolute error "
+            f"{fmt(blur.get('mean_abs_error'))}."
+        )
+        diagnostics = blur.get("diagnostics") or {}
+        if diagnostics:
+            st.caption(
+                f"Actual squared error is **{fmt(diagnostics.get('variance_ratio_actual_over_predicted'), 2)}x** "
+                f"the variance the model predicts; the interval would have to be "
+                f"{fmt(diagnostics.get('blur_multiplier_for_nominal_68pct'), 2)}x wider to be honest."
+            )
+
+
+def watch_list_panel(watch: dict[str, Any]) -> None:
+    st.subheader("Watch list")
+    if not watch:
+        st.info("This report carries no watch list.")
+        return
+
+    distractors = watch.get("distractors") or {}
+    if distractors:
+        st.markdown("**Distractor items** -- designed to load on nothing.")
+        flagged = distractors.get("flagged_at_or_above_weak_median") or []
+        strengths = distractors.get("per_item_discrimination") or {}
+        summary = distractors.get("summary") or {}
+        st.caption(
+            f"{summary.get('n', 0)} distractors, median strength {fmt(summary.get('median'))}, "
+            f"against {fmt(distractors.get('weak_median_for_reference'))} for designed-weak items and "
+            f"{fmt(distractors.get('strong_primary_median_for_reference'))} for strong primaries."
+        )
+        if flagged:
+            st.warning(distractors.get("verdict", "distractors carrying real discrimination"))
+            table(
+                [
+                    {"item": item, "fitted strength": fmt(strengths.get(item))}
+                    for item in flagged
+                ]
+            )
+        else:
+            st.caption("Nothing flagged.")
+
+    signs = watch.get("sign_check") or {}
+    st.markdown("**Sign flips** -- items fitted against their designed direction.")
+    if signs:
+        table(
+            [
+                {
+                    "item": item,
+                    "designed dimension": entry.get("designed_dimension"),
+                    "designed loading": fmt(entry.get("designed_loading"), 2),
+                    "fitted loading": fmt(entry.get("fitted_loading_on_that_dimension")),
+                    "fitted strength": fmt(entry.get("fitted_norm")),
+                }
+                for item, entry in signs.items()
+            ]
+        )
+    else:
+        st.caption("No sign flips flagged.")
+
+    pair = watch.get("planted_zero_pair") or {}
+    if pair:
+        names = " - ".join(str(part) for part in pair.get("pair") or [])
+        st.markdown(f"**The planted-zero pair ({names})**")
+        table(
+            [
+                {
+                    "pair": names,
+                    "planted": fmt(pair.get("planted"), 2),
+                    "recovered (train)": fmt(pair.get("recovered_train")),
+                    "recovered (held-out)": fmt(pair.get("recovered_holdout")),
+                    "miss (held-out)": fmt(pair.get("abs_delta_holdout")),
+                }
+            ]
+        )
+
+    flat = watch.get("near_flat_raw_items") or {}
+    if flat:
+        st.markdown("**Items that were near-flat in the raw answers**")
+        table(
+            [
+                {
+                    "item": item,
+                    "type": entry.get("type"),
+                    "designed strength": entry.get("strength_class"),
+                    "fitted strength": fmt(entry.get("fitted_discrimination")),
+                    "rank": f"{entry.get('rank_among_all_fitted_items')} of "
+                    f"{entry.get('n_fitted_items')}",
+                }
+                for item, entry in flat.items()
+            ]
+        )
+
+
+def recovery_page() -> None:
+    st.header("Recovery")
+    report = load_json(RECOVERY_PATH)
+
+    if report is None:
+        st.info(RECOVERY_HINT)
+        picture_panel(None)
+        return
+
+    counts = report.get("counts") or {}
+    st.caption(
+        f"Fitted on {counts.get('train_personas', '?')} personas x "
+        f"{counts.get('train_items', '?')} items, graded on "
+        f"{counts.get('holdout_personas', '?')} held-out personas and "
+        f"{counts.get('holdout_items', '?')} held-out items. Every number below is read "
+        f"straight out of {RECOVERY_PATH.name}."
+    )
+
+    gate2_verdict_panel(report.get("verdict"))
+    st.divider()
+    picture_panel(report.get("correlations"))
+    st.divider()
+    trait_recovery_panel(
+        report.get("trait_recovery_holdout") or {}, report.get("trait_recovery_train") or {}
+    )
+    st.divider()
+    diagnostics = report.get("fit_diagnostics") or {}
+    dimensionality_panel(
+        diagnostics.get("dimensionality_curve"),
+        (diagnostics.get("config") or {}).get("dims"),
+    )
+    st.divider()
+    item_recovery_panel(
+        report.get("item_recovery_by_stratum") or {},
+        report.get("item_recovery_holdout") or {},
+        report.get("blur_honesty") or {},
+    )
+    st.divider()
+    watch_list_panel(report.get("watch_list") or {})
+
+
+# --------------------------------------------------------------------------
 # page
 # --------------------------------------------------------------------------
 
 
-def main() -> None:
-    st.set_page_config(page_title="GLASSBOX monitor", layout="wide")
-
-    summary = load_json(SUMMARY_PATH)
-    reports = qa_files()
-
-    header(summary, reports)
-
+def population_page(summary: dict[str, Any] | None, reports: list[Path]) -> None:
     st.header("Population")
     if summary is None:
         st.info(EXPORT_HINT)
@@ -580,6 +962,26 @@ def main() -> None:
 
     st.divider()
     qa_section(reports)
+
+
+def main() -> None:
+    st.set_page_config(page_title="GLASSBOX monitor", layout="wide")
+
+    summary = load_json(SUMMARY_PATH)
+    reports = qa_files()
+
+    header(summary, reports)
+
+    page = st.sidebar.radio(
+        "Page",
+        ["1. Population", "2. Recovery"],
+        help="One page per stage, added as the stage produces its files.",
+    )
+
+    if page == "2. Recovery":
+        recovery_page()
+    else:
+        population_page(summary, reports)
 
 
 main()
