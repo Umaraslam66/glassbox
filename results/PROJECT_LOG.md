@@ -555,3 +555,45 @@ Costs, Stage 3: 23.39 GPU core-hours (open answers 4.28; Qwen smoke +
 embeddings 10.05; judgment batch 9.06) + local CPU at zero. Gate 3 is a
 hard stop per the owner's order: verdict delivered, decision with the
 owner.
+
+## 2026-07-31 — Gate 3 outcome ACCEPTED AS FINAL by the owner
+
+The documented result, in the owner's fixed phrasing, to be carried into
+every future report and the final REPORT.md: "3 bars unmet (item-encoder
+discrimination 0.504 vs 0.60; person-encoder RMSE, 0/8 dims under 0.50;
+lift 26.8% vs 30%), with the RMSE and lift shortfalls attributable to the
+accepted card-transmission ceiling: the full 252-item matrix itself
+reaches only RMSE 0.529 / 44% lift against planted truth. The 15-question
+transcript recovers r 0.770 of the full-matrix estimate." The
+monotonicity ruling (PASS under the frozen "in expectation" wording, both
+readings preserved) and both Gate 3 leakage hunts stand as logged. Four
+findings banked in results/STAGE6_NOTES.md on owner instruction:
+demographics-carry-no-signal population-realism limitation; the 15+3
+interview recovering 77% of the full matrix; the clean negative on
+direct-elicitation of discrimination; the coverage decay curve as the
+confidence-model exhibit.
+
+## 2026-07-31 — Stage 4 opened (end-to-end prediction + calibration)
+
+Why this is the headline gate: Gate 4 bars grade against each persona's
+TRUE ANSWER DISTRIBUTION (50 seeded noise-layer applications per cell,
+frozen §5 addendum), not planted θ — so the card-transmission ceiling
+that capped Gates 2–3 largely drops out. These bars are meant to be
+passable at full strength.
+
+Probe stratification verified frozen and committed with the Stage-2
+splits (commit 2ea1f72, seed 2026): near 13 / same-domain 19 / far 18
+over the 50 held-out items. No fix needed.
+
+Confirmatory path: held-out persona → N=15 fused transcript θ̂ (Stage 3
+person encoder, cached) → held-out probe items with ITEM-ENCODER
+zero-shot loadings (never fitted loadings for held-out items) → ordinal-
+logit predictor → predicted distribution per cell. Mandatory baselines,
+all from legitimate system-side data only: population marginal (training
+personas), profile-only, k-NN matched on the 15 interview items (k chosen
+on training data, recorded), and Qwen given profile but no interview.
+Frozen bars: Brier lift ≥ 25% relative vs marginal AND beats k-NN;
+ECE ≤ 0.05 (10 bins); corr(predicted prob, empirical 50-sample
+frequency) ≥ 0.9 across cells. Reported, no bar: per-stratum
+generalization curve, aggregate marginals + 2-way cross-tabs with error
+bars, exploratory θ̂-error vs loading-error decomposition.

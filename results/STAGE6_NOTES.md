@@ -23,3 +23,24 @@ observable data understates error against latent ground truth when the
 persona-rendering step is lossy (measured here: 88% card-induced / 12%
 noise-induced). Honest confidence models need truth-anchored feedback —
 connect to Simile's confidence-model direction in the writeup.
+
+## Findings banked at the Gate 3 close (owner instruction, 2026-07-31)
+
+1. Demographics carry ~zero trait signal in this synthetic population
+   (profile-only baseline collapsed to intercept). Real-human demographics
+   carry nonzero signal; the lift-over-profile bar would be harder in
+   reality. Population-realism limitation.
+
+2. Interview efficiency finding: 15 questions + 3 open answers recover 77%
+   of what 252 questions know. Open answers moved point estimates strongly
+   but bought only ~3 closed items of declared precision — text is
+   information-rich but precision-poor under our fusion.
+
+3. Clean negative: directly asking the system LLM to rate item
+   discrimination predicts nothing (r ≈ −0.003); learned heads on
+   embeddings do (0.504). Keep for report.
+
+4. Coverage decay curve (0.746 → 0.649 → 0.358 as evidence grows
+   1 → 15 → 202 items): small-N sampling noise masks the rendering blind
+   spot; more data exposes it. Central exhibit for the confidence-model
+   story.
