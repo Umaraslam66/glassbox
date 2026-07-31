@@ -672,3 +672,76 @@ the k-NN reading, aggregate scatter, Qwen panel. 620 tests green.
 Costs, Stage 4: 7.12 GPU core-hours (Qwen baseline job 51349316) + local
 CPU at zero. Project total 103.8 core-hours. Gate 4 is a hard stop:
 verdict delivered, decision with the owner.
+
+## 2026-07-31 — Gate 4 outcome ACCEPTED AS FINAL by the owner
+
+The documented result, in the owner's fixed phrasing, frozen-bar outcome
+first, to be carried into every future report and the final REPORT.md:
+"2 of 3 frozen bars pass (Brier lift 27.1% vs marginal, beats k-NN; ECE
+0.0137). The correlation bar fails at 0.684 vs 0.90, structurally: the
+full-information ceiling of this model class reaches 0.786 — per-cell
+resolution beyond an 8-dimensional trait model, attributed 67% model
+class / 18% interview length / 15% zero-shot item encoder." Commentary
+(never replacing the frozen-bar sentence): the two passing bars are the
+ones the headline claim rests on (lift + calibration); the failing bar
+measures per-cell resolution no trait-vector model of this
+dimensionality reaches on this population. k-NN verdict reported
+prominently as required: 3.6% relative edge overall; k-NN wins NEAR, the
+model wins SAME-DOMAIN and FAR. The thresholds-from-training-answers
+design decision is approved as legal (same information the marginal
+baseline sees); the exploratory zero-shot-threshold collapse (2.7% lift)
+stays documented. Four findings banked in results/STAGE6_NOTES.md on
+owner instruction (LLM-worse-than-nothing; thresholds-need-response-data
+cold-start; aggregate-vs-per-cell asymmetry; per-cell resolution limit
+and the hybrid CF direction).
+
+## 2026-07-31 — Stage 5 opened (adaptive interviewing + RL); owner rulings recorded BEFORE any Stage 5 compute
+
+RULING 1 — frozen-target attainability. The frozen Gate 5 target
+(the Gate-3 accuracy level: per-dimension RMSE ≤ 0.5) may be unreachable
+at ANY N, since the full 252-item matrix reaches only 0.529. The frozen
+bar is reported exactly as written (questions-to-target; if no strategy
+ever reaches the target, that is reported honestly — the bar is then
+unmet/undefined, not reinterpreted). ALONGSIDE it, PRE-DECLARED HERE as
+labeled-exploratory, before any results exist: (a) full efficiency
+curves — truth-side RMSE (graded by src/eval) vs N for every strategy;
+(b) a questions-to-target grid at attainable thresholds (RMSE ≤ 0.60,
+0.65, 0.70, all dims), with the ≤50%-of-random comparison computed at
+each; (c) fraction-of-full-matrix information reached at N = 5, 10, 15,
+25. This pre-declaration is what makes the exploratory analysis
+legitimate.
+
+RULING 2 — reward is system-side only. The confirmatory RL policy trains
+on blur-based reward (declared posterior-variance reduction minus
+per-question cost). Truth-derived rewards are FORBIDDEN for the
+confirmatory policy — planted truth must never shape system-side
+weights, even via reward on the training batch. Explicit watch for proxy
+gaming (blur shrinks fast while truth-side RMSE does not follow): if
+observed, it is a first-class finding for the report (proxy-reward
+hacking in confidence-driven interviewing), not a bug to hide. Optional,
+only if cheap: one exploratory truth-reward policy trained on the RL
+batch alone, to measure the deployable-vs-oracle reward gap — clearly
+labeled, never confirmatory; its training code must live under src/eval
+(the Wall test forbids truth imports anywhere else) and its weights are
+quarantined from every confirmatory artifact.
+
+RULING 3 — closed items only for Stage 5. All strategies (random, fixed
+Stage-3 order, info-gain heuristic, RL) select among closed TRAINING
+items only, identical treatment, no open-ended prompts in the adaptive
+loop. Rationale recorded: episodes must run on recorded distributions +
+the frozen noise layer (CPU-only, no GPU per episode), and Stage 3
+measured open answers as precision-poor. Reading noted: the frozen
+N=15+3 clause governs earlier stages' confirmatory interviews; Gate 5's
+own wording does not pin open answers.
+
+Execution set by the owner: mint the RL TRAINING BATCH per frozen §2
+(fresh personas, recorded new seed, v2 two-pass card writer, leak
+checker, full closed-bank GPU sweep with recorded distributions); run
+the five Gate-1 QA metrics on the batch as a sanity report (no
+re-freeze, no retuning of the frozen noise layer). Confirmatory eval
+personas remain the ORIGINAL Stage-2 held-out set — the RL policy never
+touches them in training. Sequential posterior machinery is pure CPU
+math, no LLM in the loop; RL starts simple per PRD (bounded effort;
+heuristic shipped with the RL attempt documented if RL is unstable).
+GPU only for the new batch's cards and sweep; RL training and all
+episode simulation on CPU.

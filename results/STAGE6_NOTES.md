@@ -44,3 +44,25 @@ connect to Simile's confidence-model direction in the writeup.
    1 → 15 → 202 items): small-N sampling noise masks the rendering blind
    spot; more data exposes it. Central exhibit for the confidence-model
    story.
+
+## Findings banked at the Gate 4 close (owner instruction, 2026-07-31)
+
+1. LLM given demographics only performs WORSE than knowing nothing
+   (−35% lift): its priors tilt per-person in error-adding directions.
+   Directly relevant against naive "just prompt an LLM" persona
+   approaches.
+
+2. Item difficulty/thresholds cannot be predicted from question text
+   alone (zero-shot thresholds collapse to 2.7% lift); they must be
+   learned from response data. Cold-start implication for any real
+   product.
+
+3. Aggregate prediction is dramatically easier than per-cell: population
+   marginals r 0.983, cross-tabs r 0.967 while per-cell correlation sits
+   at 0.684. Segment-level claims are cheap; individual-level claims are
+   the hard, honest currency.
+
+4. Per-cell resolution limit: individual item-level quirks exist that no
+   low-dim trait vector expresses; k-NN partially captures them on NEAR
+   items. Future direction (exploratory, not built here): hybrid
+   trait-model + collaborative-filtering residual.
