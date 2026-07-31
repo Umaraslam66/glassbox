@@ -173,8 +173,11 @@ nothing downstream can recover what never left the card.
 The fit lands on that ceiling, not below it. Per dimension, fitted recovery is within
 -0.029 to +0.033 of the model-free ceiling on every axis
 (stage2_v2_recovery.json -> answer_matrix_ceiling.fit_minus_answers_per_dimension); the
-three MIRT restarts agree to r 0.9997 and split-half reliability of theta-hat is 0.933
-(stage2_v2_recovery.json -> reliability_ceiling). The estimator is not the bottleneck.
+three MIRT restarts agree to r 0.9997
+(stage2_v2_recovery.json -> fit_diagnostics.restart_agreement, worst per-dimension
+theta correlation across the three pairs) and split-half reliability of theta-hat is 0.933
+(stage2_v2_recovery.json -> reliability_ceiling.reliability_summary.median). The estimator
+is not the bottleneck.
 The rendering step is.
 
 ### What inherits the ceiling, and what does not
@@ -241,7 +244,7 @@ is not persisted in a result JSON.)*
 The same blind spot reappears in the adaptive interviewer, measured a third way. Over a
 150-question interview the system declares away 76% of its uncertainty (declared blur falls
 to 0.2362 of its starting value for the heuristic) while removing only 45% of its actual
-error (0.5536 remaining) — a gap of 0.318, widening monotonically
+error (0.5536 remaining) — a gap of 0.317, widening monotonically
 (stage5_strategies.json -> exploratory.blur_vs_truth.heuristic). Three stages, three
 methods, one phenomenon.
 
