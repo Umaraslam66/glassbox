@@ -1,9 +1,10 @@
-"""GLASSBOX monitoring dashboard -- page 1 Population, page 2 Recovery,
-page 3 Person encoder, page 4 Calibration, page 5 Interviewer.
+"""GLASSBOX monitoring dashboard -- an Overview front page with the six gate
+verdicts, then page 1 Population, page 2 Recovery, page 3 Person encoder,
+page 4 Calibration, page 5 Interviewer.
 
     streamlit run app/dashboard.py
 
-Pick the page in the sidebar.
+Pick the page in the sidebar. It opens on the Overview.
 
 This file sits outside the Wall on purpose. It opens exactly three things:
 ``results/*.json`` and the PNGs next to them (what the grader-side code
@@ -2361,6 +2362,187 @@ def interviewer_page() -> None:
 
 
 # --------------------------------------------------------------------------
+# overview: the six gates on one screen
+# --------------------------------------------------------------------------
+
+#: Gate 1's confirmatory report. Page 1 lets you pick any ``*_qa.json``; this is
+#: the one the gate was actually graded on.
+GATE1_PATH = RESULTS_DIR / "full_sweep_v2_qa.json"
+
+#: One row per gate: where its report lives, which flag in that report is the
+#: whole-gate verdict, and one sentence on what happened. The PASS/FAIL mark is
+#: deliberately not written down here -- it is read out of each report's own
+#: verdict block, exactly like every other panel on this dashboard, so the front
+#: page cannot drift away from the runs behind it. Gate 0 is the one exception:
+#: it was a setup checklist signed off in conversation and has no report file,
+#: so its mark is recorded.
+GATES: tuple[dict[str, Any], ...] = (
+    {
+        "gate": "Gate 0",
+        "name": "Foundations",
+        "report": None,
+        "block": None,
+        "flag": None,
+        "recorded_mark": "PASS",
+        "line": (
+            "Scaffold, Wall test and both model paths stood up, and the bars were frozen "
+            "into PREREGISTRATION.md before any stage ran."
+        ),
+        "page": "--",
+    },
+    {
+        "gate": "Gate 1",
+        "name": "Population",
+        "report": GATE1_PATH,
+        "block": "verdict",
+        "flag": "all_pass",
+        "recorded_mark": None,
+        "line": (
+            "500 planted people came out diverse, obeying their traits, and repeating "
+            "themselves at a human-like rate. All five frozen bars met."
+        ),
+        "page": "1. Population",
+    },
+    {
+        "gate": "Gate 2",
+        "name": "Static recovery",
+        "report": RECOVERY_PATH,
+        "block": "verdict",
+        "flag": "all_bars_pass",
+        "recorded_mark": None,
+        "line": (
+            "The questions recover, the people do not: item loadings clear their bar, "
+            "trait recovery and blur honesty miss. The loss is in the life story, not "
+            "the fit -- the leakage hunts came back clean."
+        ),
+        "page": "2. Recovery",
+    },
+    {
+        "gate": "Gate 3",
+        "name": "Person encoder",
+        "report": GATE3_PATH,
+        "block": "verdict",
+        "flag": "all_decided_bars_pass",
+        "recorded_mark": None,
+        "line": (
+            "An interview does beat knowing nothing, but not by the required margin: "
+            "accuracy and lift both miss, coverage passes, and the shortfall lands where "
+            "the Gate 2 projection said it would."
+        ),
+        "page": "3. Person encoder",
+    },
+    {
+        "gate": "Gate 4",
+        "name": "Calibration",
+        "report": GATE4_PATH,
+        "block": "verdict",
+        "flag": "all_bars_pass",
+        "recorded_mark": None,
+        "line": (
+            "Predicted answer distributions clear the lift bar and are well calibrated. "
+            "The per-cell correlation misses, and about two thirds of that gap traces to "
+            "the eight-dimension model class itself."
+        ),
+        "page": "4. Calibration",
+    },
+    {
+        "gate": "Gate 5",
+        "name": "Interviewer",
+        "report": GATE5_PATH,
+        "block": "frozen_bar",
+        "flag": "verdict",
+        "recorded_mark": None,
+        "line": (
+            "No strategy reached the accuracy target inside the question budget, so both "
+            "frozen bars are undefined by the pre-recorded ruling. On the pre-declared "
+            "exploratory grid the RL policy and the hand-coded heuristic tie."
+        ),
+        "page": "5. Interviewer",
+    },
+)
+
+OVERVIEW_HINT = (
+    "Gates with no report file in results/ show as \"no report yet\". Produce them by "
+    "running that stage -- each stage page below names the command it needs."
+)
+
+
+def gate_mark(entry: dict[str, Any]) -> str | None:
+    """One gate's verdict, read out of its own report.
+
+    ``None`` means the report is not in ``results/`` (or has no verdict block),
+    which is what a fresh clone looks like. Nothing is judged here: a boolean
+    flag becomes PASS or FAIL and a written verdict is passed straight through,
+    so this page always agrees with the run that wrote the file.
+    """
+    path = entry["report"]
+    if path is None:
+        return entry["recorded_mark"]
+    report = load_json(path)
+    if report is None:
+        return None
+    value = (report.get(entry["block"]) or {}).get(entry["flag"])
+    if isinstance(value, bool):
+        return "PASS" if value else "FAIL"
+    if isinstance(value, str) and value.strip():
+        return value.strip().upper()
+    return None
+
+
+def overview_page() -> None:
+    st.header("Gates")
+    st.caption(
+        "Six stages, six gates. Every bar was frozen in PREREGISTRATION.md before its "
+        "stage ran, and every mark below is read straight out of that gate's own report "
+        "file -- this page does not decide any of them. Open a stage in the sidebar for "
+        "the bar-by-bar numbers behind its mark."
+    )
+
+    rows = []
+    marks = []
+    missing = []
+    for entry in GATES:
+        mark = gate_mark(entry)
+        marks.append(mark)
+        if mark is None and entry["report"] is not None:
+            missing.append(entry["report"].name)
+        rows.append(
+            {
+                "gate": f"{entry['gate']} -- {entry['name']}",
+                "verdict": mark if mark is not None else "no report yet",
+                "what happened": entry["line"],
+                "page": entry["page"],
+            }
+        )
+    table(rows)
+
+    decided = [mark for mark in marks if mark is not None]
+    if decided:
+        tally = ", ".join(
+            f"{decided.count(mark)} {mark}"
+            for mark in ("PASS", "FAIL", "UNDEFINED")
+            if decided.count(mark)
+        )
+        graded = f"{len(decided)} of {len(GATES)} gates graded: {tally}."
+        if "FAIL" in decided or "UNDEFINED" in decided:
+            st.warning(
+                graded
+                + " The failures are reported as they came out; nothing was re-graded "
+                "after the fact."
+            )
+        else:
+            st.success(graded)
+
+    if missing:
+        st.info(OVERVIEW_HINT + "\n\nNot found yet: " + ", ".join(sorted(set(missing))) + ".")
+
+    st.caption(
+        "Findings, limitations and every number: results/REPORT.md. What was run and "
+        "when: results/PROJECT_LOG.md. Compute and API spend: results/COSTS.md."
+    )
+
+
+# --------------------------------------------------------------------------
 # page
 # --------------------------------------------------------------------------
 
@@ -2392,16 +2574,19 @@ def main() -> None:
     page = st.sidebar.radio(
         "Page",
         [
+            "Overview",
             "1. Population",
             "2. Recovery",
             "3. Person encoder",
             "4. Calibration",
             "5. Interviewer",
         ],
-        help="One page per stage, added as the stage produces its files.",
+        help="The six gate verdicts, then one page per stage.",
     )
 
-    if page == "2. Recovery":
+    if page == "1. Population":
+        population_page(summary, reports)
+    elif page == "2. Recovery":
         recovery_page()
     elif page == "3. Person encoder":
         person_encoder_page()
@@ -2410,7 +2595,7 @@ def main() -> None:
     elif page == "5. Interviewer":
         interviewer_page()
     else:
-        population_page(summary, reports)
+        overview_page()
 
 
 main()

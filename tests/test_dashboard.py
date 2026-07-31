@@ -55,6 +55,12 @@ GATE5_THRESHOLDS = ("0.60", "0.65", "0.70")
 #: The wording the monotonicity row must carry, exactly.
 MONOTONICITY_RULING = "orchestrator ruling on qualitative wording; both readings reported"
 
+#: The front page -- the six gate verdicts, read out of the reports below it.
+#: Gate 1's confirmatory report is the one the overview reads for that row.
+GATE1_REPORT = REPO_ROOT / "results" / "full_sweep_v2_qa.json"
+GATE_ROWS = ("Gate 0", "Gate 1", "Gate 2", "Gate 3", "Gate 4", "Gate 5")
+
+POPULATION_PAGE = "1. Population"
 RECOVERY_PAGE = "2. Recovery"
 PERSON_ENCODER_PAGE = "3. Person encoder"
 CALIBRATION_PAGE = "4. Calibration"
@@ -76,6 +82,12 @@ def run_app(root: Path | None = None) -> AppTest:
             default_timeout=60.0,
         )
     app.run()
+    return app
+
+
+def open_population(app: AppTest) -> AppTest:
+    """Flip the sidebar selector to page 1 and re-run."""
+    app.sidebar.radio[0].set_value(POPULATION_PAGE).run()
     return app
 
 
@@ -114,11 +126,61 @@ def all_text(app: AppTest) -> str:
 
 
 def test_dashboard_boots() -> None:
-    """Page 1 renders against whatever is in results/ right now."""
+    """The dashboard opens on the overview, against whatever is in results/."""
     app = run_app()
     assert not app.exception
     assert app.title[0].value == "GLASSBOX monitor"
+    assert "Gates" in all_text(app)
+
+
+def test_population_page_still_renders() -> None:
+    """Page 1 is one click away from the new front page."""
+    app = open_population(run_app())
+    assert not app.exception
     assert "Population" in all_text(app)
+
+
+def test_the_overview_marks_come_from_the_gate_reports() -> None:
+    """Every gate row is on screen and its mark matches its own report file."""
+    app = run_app()
+    assert not app.exception
+
+    # dataframe 0 on the front page is the gate table
+    frame = app.dataframe[0].value
+    assert [row.split(" -- ")[0] for row in frame["gate"]] == list(GATE_ROWS)
+
+    def mark_of(path: Path, block: str, flag: str) -> str:
+        if not path.is_file():
+            return "no report yet"
+        value = (json.loads(path.read_text(encoding="utf-8")).get(block) or {}).get(flag)
+        if isinstance(value, bool):
+            return "PASS" if value else "FAIL"
+        return value.strip().upper() if isinstance(value, str) and value.strip() else "no report yet"
+
+    expected = [
+        "PASS",  # Gate 0 has no report -- a setup checklist signed off in conversation
+        mark_of(GATE1_REPORT, "verdict", "all_pass"),
+        mark_of(RECOVERY_REPORT, "verdict", "all_bars_pass"),
+        mark_of(GATE3_REPORT, "verdict", "all_decided_bars_pass"),
+        mark_of(GATE4_REPORT, "verdict", "all_bars_pass"),
+        mark_of(GATE5_REPORT, "frozen_bar", "verdict"),
+    ]
+    assert list(frame["verdict"]) == expected, "the front page disagrees with a gate report"
+
+    # the failures are stated, not softened
+    assert "nothing was re-graded after the fact" in all_text(app)
+
+
+def test_the_overview_survives_missing_reports(tmp_path: Path) -> None:
+    """A fresh clone shows six gates, five of them ungraded, and no traceback."""
+    (tmp_path / "results").mkdir()
+
+    app = run_app(root=tmp_path)
+    assert not app.exception
+
+    frame = app.dataframe[0].value
+    assert list(frame["verdict"]) == ["PASS"] + ["no report yet"] * 5
+    assert "no report yet" in all_text(app) or "Not found yet" in all_text(app)
 
 
 def test_recovery_page_renders_with_the_real_report() -> None:
