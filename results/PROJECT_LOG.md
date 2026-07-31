@@ -32,7 +32,7 @@ trait dimensions agreed with the owner, `PREREGISTRATION.md` frozen.
 
 ## 2026-07-30 — Stage 0: Leonardo set up, smoke test passed, API paths verified
 
-Leonardo: created `[redacted-workspace]/glassbox/` and copied the Gemma 4
+Leonardo: created the project's own folder in the allocation workspace and copied the Gemma 4
 31B installation from [sibling-project] (weights, vLLM venv, CUDA compat tools, HF cache —
 69 GB, byte-verified; [sibling-project] itself untouched). Smoke test job 51068113 passed on
 the first submission: 4 GPUs visible, Gemma answered a role-play prompt in
