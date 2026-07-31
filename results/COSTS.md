@@ -16,3 +16,5 @@ accordingly if it is ever used for bulk development calls.
 | 2026-07-30 | 1 | Qwen3.6-27B copy [sibling-project] → glassbox (login-node I/O, no jobs) | none billed | 0 |
 | 2026-07-31 | 1 | Gemma card writing, 500 personas (job 51146579, 1 node × 11m17s) | 6.02 core-hours | 6.02 core-h |
 | 2026-07-31 | 1 | Card retry for 6 leak-rejected personas (job 51150672, 1 node × 9m26s) | 5.03 core-hours | 5.03 core-h |
+| 2026-07-31 | 1 | Temperature pilot, attempt 1 — p0314 card rendered, both answer sweeps died on leaked GPU memory (job 51171292, 1 node × 10m40s) | 5.69 core-hours | 5.69 core-h |
+| 2026-07-31 | 1 | Temperature pilot, attempt 2 — 60 personas × (252 main + 30 retest) at t=0.7 and t=1.0, 33,840 answers (job 51179813, 1 node × 16m42s) | 8.91 core-hours | 8.91 core-h |

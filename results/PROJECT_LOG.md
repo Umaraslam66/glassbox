@@ -158,3 +158,29 @@ KNOWN INSTRUMENT LIMITATIONS (accepted, watch at Gates 1–2):
   by domain alone.
 - Realistic answerability premises (home/garden, employment clusters) and
   style nits accepted as survey realism.
+
+## 2026-07-31 — Pilot round 1: measurement bug found (seed coupling); QA early signals strong
+
+Temperature pilot (60 personas × full bank + 30-item retest at t=0.7 and t=1.0,
+jobs 51171292 + 51179813, 14.6 core-hours) returned test–retest ≈ 98% at both
+temperatures — far above the frozen 70–90% band. The number is INVALID: the
+batch driver passed one global seed into every request's SamplingParams, and
+vLLM (verified in the installed source) seeds a per-request generator from it —
+so the main and retest rounds drew identical random numbers by construction
+(accidental common-random-numbers coupling). Attempt 1 also found a GPU-memory
+leak between driver invocations in one job (orphaned workers after os._exit);
+fixed with a free_gpus() helper in the sbatch.
+
+Valid early signals from the same run (coupling pushes agreement UP, so these
+pass conservatively): max pairwise agreement 0.837 (bar ≤ 0.95), median
+pairwise 0.468 (bar ≤ 0.80), participation ratio 10.7 (bar ≥ 5), obedience
+median r 0.836–0.841 with all 8 dimensions individually above 0.5. Parse
+rejects 0/33,840. The responder is decisive: 63% of Likert answers are 1 or 5,
+6% midpoint. Three items had zero variance across 60 personas (q044, q141,
+q246) — watch at the full sweep and Stage 2.
+
+Decision: driver gets per-record seeds (stable hash of base seed + pid + item +
+round + temperature — uncoupled and reproducible) plus per-record temperature;
+clean rerun at t ∈ {0.7, 1.0, 1.3} in one job before touching the wobble
+mechanism. p0314's card cleared on attempt 3 with a vocabulary-ban line —
+cards now 500/500.
