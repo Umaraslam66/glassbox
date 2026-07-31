@@ -1,0 +1,1114 @@
+{
+  "module": "src.eval.corr_attribution",
+  "status": "EXPLORATORY -- not a pre-registered bar, nothing here is confirmatory",
+  "generated": "2026-07-31T17:55:00+00:00",
+  "question": "the Gate 4 correlation bar failed at 0.684 against 0.90. Where do the missing 0.31 correlation points sit?",
+  "summary": {
+    "headline": "the correlation bar fails structurally, not by a calibration slip: the 8-dim model class explains most of the gap, and the ceiling arm is itself below the bar",
+    "bar": 0.9,
+    "confirmatory_correlation": 0.6843654025031514,
+    "ceiling_correlation": 0.7864945617849528,
+    "oracle_correlation": 0.9925264121906868,
+    "losses": {
+      "model_class_8dim": {
+        "loss": 0.20603185040573402,
+        "share_of_oracle_to_model_gap": 0.6685850705598452
+      },
+      "information_loss_at_n15": {
+        "loss": 0.056064867593367484,
+        "share_of_oracle_to_model_gap": 0.1819336834670139
+      },
+      "zero_shot_item_encoder": {
+        "loss": 0.046064291688433956,
+        "share_of_oracle_to_model_gap": 0.14948124597314094
+      }
+    },
+    "confirmatory_ols_slope": 0.9373637280206198,
+    "confirmatory_std_ratio": 0.7300958870558064,
+    "truth_sharp_fraction_either_end": 0.3934146341463415,
+    "between_item_share_of_truth_variance": 0.31943333475109953,
+    "marginal_share_of_the_model_correlation": 0.8093039780569482,
+    "median_per_item_correlation": {
+      "model": 0.6047881943883211,
+      "knn": 0.5696423603130811,
+      "dec_fused_fitted": 0.6722378636810655,
+      "dec_full_fitted": 0.740148751681296,
+      "oracle": 0.9910456483058591
+    }
+  },
+  "sanity_check": {
+    "tolerance": 1e-09,
+    "n_checks": 37,
+    "all_match": true,
+    "failures": [],
+    "checks": [
+      {
+        "arm": "model",
+        "quantity": "correlation",
+        "recomputed": 0.6843654025031514,
+        "gate4": 0.6843654025031514,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model",
+        "quantity": "binary_only",
+        "recomputed": 0.699997915305499,
+        "gate4": 0.699997915305499,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model",
+        "quantity": "likert_only",
+        "recomputed": 0.6154341512875057,
+        "gate4": 0.6154341512875057,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model_plugin",
+        "quantity": "correlation",
+        "recomputed": 0.6826735925119616,
+        "gate4": 0.6826735925119616,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model_plugin",
+        "quantity": "binary_only",
+        "recomputed": 0.7001776790332604,
+        "gate4": 0.7001776790332604,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model_plugin",
+        "quantity": "likert_only",
+        "recomputed": 0.6138068857608855,
+        "gate4": 0.6138068857608855,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model_text_thresholds",
+        "quantity": "correlation",
+        "recomputed": 0.5371390115454806,
+        "gate4": 0.5371390115454806,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model_text_thresholds",
+        "quantity": "binary_only",
+        "recomputed": 0.5740551858553427,
+        "gate4": 0.5740551858553427,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model_text_thresholds",
+        "quantity": "likert_only",
+        "recomputed": 0.40694277808341783,
+        "gate4": 0.40694277808341783,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "full_matrix_posterior",
+        "quantity": "correlation",
+        "recomputed": 0.7859219566434894,
+        "gate4": 0.7859219566434894,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "full_matrix_posterior",
+        "quantity": "binary_only",
+        "recomputed": 0.8628857248967053,
+        "gate4": 0.8628857248967053,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "full_matrix_posterior",
+        "quantity": "likert_only",
+        "recomputed": 0.7165814610800317,
+        "gate4": 0.7165814610800317,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_fused_encoder",
+        "quantity": "correlation",
+        "recomputed": 0.6826735925119616,
+        "gate4": 0.6826735925119616,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_fused_encoder",
+        "quantity": "binary_only",
+        "recomputed": 0.7001776790332604,
+        "gate4": 0.7001776790332604,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_fused_encoder",
+        "quantity": "likert_only",
+        "recomputed": 0.6138068857608855,
+        "gate4": 0.6138068857608855,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_fused_fitted",
+        "quantity": "correlation",
+        "recomputed": 0.7304296941915853,
+        "gate4": 0.7304296941915853,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_fused_fitted",
+        "quantity": "binary_only",
+        "recomputed": 0.7747495793721961,
+        "gate4": 0.7747495793721961,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_fused_fitted",
+        "quantity": "likert_only",
+        "recomputed": 0.661471891779468,
+        "gate4": 0.661471891779468,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_full_encoder",
+        "quantity": "correlation",
+        "recomputed": 0.7236775338408026,
+        "gate4": 0.7236775338408026,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_full_encoder",
+        "quantity": "binary_only",
+        "recomputed": 0.7906355414962605,
+        "gate4": 0.7906355414962605,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_full_encoder",
+        "quantity": "likert_only",
+        "recomputed": 0.645320151066807,
+        "gate4": 0.645320151066807,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_full_fitted",
+        "quantity": "correlation",
+        "recomputed": 0.7864945617849528,
+        "gate4": 0.7864945617849528,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_full_fitted",
+        "quantity": "binary_only",
+        "recomputed": 0.8639910511717646,
+        "gate4": 0.8639910511717646,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "dec_full_fitted",
+        "quantity": "likert_only",
+        "recomputed": 0.717034162446204,
+        "gate4": 0.717034162446204,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "marginal",
+        "quantity": "correlation",
+        "recomputed": 0.5538596426903449,
+        "gate4": 0.5538596426903449,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "marginal",
+        "quantity": "binary_only",
+        "recomputed": 0.434933558570364,
+        "gate4": 0.434933558570364,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "marginal",
+        "quantity": "likert_only",
+        "recomputed": 0.4890598675872765,
+        "gate4": 0.4890598675872765,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "profile",
+        "quantity": "correlation",
+        "recomputed": 0.5545262216569385,
+        "gate4": 0.5545262216569385,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "profile",
+        "quantity": "binary_only",
+        "recomputed": 0.4368400142432788,
+        "gate4": 0.4368400142432788,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "profile",
+        "quantity": "likert_only",
+        "recomputed": 0.48969926111086337,
+        "gate4": 0.48969926111086337,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "knn",
+        "quantity": "correlation",
+        "recomputed": 0.6615503396338418,
+        "gate4": 0.6615503396338418,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "knn",
+        "quantity": "binary_only",
+        "recomputed": 0.7051559815874401,
+        "gate4": 0.7051559815874401,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "knn",
+        "quantity": "likert_only",
+        "recomputed": 0.5743979755547612,
+        "gate4": 0.5743979755547612,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "oracle",
+        "quantity": "correlation",
+        "recomputed": 0.9925264121906868,
+        "gate4": 0.9925264121906868,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "oracle",
+        "quantity": "binary_only",
+        "recomputed": 0.9951573562064705,
+        "gate4": 0.9951573562064705,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "oracle",
+        "quantity": "likert_only",
+        "recomputed": 0.9904283105652792,
+        "gate4": 0.9904283105652792,
+        "abs_difference": 0.0,
+        "matches": true
+      },
+      {
+        "arm": "model",
+        "quantity": "the frozen bar value itself",
+        "recomputed": 0.6843654025031514,
+        "gate4": 0.6843654025031514,
+        "abs_difference": 0.0,
+        "matches": true
+      }
+    ]
+  },
+  "ladder": {
+    "label": "EXPLORATORY",
+    "pooling": "Pearson between predicted probability and empirical 50-sample frequency over every (cell, category) pair -- the same pooling the frozen bar uses, 100 held-out personas x 50 probe items",
+    "order": [
+      "marginal",
+      "profile",
+      "model_text_thresholds",
+      "knn",
+      "model_plugin",
+      "model",
+      "dec_full_encoder",
+      "dec_fused_fitted",
+      "full_matrix_posterior",
+      "dec_full_fitted",
+      "oracle"
+    ],
+    "labels": {
+      "marginal": "population marginal (zero information)",
+      "profile": "public profile only",
+      "model_text_thresholds": "fused theta x fully zero-shot item side",
+      "knn": "k-NN on the 15 interview answers",
+      "model_plugin": "CONFIRMATORY model, posterior collapsed to its mean",
+      "model": "CONFIRMATORY model, posterior-integrated",
+      "dec_full_encoder": "full-matrix theta x encoder item parameters",
+      "dec_fused_fitted": "fused theta@15 x fitted item parameters",
+      "full_matrix_posterior": "full-matrix theta x fitted items, posterior-integrated",
+      "dec_full_fitted": "full-matrix theta x fitted item parameters (CEILING)",
+      "oracle": "analytic post-noise distribution (truth-side oracle)"
+    },
+    "rungs": {
+      "model": {
+        "correlation": 0.6843654025031514,
+        "binary_only": 0.699997915305499,
+        "likert_only": 0.6154341512875057,
+        "n_pairs": 20500,
+        "predicted_std": 0.23945845376980646,
+        "predicted_mean": 0.24390243902439024
+      },
+      "model_plugin": {
+        "correlation": 0.6826735925119616,
+        "binary_only": 0.7001776790332604,
+        "likert_only": 0.6138068857608855,
+        "n_pairs": 20500,
+        "predicted_std": 0.2541408196332701,
+        "predicted_mean": 0.24390243902439024
+      },
+      "model_text_thresholds": {
+        "correlation": 0.5371390115454806,
+        "binary_only": 0.5740551858553427,
+        "likert_only": 0.40694277808341783,
+        "n_pairs": 20500,
+        "predicted_std": 0.19682007030649626,
+        "predicted_mean": 0.24390243902439024
+      },
+      "full_matrix_posterior": {
+        "correlation": 0.7859219566434894,
+        "binary_only": 0.8628857248967053,
+        "likert_only": 0.7165814610800317,
+        "n_pairs": 20500,
+        "predicted_std": 0.25198504577744607,
+        "predicted_mean": 0.24390243902439024
+      },
+      "dec_fused_encoder": {
+        "correlation": 0.6826735925119616,
+        "binary_only": 0.7001776790332604,
+        "likert_only": 0.6138068857608855,
+        "n_pairs": 20500,
+        "predicted_std": 0.2541408196332701,
+        "predicted_mean": 0.24390243902439024
+      },
+      "dec_fused_fitted": {
+        "correlation": 0.7304296941915853,
+        "binary_only": 0.7747495793721961,
+        "likert_only": 0.661471891779468,
+        "n_pairs": 20500,
+        "predicted_std": 0.2538991609863262,
+        "predicted_mean": 0.24390243902439024
+      },
+      "dec_full_encoder": {
+        "correlation": 0.7236775338408026,
+        "binary_only": 0.7906355414962605,
+        "likert_only": 0.645320151066807,
+        "n_pairs": 20500,
+        "predicted_std": 0.25669955528154165,
+        "predicted_mean": 0.24390243902439024
+      },
+      "dec_full_fitted": {
+        "correlation": 0.7864945617849528,
+        "binary_only": 0.8639910511717646,
+        "likert_only": 0.717034162446204,
+        "n_pairs": 20500,
+        "predicted_std": 0.25455438421590515,
+        "predicted_mean": 0.24390243902439024
+      },
+      "marginal": {
+        "correlation": 0.5538596426903449,
+        "binary_only": 0.434933558570364,
+        "likert_only": 0.4890598675872765,
+        "n_pairs": 20500,
+        "predicted_std": 0.1896875380448457,
+        "predicted_mean": 0.24390243902439024
+      },
+      "profile": {
+        "correlation": 0.5545262216569385,
+        "binary_only": 0.4368400142432788,
+        "likert_only": 0.48969926111086337,
+        "n_pairs": 20500,
+        "predicted_std": 0.19048338731007813,
+        "predicted_mean": 0.24390243902439024
+      },
+      "knn": {
+        "correlation": 0.6615503396338418,
+        "binary_only": 0.7051559815874401,
+        "likert_only": 0.5743979755547612,
+        "n_pairs": 20500,
+        "predicted_std": 0.21871917580194547,
+        "predicted_mean": 0.24390243902439024
+      },
+      "oracle": {
+        "correlation": 0.9925264121906868,
+        "binary_only": 0.9951573562064705,
+        "likert_only": 0.9904283105652792,
+        "n_pairs": 20500,
+        "predicted_std": 0.3254997483958064,
+        "predicted_mean": 0.24390243902439024
+      }
+    }
+  },
+  "attribution": {
+    "label": "EXPLORATORY",
+    "oracle_correlation": 0.9925264121906868,
+    "model_correlation": 0.6843654025031514,
+    "oracle_to_model_gap": 0.30816100968753546,
+    "terms": {
+      "model_class_8dim": {
+        "what": "oracle minus full-matrix theta x fitted items: what an 8-dim graded-response model cannot express even given every answer and every held-out item fitted",
+        "from": "oracle",
+        "to": "dec_full_fitted",
+        "loss": 0.20603185040573402,
+        "share_of_oracle_to_model_gap": 0.6685850705598452
+      },
+      "information_loss_at_n15": {
+        "what": "full-matrix theta minus fused theta@15, item side held fixed at the fitted parameters: the cost of 15 interview answers instead of the whole answer matrix",
+        "from": "dec_full_fitted",
+        "to": "dec_fused_fitted",
+        "loss": 0.056064867593367484,
+        "share_of_oracle_to_model_gap": 0.1819336834670139
+      },
+      "zero_shot_item_encoder": {
+        "what": "fitted item parameters minus the confirmatory arm's zero-shot loadings and trained thresholds, theta held fixed at fused@15",
+        "from": "dec_fused_fitted",
+        "to": "model",
+        "loss": 0.046064291688433956,
+        "share_of_oracle_to_model_gap": 0.14948124597314094
+      }
+    },
+    "terms_sum": 0.30816100968753546,
+    "telescopes_exactly": true,
+    "distance_from_the_frozen_bar": {
+      "bar": 0.9,
+      "model_shortfall": 0.21563459749684866,
+      "ceiling_shortfall": 0.11350543821504722,
+      "reading": "the ceiling arm is itself below the bar, so closing every loss this project controls still would not reach 0.90"
+    }
+  },
+  "flatness": {
+    "label": "EXPLORATORY",
+    "what": "how far the predicted probabilities spread compared with the empirical 50-sample frequencies they are graded against",
+    "truth": {
+      "empirical_std_pooled": 0.3279821979760077,
+      "empirical_std_binary": 0.41222356393911624,
+      "empirical_std_likert5": 0.289330261120402,
+      "empirical_mean_pooled": 0.24390243902439024,
+      "mean_entropy_nats": 0.6404961773212672,
+      "mean_entropy_binary": 0.28341549458936366,
+      "mean_entropy_likert5": 0.7935307556349401,
+      "sharp_fraction": {
+        "at_or_below_0.05": 0.36678048780487804,
+        "at_or_above_0.95": 0.026634146341463414,
+        "either_end": 0.3934146341463415
+      },
+      "uniform_entropy_reference": {
+        "binary_ln2": 0.6931471805599453,
+        "likert5_ln5": 1.6094379124341003
+      }
+    },
+    "per_arm": {
+      "model": {
+        "predicted_std_pooled": 0.23945845376980646,
+        "predicted_std_binary": 0.29455855168851064,
+        "predicted_std_likert5": 0.19780151251493014,
+        "std_ratio_pooled": 0.7300958870558064,
+        "std_ratio_binary": 0.7145601985334729,
+        "std_ratio_likert5": 0.683653039778708,
+        "mean_entropy_nats": 0.9862654832746927,
+        "mean_entropy_binary": 0.49252524783102747,
+        "mean_entropy_likert5": 1.1978684413219776,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.16921951219512196,
+          "at_or_above_0.95": 0.008292682926829269,
+          "either_end": 0.17751219512195124
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.9373637280206198,
+          "intercept": 0.015277139507166136,
+          "r": 0.6843654025031514,
+          "r_squared": 0.46835600414330036
+        }
+      },
+      "model_plugin": {
+        "predicted_std_pooled": 0.2541408196332701,
+        "predicted_std_binary": 0.3225324412382343,
+        "predicted_std_likert5": 0.21131906415898455,
+        "std_ratio_pooled": 0.7748616272516743,
+        "std_ratio_binary": 0.7824211652438944,
+        "std_ratio_likert5": 0.7303731844041235,
+        "mean_entropy_nats": 0.9310671303519755,
+        "mean_entropy_binary": 0.44725540399640407,
+        "mean_entropy_likert5": 1.138415013075792,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.21829268292682927,
+          "at_or_above_0.95": 0.015268292682926829,
+          "either_end": 0.23356097560975608
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.8810264549211331,
+          "intercept": 0.029017937824114045,
+          "r": 0.6826735925119616,
+          "r_squared": 0.46604323391318775
+        }
+      },
+      "model_text_thresholds": {
+        "predicted_std_pooled": 0.19682007030649626,
+        "predicted_std_binary": 0.2583825553012624,
+        "predicted_std_likert5": 0.14409509400129406,
+        "std_ratio_pooled": 0.6000937597256235,
+        "std_ratio_binary": 0.6268020023703071,
+        "std_ratio_likert5": 0.4980298066413809,
+        "mean_entropy_nats": 1.1271298963922032,
+        "mean_entropy_binary": 0.5437354948535458,
+        "mean_entropy_likert5": 1.3771560684801993,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.08117073170731708,
+          "at_or_above_0.95": 0.0025365853658536586,
+          "either_end": 0.08370731707317074
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.8950918133044283,
+          "intercept": 0.0255873626086762,
+          "r": 0.5371390115454806,
+          "r_squared": 0.28851831772405595
+        }
+      },
+      "full_matrix_posterior": {
+        "predicted_std_pooled": 0.25198504577744607,
+        "predicted_std_binary": 0.34890284363483803,
+        "predicted_std_likert5": 0.20085390707668743,
+        "std_ratio_pooled": 0.7682887892466623,
+        "std_ratio_binary": 0.846392283596795,
+        "std_ratio_likert5": 0.6942029025892457,
+        "mean_entropy_nats": 0.9496450341871868,
+        "mean_entropy_binary": 0.4029438535372889,
+        "mean_entropy_likert5": 1.1839455401800005,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.19034146341463415,
+          "at_or_above_0.95": 0.01673170731707317,
+          "either_end": 0.20707317073170733
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 1.0229512230864604,
+          "intercept": -0.005597859289380591,
+          "r": 0.7859219566434894,
+          "r_squared": 0.6176733219343309
+        }
+      },
+      "dec_fused_encoder": {
+        "predicted_std_pooled": 0.2541408196332701,
+        "predicted_std_binary": 0.3225324412382343,
+        "predicted_std_likert5": 0.21131906415898455,
+        "std_ratio_pooled": 0.7748616272516743,
+        "std_ratio_binary": 0.7824211652438944,
+        "std_ratio_likert5": 0.7303731844041235,
+        "mean_entropy_nats": 0.9310671303519755,
+        "mean_entropy_binary": 0.44725540399640407,
+        "mean_entropy_likert5": 1.138415013075792,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.21829268292682927,
+          "at_or_above_0.95": 0.015268292682926829,
+          "either_end": 0.23356097560975608
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.8810264549211331,
+          "intercept": 0.029017937824114045,
+          "r": 0.6826735925119616,
+          "r_squared": 0.46604323391318775
+        }
+      },
+      "dec_fused_fitted": {
+        "predicted_std_pooled": 0.2538991609863262,
+        "predicted_std_binary": 0.3452803150871133,
+        "predicted_std_likert5": 0.20471370644710776,
+        "std_ratio_pooled": 0.7741248230945121,
+        "std_ratio_binary": 0.837604507097294,
+        "std_ratio_likert5": 0.7075433646462516,
+        "mean_entropy_nats": 0.9400691417806193,
+        "mean_entropy_binary": 0.4082800353906738,
+        "mean_entropy_likert5": 1.1679787588048816,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.20317073170731706,
+          "at_or_above_0.95": 0.01770731707317073,
+          "either_end": 0.22087804878048778
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.9435554479079244,
+          "intercept": 0.013766963924896274,
+          "r": 0.7304296941915853,
+          "r_squared": 0.5335275381568129
+        }
+      },
+      "dec_full_encoder": {
+        "predicted_std_pooled": 0.25669955528154165,
+        "predicted_std_binary": 0.3305205804248693,
+        "predicted_std_likert5": 0.21282067533079438,
+        "std_ratio_pooled": 0.7826630739889107,
+        "std_ratio_binary": 0.8017993373947101,
+        "std_ratio_likert5": 0.735563139875753,
+        "mean_entropy_nats": 0.9224764876409143,
+        "mean_entropy_binary": 0.4344897194404149,
+        "mean_entropy_likert5": 1.1316136740125566,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.22473170731707318,
+          "at_or_above_0.95": 0.01604878048780488,
+          "either_end": 0.24078048780487804
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.9246348242194657,
+          "intercept": 0.018381750190374253,
+          "r": 0.7236775338408026,
+          "r_squared": 0.5237091729859059
+        }
+      },
+      "dec_full_fitted": {
+        "predicted_std_pooled": 0.25455438421590515,
+        "predicted_std_binary": 0.3544810726818511,
+        "predicted_std_likert5": 0.20296366461378065,
+        "std_ratio_pooled": 0.7761225633182876,
+        "std_ratio_binary": 0.8599243315799543,
+        "std_ratio_likert5": 0.7014947687387573,
+        "mean_entropy_nats": 0.9398083069227181,
+        "mean_entropy_binary": 0.3919148218338962,
+        "mean_entropy_likert5": 1.1746198005322133,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.19907317073170733,
+          "at_or_above_0.95": 0.018926829268292682,
+          "either_end": 0.218
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 1.013363866684044,
+          "intercept": -0.0032594796790353805,
+          "r": 0.7864945617849528,
+          "r_squared": 0.6185736957173049
+        }
+      },
+      "marginal": {
+        "predicted_std_pooled": 0.1896875380448457,
+        "predicted_std_binary": 0.18266783269290418,
+        "predicted_std_likert5": 0.15250808065801175,
+        "std_ratio_pooled": 0.5783470542468941,
+        "std_ratio_binary": 0.4431280709607457,
+        "std_ratio_likert5": 0.5271072582157141,
+        "mean_entropy_nats": 1.1364679003375247,
+        "mean_entropy_binary": 0.6218337189254622,
+        "mean_entropy_likert5": 1.3570254066569796,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.04878048780487805,
+          "at_or_above_0.95": 0.0,
+          "either_end": 0.04878048780487805
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.957659658890396,
+          "intercept": 0.010326912465757737,
+          "r": 0.5538596426903449,
+          "r_squared": 0.30676050380107656
+        }
+      },
+      "profile": {
+        "predicted_std_pooled": 0.19048338731007813,
+        "predicted_std_binary": 0.18334170489887502,
+        "predicted_std_likert5": 0.15352803933749282,
+        "std_ratio_pooled": 0.5807735556550305,
+        "std_ratio_binary": 0.44476279605877617,
+        "std_ratio_likert5": 0.5306324984568538,
+        "mean_entropy_nats": 1.1337859289851657,
+        "mean_entropy_binary": 0.6212673410187586,
+        "mean_entropy_likert5": 1.353436752399341,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.054341463414634146,
+          "at_or_above_0.95": 0.0,
+          "either_end": 0.054341463414634146
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.9548062515200271,
+          "intercept": 0.011022865482920153,
+          "r": 0.5545262216569385,
+          "r_squared": 0.3074993305051201
+        }
+      },
+      "knn": {
+        "predicted_std_pooled": 0.21871917580194547,
+        "predicted_std_binary": 0.27085399713723834,
+        "predicted_std_likert5": 0.1740454994744078,
+        "std_ratio_pooled": 0.6668629491224553,
+        "std_ratio_binary": 0.6570560754679283,
+        "std_ratio_likert5": 0.6015461320929042,
+        "mean_entropy_nats": 1.0560084790371496,
+        "mean_entropy_binary": 0.5285600437245674,
+        "mean_entropy_likert5": 1.2820578084568275,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.10307317073170731,
+          "at_or_above_0.95": 0.0023902439024390243,
+          "either_end": 0.10546341463414634
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 0.9920334313135691,
+          "intercept": 0.0019430655332732649,
+          "r": 0.6615503396338418,
+          "r_squared": 0.4376488518696514
+        }
+      },
+      "oracle": {
+        "predicted_std_pooled": 0.3254997483958064,
+        "predicted_std_binary": 0.4110844810920464,
+        "predicted_std_likert5": 0.2863082864481504,
+        "std_ratio_pooled": 0.992431145362399,
+        "std_ratio_binary": 0.9972367352409819,
+        "std_ratio_likert5": 0.9895552761728091,
+        "mean_entropy_nats": 0.6748152724671032,
+        "mean_entropy_binary": 0.2913463467284804,
+        "mean_entropy_likert5": 0.8391590977836557,
+        "sharp_fraction": {
+          "at_or_below_0.05": 0.3322439024390244,
+          "at_or_above_0.95": 0.015902439024390244,
+          "either_end": 0.34814634146341467
+        },
+        "ols_empirical_on_predicted": {
+          "slope": 1.0000959933882878,
+          "intercept": -2.3413021534024578e-05,
+          "r": 0.9925264121906868,
+          "r_squared": 0.9851086788961172
+        }
+      }
+    },
+    "confirmatory_ols": {
+      "slope": 0.9373637280206198,
+      "intercept": 0.015277139507166136,
+      "r": 0.6843654025031514,
+      "r_squared": 0.46835600414330036
+    },
+    "reading": "read the two numbers together. The predicted spread is well below the truth's, but the OLS slope of empirical on predicted sits near 1, which is what the low ECE already said: the arm is not systematically shrunk, it is noisy. Pearson is unchanged by any shared affine squash, so flatness is a description of the miss and not on its own a cause of it -- slope = r * sd(truth) / sd(predicted) ties the three together"
+  },
+  "variance": {
+    "label": "EXPLORATORY",
+    "split": {
+      "n_slots": 205,
+      "n_personas_per_slot": 100,
+      "grand_mean": 0.24390243902439024,
+      "total_variance": 0.1075723221891731,
+      "between_item_variance": 0.034362185603807265,
+      "within_item_between_persona_variance": 0.07321013658536586,
+      "between_item_share": 0.31943333475109953,
+      "within_item_share": 0.6805666652489006,
+      "identity_residual": -1.3877787807814457e-17,
+      "best_item_level_only_correlation": 0.5651843369654714,
+      "reading": "between-slot variance is item-level signal; within-slot variance is person-level signal. sqrt(between share) is the pooled correlation a predictor that knew every item's population marginal exactly, and nothing about the person, would score."
+    },
+    "what_the_marginal_already_captures": {
+      "marginal_correlation": 0.5538596426903449,
+      "model_correlation": 0.6843654025031514,
+      "share_of_the_model_r_the_marginal_already_has": 0.8093039780569482,
+      "share_of_the_model_r_squared_the_marginal_already_has": 0.6549729288988013,
+      "share_of_the_bar_the_marginal_already_has": 0.6153996029892721,
+      "item_level_only_ceiling": 0.5651843369654714,
+      "marginal_share_of_the_item_level_ceiling": 0.979962830647555,
+      "model_gain_over_the_item_level_ceiling": 0.11918106553767993,
+      "reading": "the population marginal knows nothing about any person, so everything it scores is item-level signal. What the confirmatory arm adds on top of it is the person-level part of the pooled correlation"
+    },
+    "within_item_correlations": {
+      "what": "EXPLORATORY lens only -- the frozen bar is the pooled number and stays the graded one. Per item, the correlation is taken over that item's (persona, category) pairs; per slot, over the 100 personas of one (item, category) column",
+      "per_arm": {
+        "model": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.6047881943883211,
+            "mean": 0.6258502847601366,
+            "q25": 0.527229957399611,
+            "q75": 0.7105636187919,
+            "min": 0.33281723097288496,
+            "max": 0.965605216277976
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.3016284452069049,
+            "mean": 0.33864988432812393,
+            "q25": 0.15215173975319837,
+            "q75": 0.5372672441477327,
+            "min": -0.18124806263501136,
+            "max": 0.8441900314682426
+          }
+        },
+        "model_plugin": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.6039595175305464,
+            "mean": 0.6253175183277012,
+            "q25": 0.5335853019950889,
+            "q75": 0.7113852181557083,
+            "min": 0.3362493748650473,
+            "max": 0.9674883442263374
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.300329943080262,
+            "mean": 0.33721541543554706,
+            "q25": 0.1554767770498771,
+            "q75": 0.5324273075142725,
+            "min": -0.1799030623418086,
+            "max": 0.8461911232713106
+          }
+        },
+        "model_text_thresholds": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.466363350481748,
+            "mean": 0.44715258686151155,
+            "q25": 0.34886938005215146,
+            "q75": 0.5246642846104319,
+            "min": -0.13605768031523327,
+            "max": 0.8397241409203516
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.29995268723497337,
+            "mean": 0.3152923081249408,
+            "q25": 0.11728995251072541,
+            "q75": 0.5129328090906285,
+            "min": -0.203189995310691,
+            "max": 0.8407406543465207
+          }
+        },
+        "full_matrix_posterior": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.7386840602977474,
+            "mean": 0.7493211730090833,
+            "q25": 0.6624504690080477,
+            "q75": 0.8530105820742767,
+            "min": 0.49087911598033424,
+            "max": 0.9834356535358819
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.4706980735254746,
+            "mean": 0.48438028689918194,
+            "q25": 0.2904317288027557,
+            "q75": 0.7124670356586784,
+            "min": -0.17324822994715378,
+            "max": 0.9459109981143301
+          }
+        },
+        "dec_fused_encoder": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.6039595175305464,
+            "mean": 0.6253175183277012,
+            "q25": 0.5335853019950889,
+            "q75": 0.7113852181557083,
+            "min": 0.3362493748650473,
+            "max": 0.9674883442263374
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.300329943080262,
+            "mean": 0.33721541543554706,
+            "q25": 0.1554767770498771,
+            "q75": 0.5324273075142725,
+            "min": -0.1799030623418086,
+            "max": 0.8461911232713106
+          }
+        },
+        "dec_fused_fitted": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.6722378636810655,
+            "mean": 0.6817609479844748,
+            "q25": 0.5947350384654145,
+            "q75": 0.7702090096187342,
+            "min": 0.4583259497986502,
+            "max": 0.9835792130675398
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.36552731180205617,
+            "mean": 0.401999930555724,
+            "q25": 0.20400129431546649,
+            "q75": 0.5940020296889128,
+            "min": -0.09446342762994304,
+            "max": 0.8924491169438635
+          }
+        },
+        "dec_full_encoder": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.6809162970649589,
+            "mean": 0.6785169392114551,
+            "q25": 0.5899453314624507,
+            "q75": 0.7991420985713564,
+            "min": 0.3164744840476233,
+            "max": 0.9606686983669329
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.3527576799424579,
+            "mean": 0.3953505904853801,
+            "q25": 0.197673271847336,
+            "q75": 0.6372073087177094,
+            "min": -0.2037707107901753,
+            "max": 0.9068425685233021
+          }
+        },
+        "dec_full_fitted": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.740148751681296,
+            "mean": 0.7499313955375625,
+            "q25": 0.6639525148688894,
+            "q75": 0.8548316085406287,
+            "min": 0.4915981130098723,
+            "max": 0.9834525925410298
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.4726016107447006,
+            "mean": 0.48475462781372114,
+            "q25": 0.2877177937448656,
+            "q75": 0.7122918168195415,
+            "min": -0.17245206770892726,
+            "max": 0.947157808600583
+          }
+        },
+        "marginal": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.36581375998675825,
+            "mean": 0.42235600420837455,
+            "q25": 0.2883906666303955,
+            "q75": 0.5254028489798452,
+            "min": 0.046671280905463186,
+            "max": 0.9841765838369352
+          },
+          "per_item_category_slot": {
+            "n": 0,
+            "n_undefined": 205,
+            "median": null
+          }
+        },
+        "profile": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.37119156438903744,
+            "mean": 0.42291606015755456,
+            "q25": 0.2890032289552432,
+            "q75": 0.5301408995650838,
+            "min": 0.05751576534197317,
+            "max": 0.9842560529893446
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.03134113462258987,
+            "mean": 0.03523127576348258,
+            "q25": -0.045892217202819253,
+            "q75": 0.10926402576965986,
+            "min": -0.2638997863322421,
+            "max": 0.34503403483089773
+          }
+        },
+        "knn": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.5696423603130811,
+            "mean": 0.5892357245186068,
+            "q25": 0.4686256075469667,
+            "q75": 0.6867284162494695,
+            "min": 0.2291224089288316,
+            "max": 0.9771188929111039
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.2312399584135076,
+            "mean": 0.26390986947462464,
+            "q25": 0.07484040423561526,
+            "q75": 0.41931023139344786,
+            "min": -0.20537756067713106,
+            "max": 0.8411324108192427
+          }
+        },
+        "oracle": {
+          "per_item": {
+            "n": 50,
+            "n_undefined": 0,
+            "median": 0.9910456483058591,
+            "mean": 0.9916439013170206,
+            "q25": 0.9897911838727521,
+            "q75": 0.9945436206227549,
+            "min": 0.9778565837880758,
+            "max": 0.9969322470264115
+          },
+          "per_item_category_slot": {
+            "n": 205,
+            "n_undefined": 0,
+            "median": 0.9883541928915552,
+            "mean": 0.9432183418926918,
+            "q25": 0.9726051740350344,
+            "q75": 0.9919185634718549,
+            "min": 0.3823832783515247,
+            "max": 0.996533515507976
+          }
+        }
+      }
+    }
+  },
+  "counts": {
+    "holdout_personas": 100,
+    "probe_items": 50,
+    "cells": 5000,
+    "cell_category_pairs": 20500,
+    "binary_items": 15,
+    "likert5_items": 35,
+    "truth_samples_per_cell": 50
+  },
+  "inputs": {
+    "truth50": "data/truth/runs/truth50",
+    "predictions": "results/stage4_predictions.npz",
+    "baselines": "results/stage4_baselines.npz",
+    "splits": "experiments/splits_v1.json",
+    "gate4_report": "results/stage4_gate4.json"
+  },
+  "artifacts": {
+    "plot": "results/stage4_corr_attribution.png"
+  },
+  "runtime_seconds": 0.5703790187835693
+}
