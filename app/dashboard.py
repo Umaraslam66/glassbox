@@ -124,9 +124,12 @@ GATE4_BARS: dict[str, Any] = {
     "correlation": CELL_CORRELATION_BAR,
 }
 
-#: The arms this page shows: the confirmatory one and the three pre-registered
+#: The arms this page shows: the confirmatory one and the four pre-registered
 #: baselines. The report also carries exploratory arms; those stay off the page.
-GATE4_ARMS = ("model", "marginal", "profile", "knn")
+#: An arm the report does not carry is simply left out, so a report written
+#: before the no-interview baseline landed still renders.
+GATE4_ARMS = ("model", "marginal", "profile", "knn", "qwen_no_interview")
+QWEN_ARM = "qwen_no_interview"
 
 #: Near first, then same-domain, then far -- how far a probe item sits from the
 #: items the interview asked about.
@@ -1494,8 +1497,9 @@ def gate4_reliability_panel(arms: dict[str, Any]) -> None:
             st.caption(
                 "`model` is the confirmatory arm; `marginal` is the zero-information baseline "
                 "every lift on this page is measured against; `profile` is public profile only; "
-                "`knn` matches on the same 15 interview answers the encoder sees. Lower Brier, "
-                "lower log loss and lower ECE are better."
+                "`knn` matches on the same 15 interview answers the encoder sees; "
+                "`qwen_no_interview` is an LLM given the public profile and no interview. "
+                "Lower Brier, lower log loss and lower ECE are better."
             )
         else:
             st.info("This report carries no arms to compare.")
@@ -1704,8 +1708,13 @@ def gate4_aggregate_panel(
             st.info("This report has no cross-tab check.")
 
 
-def qwen_baseline_panel(block: dict[str, Any] | None) -> None:
-    """The no-interview LLM baseline, graded as soon as its file lands."""
+def qwen_baseline_panel(block: dict[str, Any] | None, arms: dict[str, Any]) -> None:
+    """The no-interview LLM baseline: pending until its file lands, then graded.
+
+    The slot itself only carries how the file parsed; the numbers live with the
+    other arms, and are shown here next to the zero-information marginal so the
+    baseline is never quoted on its own.
+    """
     st.subheader("Qwen no-interview baseline")
     if not block:
         st.info("This report carries no slot for the no-interview LLM baseline.")
@@ -1720,14 +1729,43 @@ def qwen_baseline_panel(block: dict[str, Any] | None) -> None:
         )
         return
 
-    numbers = {
-        key: value
-        for key, value in block.items()
-        if isinstance(value, (int, float)) and not isinstance(value, bool)
-    }
-    if numbers:
-        table([{key.replace("_", " "): fmt(value, 4) for key, value in numbers.items()}])
-    st.caption(str(block.get("note", "")))
+    arm = (arms or {}).get(QWEN_ARM) or {}
+    marginal = (arms or {}).get("marginal") or {}
+    if arm:
+        table(
+            [
+                {
+                    "arm": name,
+                    "what it is": entry.get("label", ""),
+                    "Brier": fmt(entry.get("brier"), 4),
+                    "log loss": fmt(entry.get("log_loss")),
+                    "ECE": fmt(entry.get("ece"), 4),
+                    "correlation": fmt(entry.get("correlation")),
+                }
+                for name, entry in (
+                    ("qwen no-interview", arm),
+                    ("marginal", marginal),
+                )
+                if entry
+            ]
+        )
+        st.caption(
+            f"Lower Brier is better, so this baseline **loses to the zero-information "
+            f"marginal**: {fmt(arm.get('brier'), 4)} against {fmt(marginal.get('brier'), 4)}. "
+            f"Its ECE is {fmt(arm.get('ece'), 4)} against the {ECE_BAR} gate bar, and the "
+            f"reliability diagram above shows where it goes wrong -- it is over-confident at "
+            f"the top end. An LLM handed the public profile and no interview is not a "
+            f"competitive predictor here."
+        )
+    else:
+        st.info(f"The report grades this baseline but carries no `{QWEN_ARM}` arm to show.")
+
+    st.caption(
+        f"Status **{block.get('status', '?')}**: {block.get('cells_parsed', '?')} of "
+        f"{block.get('cells_expected', '?')} cells parsed, "
+        f"{block.get('cells_malformed', '?')} malformed, "
+        f"{block.get('cells_filled_with_a_uniform_row', '?')} filled with a uniform row."
+    )
 
 
 def calibration_page() -> None:
@@ -1772,7 +1810,7 @@ def calibration_page() -> None:
     st.divider()
     gate4_aggregate_panel(report.get("aggregate_check"), report.get("cross_tabs"))
     st.divider()
-    qwen_baseline_panel(report.get("qwen_no_interview_baseline"))
+    qwen_baseline_panel(report.get("qwen_no_interview_baseline"), report.get("arms") or {})
 
 
 # --------------------------------------------------------------------------

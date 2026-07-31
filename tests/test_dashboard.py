@@ -421,23 +421,54 @@ def test_the_aggregate_numbers_come_from_the_report() -> None:
     assert str(cross_tabs.get("conditional_independence")) in all_text(app)
 
 
-def test_the_qwen_slot_says_pending_until_the_file_lands() -> None:
-    """The no-interview baseline renders either way, from its own status."""
+def test_the_qwen_slot_renders_whether_or_not_the_file_has_landed() -> None:
+    """The no-interview baseline: a pending note, or its numbers once graded."""
     if not GATE4_REPORT.is_file():
         pytest.skip("no Gate 4 report in this checkout")
 
-    block = json.loads(GATE4_REPORT.read_text(encoding="utf-8")).get(
-        "qwen_no_interview_baseline"
-    ) or {}
+    report = json.loads(GATE4_REPORT.read_text(encoding="utf-8"))
+    block = report.get("qwen_no_interview_baseline") or {}
+    arm = (report.get("arms") or {}).get("qwen_no_interview") or {}
 
     app = open_calibration(run_app())
     assert not app.exception
 
     text = all_text(app)
     assert "Qwen no-interview baseline" in text
+
     if str(block.get("status", "")).lower() == "pending":
         assert "Pending" in text
-        assert str(block.get("note", "")) in text
+        assert str(block.get("note", "")).rstrip(" .") in text
+        return
+
+    # graded: the numbers come from the arm, never quoted without the marginal
+    assert arm, "the report grades the baseline but carries no arm for it"
+    frame = app.dataframe[4].value
+    assert list(frame["arm"]) == ["qwen no-interview", "marginal"]
+    assert frame["Brier"][0] == f"{float(arm['brier']):.4f}"
+    marginal = (report.get("arms") or {}).get("marginal") or {}
+    assert frame["Brier"][1] == f"{float(marginal['brier']):.4f}"
+
+
+def test_the_arms_table_matches_the_reliability_picture() -> None:
+    """Every pre-registered arm the report carries is in the table beside it."""
+    if not GATE4_REPORT.is_file():
+        pytest.skip("no Gate 4 report in this checkout")
+
+    arms = json.loads(GATE4_REPORT.read_text(encoding="utf-8")).get("arms") or {}
+    expected = [
+        name
+        for name in ("model", "marginal", "profile", "knn", "qwen_no_interview")
+        if arms.get(name)
+    ]
+
+    app = open_calibration(run_app())
+    assert not app.exception
+
+    # dataframe 1 is the per-arm table next to the reliability diagram
+    frame = app.dataframe[1].value
+    assert list(frame["arm"]) == expected
+    assert list(frame["Brier"]) == [f"{float(arms[name]['brier']):.4f}" for name in expected]
 
 
 def test_calibration_page_survives_missing_files(tmp_path: Path) -> None:

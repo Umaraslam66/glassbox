@@ -124,8 +124,8 @@ Gate 4 is a partial pass: **2 of the 3 bars pass, 1 is missed**.
 
 Under that:
 
-- the **reliability diagram** with all four arms on it, beside a table of every arm's
-  Brier, log loss, ECE and correlation, and the confirmatory arm's ten bins with the
+- the **reliability diagram** with every pre-registered arm on it, beside a table of each
+  arm's Brier, log loss, ECE and correlation, and the confirmatory arm's ten bins with the
   gap between predicted and observed in each;
 - **per-stratum performance** — grouped bars of relative Brier lift over the marginal
   for the model, k-NN and profile-only, near/same-domain/far, with the primary bar drawn
@@ -136,7 +136,9 @@ Under that:
   2-way cross-tabs (r **0.9671**), with the report's conditional-independence caveat
   quoted in full;
 - the **Qwen no-interview baseline** slot, which says *pending* until that file lands and
-  shows its numbers once it does.
+  shows its numbers once it does. It has landed: Brier **0.1159** against the marginal's
+  0.0860, so an LLM handed the public profile and no interview is worse than knowing
+  nothing at all. The two numbers are always shown together.
 
 The per-stratum profile bar is the one number on the page the report does not carry
 ready-made: it is `1 - profile Brier / marginal Brier` from the two Brier scores in the
