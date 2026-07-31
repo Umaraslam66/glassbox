@@ -1,4 +1,5 @@
-"""GLASSBOX monitoring dashboard -- page 1 Population, page 2 Recovery.
+"""GLASSBOX monitoring dashboard -- page 1 Population, page 2 Recovery,
+page 3 Person encoder.
 
     streamlit run app/dashboard.py
 
@@ -63,6 +64,44 @@ RETEST_BAND = (0.70, 0.90)
 TRAIT_RECOVERY_BAR = 0.8
 ITEM_RECOVERY_BAR = 0.7
 BLUR_COVERAGE_BAND = (0.60, 0.75)
+
+#: Stage 3. The Gate 3 report carries the verdict block, both tracks and the
+#: curves; the two pictures sit next to it; the item encoder is graded in its
+#: own file and shown compactly on the same page.
+GATE3_PATH = RESULTS_DIR / "stage3_gate3.json"
+BLUR_VS_N_PATH = RESULTS_DIR / "stage3_blur_vs_n.png"
+GATE3_CURVES_PATH = RESULTS_DIR / "stage3_gate3_curves.png"
+BACKBONE_PATH = RESULTS_DIR / "stage3_person_backbone.json"
+ITEM_ENCODER_PATH = RESULTS_DIR / "stage3_item_encoder.json"
+
+#: The frozen Gate 3 bars (PREREGISTRATION.md section 6). Reference values
+#: only -- pass and fail are read from the reports, as everywhere else here.
+PERSON_RMSE_BAR = 0.5
+PERSON_LIFT_BAR = 0.30
+PERSON_COVERAGE_BAND = (0.60, 0.75)
+ITEM_COSINE_BAR = 0.7
+ITEM_DISCRIMINATION_BAR = 0.6
+
+#: Used only when a report omits its own threshold, the same fallback rule the
+#: Gate 2 blur panel already follows.
+GATE3_PERSON_BARS: dict[str, Any] = {
+    "rmse": PERSON_RMSE_BAR,
+    "blur_coverage": PERSON_COVERAGE_BAND,
+    "lift": PERSON_LIFT_BAR,
+}
+GATE3_ITEM_BARS: dict[str, Any] = {
+    "median_loading_cosine": ITEM_COSINE_BAR,
+    "discrimination_r": ITEM_DISCRIMINATION_BAR,
+}
+
+#: The one bar on this page the report deliberately does not decide: it stores
+#: both readings of "monotone in expectation" and hands the call up
+#: (``pass: null``). The call taken is PASS on the in-expectation wording. The
+#: report's own strict readings are printed beside it, unchanged, so the page
+#: shows the ruling and the thing it ruled on together.
+MONOTONICITY_KEY = "monotone_blur"
+MONOTONICITY_VERDICT = "PASS"
+MONOTONICITY_RULING = "orchestrator ruling on qualitative wording; both readings reported"
 
 INK = "#4c78a8"
 MARK = "#d1495b"
@@ -1046,6 +1085,266 @@ def recovery_page() -> None:
 
 
 # --------------------------------------------------------------------------
+# person encoder: Stage 3, from results/stage3_gate3.json, its two PNGs and
+# the item-encoder report
+# --------------------------------------------------------------------------
+
+
+GATE3_HINT = (
+    "No Gate 3 report in results/ yet. Produce it with:\n\n"
+    "```\n"
+    "python -m src.eval.gate3 \\\n"
+    "    --fused results/stage3_person_fused.json \\\n"
+    "    --fused-npz results/stage3_person_fused.npz \\\n"
+    "    --backbone-npz results/stage3_person_backbone.npz \\\n"
+    "    --fit results/stage2_v2_fit.npz \\\n"
+    "    --truth <planted dir> --splits experiments/splits_v1.json \\\n"
+    "    --out results --out-prefix stage3\n"
+    "```"
+)
+
+
+def gate3_verdict_panel(verdict: dict[str, Any] | None, tracks: dict[str, Any]) -> None:
+    """The four frozen bars, read out of the report's own verdict block.
+
+    One bar is different: the report leaves ``monotone_blur`` undecided on
+    purpose. That row carries the ruling and says so in the row itself.
+    """
+    st.subheader("Gate 3 verdict")
+    bars = (verdict or {}).get("bars") or {}
+    if not bars:
+        st.info("This report has no verdict block.")
+        return
+
+    rows = []
+    for key, entry in bars.items():
+        if key == MONOTONICITY_KEY and entry.get("pass") is None:
+            mark = f"{MONOTONICITY_VERDICT} -- {MONOTONICITY_RULING}"
+        elif entry.get("pass") is True:
+            mark = "PASS"
+        elif entry.get("pass") is False:
+            mark = "FAIL"
+        else:
+            mark = "not decided in the report"
+        label = entry.get("value_label")
+        threshold = entry.get("bar")
+        rows.append(
+            {
+                "bar": key.replace("_", " "),
+                "rule": entry.get("statement", ""),
+                "must be": bar_threshold(
+                    threshold if threshold is not None else GATE3_PERSON_BARS.get(key)
+                ),
+                "value": fmt(entry.get("value")) + (f" ({label})" if label else ""),
+                "verdict": mark,
+            }
+        )
+    table(rows)
+
+    failed = [name.replace("_", " ") for name in (verdict or {}).get("failed_bars") or []]
+    if failed:
+        st.error(f"Gate 3: FAIL -- {len(failed)} of {len(bars)} bars missed: {', '.join(failed)}.")
+    elif (verdict or {}).get("all_decided_bars_pass"):
+        st.success("Gate 3: PASS -- every decided bar is met.")
+    else:
+        st.error("Gate 3: FAIL -- at least one bar is missed or not decided.")
+
+    rmse = bars.get("rmse") or {}
+    st.caption(
+        f"**RMSE:** {rmse.get('n_dimensions_passing', 0)} of "
+        f"{len((tracks.get('fused') or {}).get('bars', {}).get('rmse', {}).get('per_dimension_rmse') or {})}"
+        f" dimensions under {PERSON_RMSE_BAR}; worst {fmt(rmse.get('value'))} "
+        f"({rmse.get('value_label', '')})."
+    )
+
+    lift = ((tracks.get("fused") or {}).get("bars") or {}).get("lift") or {}
+    if lift:
+        st.caption(
+            f"**Lift:** pooled encoder RMSE {fmt(lift.get('pooled_encoder_rmse'))} against a "
+            f"baseline of {fmt(lift.get('pooled_baseline_rmse'))}"
+            + (
+                " -- the public-profile ridge collapsed to intercept-only in cross-validation, "
+                "so that baseline is the zero-information one."
+                if lift.get("baseline_is_intercept_only")
+                else "."
+            )
+        )
+
+    monotone = bars.get(MONOTONICITY_KEY) or {}
+    if monotone.get("pass") is None:
+        detail = ((tracks.get("fused") or {}).get("bars") or {}).get("monotonicity") or {}
+        mean_curve = detail.get("mean_curve_reading") or {}
+        strict = detail.get("strict_per_step_reading") or {}
+        control = detail.get("fixed_theta_control") or {}
+        st.caption(
+            f"**Monotone blur:** read as {MONOTONICITY_VERDICT} -- {MONOTONICITY_RULING}. The "
+            f"report decides nothing here; it stores both readings and hands the call up. Its own "
+            f"mean-curve reading is **{monotone.get('mean_curve_verdict', '--')}** "
+            f"({mean_curve.get('n_dimensions_monotone', '?')} of 8 dimensions monotone at zero "
+            f"tolerance, largest uptick {fmt(monotone.get('value'), 4)}) and its strict per-step "
+            f"reading is **{monotone.get('strict_per_step_verdict', '--')}** "
+            f"({strict.get('n_increases', '?')} of {strict.get('n_steps_checked', '?')} steps rise). "
+            f"With theta pinned, where nesting makes monotonicity a theorem, the control reads "
+            f"{control.get('verdict', '--')}."
+        )
+
+
+def gate3_picture_panel() -> None:
+    st.subheader("Pictures")
+    left, right = st.columns(2)
+
+    with left:
+        st.markdown("**Blur against interview length**")
+        if BLUR_VS_N_PATH.is_file():
+            st.image(str(BLUR_VS_N_PATH), width="stretch")
+        else:
+            st.info(f"{BLUR_VS_N_PATH.name} not found -- the Gate 3 run writes it unless --no-plots.")
+
+    with right:
+        st.markdown("**RMSE, coverage and lift against interview length**")
+        if GATE3_CURVES_PATH.is_file():
+            st.image(str(GATE3_CURVES_PATH), width="stretch")
+        else:
+            st.info(
+                f"{GATE3_CURVES_PATH.name} not found -- the Gate 3 run writes it unless --no-plots."
+            )
+
+
+def gate3_rmse_panel(fused: dict[str, Any], closed_only: dict[str, Any]) -> None:
+    """Per-dimension RMSE, both tracks, against the frozen 0.5 bar."""
+    st.subheader("RMSE per dimension")
+    per_dimension = fused.get("per_dimension_rmse") or {}
+    if not per_dimension:
+        st.info("This report has no per-dimension RMSE.")
+        return
+
+    closed = closed_only.get("per_dimension_rmse") or {}
+    projection = (fused.get("projection") or {}).get("filed") or {}
+    table(
+        [
+            {
+                "dimension": dimension,
+                "fused": fmt(value),
+                "closed-only": fmt(closed.get(dimension)),
+                "bar": fmt(PERSON_RMSE_BAR, 2),
+                "filed projection": fmt(projection.get(dimension)),
+                "verdict": "PASS" if float(value) <= PERSON_RMSE_BAR else "FAIL",
+            }
+            for dimension, value in per_dimension.items()
+        ]
+    )
+
+    gaps = (fused.get("projection") or {}).get("per_dimension_outcome_minus_projection") or {}
+    worst_gap = max((abs(float(v)) for v in gaps.values()), default=None)
+    st.caption(
+        f"Fused is the confirmatory track; closed-only is the same interview without the open "
+        f"answers. Worst dimension {fmt(fused.get('worst_rmse'))} "
+        f"({fused.get('worst_dimension', '?')}), best {fmt(fused.get('best_rmse'))}, pooled "
+        f"{fmt(fused.get('pooled_rmse'))} over {fused.get('n_personas', '?')} held-out personas."
+        + (
+            f" The projection filed before any Stage 3 measurement said this bar was unreachable; "
+            f"every dimension landed within {fmt(worst_gap)} of that filed per-dimension prediction."
+            if worst_gap is not None
+            else ""
+        )
+    )
+
+
+def item_encoder_panel(report: dict[str, Any] | None) -> None:
+    """The two item-encoder bars, read out of their own report."""
+    st.subheader("Item encoder")
+    if report is None:
+        st.info(
+            f"{ITEM_ENCODER_PATH.name} not found. Produce it with:\n\n"
+            "```\n"
+            "python -m src.model.item_encoder train \\\n"
+            "    --judgments <item judgments.jsonl> \\\n"
+            "    --out results/stage3_item_encoder.json\n"
+            "```"
+        )
+        return
+
+    bars = report.get("bars") or {}
+    if not bars:
+        st.info("This report has no bars block.")
+        return
+
+    table(
+        [
+            {
+                "bar": key.replace("_", " "),
+                "value": fmt(entry.get("value")),
+                "must be": ">= "
+                + bar_threshold(
+                    entry.get("bar") if entry.get("bar") is not None else GATE3_ITEM_BARS.get(key)
+                ),
+                "verdict": "PASS"
+                if entry.get("pass") is True
+                else "FAIL"
+                if entry.get("pass") is False
+                else "not evaluated",
+            }
+            for key, entry in bars.items()
+        ]
+    )
+    st.caption(
+        f"{report.get('model', 'the frozen system-side model')} reading item wording only, graded "
+        f"against the fitted parameters of {report.get('n_holdout_items', '?')} held-out items "
+        f"({report.get('n_train_items', '?')} training items were used to fit the map). Direction "
+        f"clears its bar; strength does not."
+    )
+
+
+def person_encoder_page() -> None:
+    st.header("Person encoder")
+    report = load_json(GATE3_PATH)
+
+    if report is None:
+        st.info(GATE3_HINT)
+        gate3_picture_panel()
+        st.divider()
+        item_encoder_panel(load_json(ITEM_ENCODER_PATH))
+        return
+
+    verdict = report.get("verdict") or {}
+    counts = report.get("counts") or {}
+    backbone = load_json(BACKBONE_PATH)
+    st.caption(
+        f"Gate 3, {verdict.get('confirmatory_track', '?')} track at N = "
+        f"{verdict.get('confirmatory_n', '?')} scripted questions plus "
+        f"{counts.get('open_prompts', '?')} open answers. Fitted on "
+        f"{counts.get('train_personas', '?')} training personas, graded on "
+        f"{verdict.get('n_holdout_personas', '?')} held-out ones. Every number below is read "
+        f"straight out of {GATE3_PATH.name}, with the item bars out of {ITEM_ENCODER_PATH.name}."
+        + (
+            f" The closed-question backbone it builds on is {BACKBONE_PATH.name}."
+            if backbone is not None
+            else ""
+        )
+    )
+
+    tracks = report.get("tracks") or {}
+    gate3_verdict_panel(verdict, tracks)
+
+    comparison = verdict.get("closed_only_for_comparison") or {}
+    if comparison:
+        st.caption(
+            f"Closed-only, for comparison: worst RMSE {fmt(comparison.get('rmse_worst'))}, "
+            f"coverage {fmt(comparison.get('coverage'))}, lift {fmt(comparison.get('lift'))}."
+        )
+
+    st.divider()
+    gate3_picture_panel()
+    st.divider()
+    gate3_rmse_panel(
+        ((tracks.get("fused") or {}).get("bars") or {}).get("rmse") or {},
+        ((tracks.get("closed_only") or {}).get("bars") or {}).get("rmse") or {},
+    )
+    st.divider()
+    item_encoder_panel(load_json(ITEM_ENCODER_PATH))
+
+
+# --------------------------------------------------------------------------
 # page
 # --------------------------------------------------------------------------
 
@@ -1076,12 +1375,14 @@ def main() -> None:
 
     page = st.sidebar.radio(
         "Page",
-        ["1. Population", "2. Recovery"],
+        ["1. Population", "2. Recovery", "3. Person encoder"],
         help="One page per stage, added as the stage produces its files.",
     )
 
     if page == "2. Recovery":
         recovery_page()
+    elif page == "3. Person encoder":
+        person_encoder_page()
     else:
         population_page(summary, reports)
 

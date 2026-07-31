@@ -73,6 +73,39 @@ Every panel checks for its file first: a clone with no Stage 2 run shows the com
 produces the report, and a checkout with attempt 2 but no attempt 1 renders the page
 without the comparison instead of failing.
 
+## What page 3 (Person encoder) shows
+
+Stage 3, from `results/stage3_gate3.json` plus the two pictures next to it
+(`stage3_blur_vs_n.png`, `stage3_gate3_curves.png`) and the item-encoder report
+`results/stage3_item_encoder.json`.
+
+Top of the page is the Gate 3 verdict table — each frozen bar, its rule, the threshold,
+the number and pass or fail — under a banner that states the report's own verdict.
+Gate 3 fails: 2 of the 4 bars are missed.
+
+- **RMSE FAIL** — 0 of 8 dimensions under the 0.5 bar, worst 0.788 (TRD). The projection
+  filed before any Stage 3 measurement said the bar was unreachable, and every dimension
+  landed within 0.138 of that filed prediction.
+- **Coverage PASS** — 0.649, inside the 60–75% band.
+- **Lift FAIL** — 26.8% against the 30% bar, measured against a public-profile baseline
+  that collapsed to intercept-only in cross-validation, so it is the zero-information one.
+- **Monotone blur PASS** — the report leaves this bar undecided on purpose (`pass: null`)
+  and stores two readings; the row carries the call and labels it
+  *"orchestrator ruling on qualitative wording; both readings reported"*. The report's own
+  mean-curve reading (FAIL, largest uptick 0.0023) and strict per-step reading (FAIL,
+  1700 of 11200 steps rise) are printed next to it, unchanged, along with the fixed-θ
+  control that reads PASS.
+
+Under that: the two pictures — blur against interview length, and RMSE, coverage and lift
+against interview length; a per-dimension RMSE table with the fused track beside the
+closed-only track, the 0.5 bar and the filed projection; and the two **item-encoder** bars
+shown compactly — median loading cosine 0.861 (PASS, bar 0.7) and discrimination r 0.504
+(FAIL, bar 0.6): direction clears its bar, strength does not.
+
+Same rule as the other pages: every panel checks for its file first, so a clone with no
+Stage 3 run shows the commands that produce the reports, and a checkout with the Gate 3
+report but no item-encoder report renders the page without those two bars.
+
 ## Producing the files it reads
 
 ```bash
@@ -91,6 +124,18 @@ without the comparison instead of failing.
     --truth <truth dir> --splits experiments/splits_v1.json \
     --answers <answers_noised.jsonl> \
     --out results --out-prefix stage2_v2
+
+./.venv/bin/python -m src.eval.gate3 \
+    --fused results/stage3_person_fused.json \
+    --fused-npz results/stage3_person_fused.npz \
+    --backbone-npz results/stage3_person_backbone.npz \
+    --fit results/stage2_v2_fit.npz \
+    --truth <truth dir> --splits experiments/splits_v1.json \
+    --out results --out-prefix stage3
+
+./.venv/bin/python -m src.model.item_encoder train \
+    --judgments <item judgments.jsonl> \
+    --out results/stage3_item_encoder.json
 ```
 
 `--out-prefix` is the filename stem for everything the run writes into `--out`
@@ -105,5 +150,5 @@ the suite if it ever does. The export CLI above is the only bridge: it lives in
 `src/eval/`, reads the planted values, and writes out bin counts — no persona ids, no
 individual values.
 
-Later pages (person encoder, calibration, interviewer) get added as each stage produces
-the data they show. See PRD section 8.
+Later pages (calibration, interviewer) get added as each stage produces the data they
+show. See PRD section 8.
