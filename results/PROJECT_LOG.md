@@ -597,3 +597,78 @@ ECE ≤ 0.05 (10 bins); corr(predicted prob, empirical 50-sample
 frequency) ≥ 0.9 across cells. Reported, no bar: per-stratum
 generalization curve, aggregate marginals + 2-way cross-tabs with error
 bars, exploratory θ̂-error vs loading-error decomposition.
+
+## 2026-07-31 — Stage 4 run: Gate 4 verdict — 2 of 3 bars PASS, correlation fails structurally
+
+Machinery (all committed): 50-sample true answer distributions per held-out
+cell (250,000 seeded draws of the frozen noise layer, round tags
+truth50_s01..s50, byte-reproducible, eval-side only, stored under
+data/truth/runs/truth50); graded-response predictor over the fused N=15
+person-encoder posterior (512-draw posterior integration) with ITEM-ENCODER
+zero-shot loadings for all 50 probe items — probe THRESHOLDS fitted on
+training personas' answers with loadings and training θ frozen
+(orchestrator decision: threshold information equals what the marginal
+baseline already sees; the person-specific signal stays on the zero-shot
+path; the fully-zero-shot text-threshold arm is exploratory and collapses
+to 2.7% lift); all four mandatory baselines. Integrity: item-encoder re-run
+byte-identical to Gate 3 (0.861/0.504), predictor matches mirt.py to
+1e-10, 619-test suite green at grading (620 with the dashboard page).
+
+GATE 4 (results/stage4_gate4.json, confirmatory): primary lift PASS —
+Brier 0.0627 vs marginal 0.0860, 27.1% relative (bar ≥ 25%), and beats
+k-NN. Per the frozen doc, prominently: k-NN alone reaches 24.4% lift; the
+model's whole margin over it is 3.6% relative. The stratum lens is the
+redeeming pattern: k-NN wins NEAR (24.9 vs 22.6), the model wins
+same-domain (29.3 vs 26.6) and FAR (28.0 vs 21.5) — the opposite of
+interview memorization; the encoder earns its keep exactly where it
+should. ECE PASS — 0.0137 (bar ≤ 0.05); posterior integration halves ECE
+vs plug-in (0.0255 → 0.0137). Correlation FAIL — pooled r(predicted prob,
+empirical 50-sample frequency) 0.684 vs bar 0.90 (binary 0.700, likert
+0.615).
+
+ATTRIBUTION of the correlation fail (exploratory, results/
+stage4_corr_attribution.json; sanity-locked to the grader's pooling at
+1e-9): the bar is unreachable for this model class — the ceiling arm
+(full 202-item θ̂ + FITTED holdout item parameters) reaches only 0.786;
+the truth-side oracle reaches 0.9925, so the metric itself is sound. The
+oracle-to-model gap telescopes exactly: 66.9% the 8-dim model class
+(item-level idiosyncrasy an 8-trait vector cannot express), 18.2% N=15
+information, 14.9% zero-shot item encoder. Closing everything the
+project controls still lands ~0.11 under the bar. The pooled form is
+also 81%-saturated by item-level structure the zero-information marginal
+already captures (marginal rung 0.554 of the model's 0.684; frequency
+variance splits 32% between-item / 68% between-persona). Predictions are
+near-unbiased (OLS slope 0.937, intercept 0.015) — which is why ECE
+passes while correlation fails: the arm is noisy, not miscalibrated.
+
+QWEN NO-INTERVIEW BASELINE (job 51349316, 7.12 core-hours, 15,000/15,000
+parsed, wall-audited prompts): Brier 0.1159 — LOSES to the
+zero-information marginal by 35% relative (corr 0.336). Clean negative
+for the report: an LLM given only demographics is worse than predicting
+the population distribution — it tilts per-person in directions that add
+error, consistent with demographics carrying ~zero trait signal here.
+Profile-only ridge confirms from the other side: +0.1% lift,
+indistinguishable from the marginal.
+
+AGGREGATE CHECK (reported, no bar): predicted vs true population
+marginals r 0.9826 (mean abs gap 0.028; 78% of entries inside the true
+95% bootstrap band); 1,225 two-way cross-tabs r 0.9671 — both sides
+computed under the same conditional-independence assumption, stated on
+the artifact. The high marginal r is threshold information shared with
+the marginal baseline, not persona-level signal.
+
+LEAKAGE: no hunt fired. The grader's own triggers (pooled corr > 0.95 or
+lift > 45%) did not trip; the failed bar is low, not suspiciously high;
+nothing beat expectations. Exploratory 2×2 decomposition: θ̂-error and
+item-side error contribute almost exactly equally to the Brier gap
+(0.010–0.012 each, interaction −0.002); the full-information arm reaches
+0.0416 Brier / 51.7% lift — the Gate-2 ceiling expressed in answer space.
+Oracle Brier 0.0016 sits on the analytic 50-sample noise floor 0.0016.
+
+Dashboard page 4 (Calibration) live: verdict table with honest FAIL
+banner, reliability diagram + per-arm table, per-stratum lift chart with
+the k-NN reading, aggregate scatter, Qwen panel. 620 tests green.
+
+Costs, Stage 4: 7.12 GPU core-hours (Qwen baseline job 51349316) + local
+CPU at zero. Project total 103.8 core-hours. Gate 4 is a hard stop:
+verdict delivered, decision with the owner.
