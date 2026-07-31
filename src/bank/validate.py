@@ -11,8 +11,11 @@ answers one question: is this bank the bank the design asked for?
   * no duplicate item text anywhere, closed or open;
   * every dimension is touched by at least a full dimension's worth of items;
   * item ids are unique and sequential;
+  * every post-freeze amendment is fully written up -- which item, which field,
+    the old and new value, the date, who authorised it and the log entry that
+    justifies it -- and names an item that exists;
   * the public file carries none of the planted design -- no loadings, no
-    strength class, no keying flag, no target dimensions.
+    strength class, no keying flag, no target dimensions, no amendment log.
 
 Run:
     python -m src.bank.validate --truth <dir> --public <dir>
@@ -29,6 +32,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from src.bank.schema import (
+    AMENDMENT_KEYS,
     DIMENSIONS,
     PRIVATE_ONLY_KEYS,
     PUBLIC_FILENAME,
@@ -300,6 +304,37 @@ def _check_open_items(bank: Bank, spec: BankSpec, problems: list[str]) -> None:
             problems.append(f"no open-ended prompt targets: {missing}")
 
 
+def _check_amendments(bank: Bank, problems: list[str]) -> None:
+    """A post-freeze edit is only legitimate if it is written up in full.
+
+    The bank is final once planted, so anything changed afterwards has to say
+    what it changed, to which item, when, on whose authority and against which
+    entry in the project log. This checks the paperwork is there; it does not
+    and cannot judge whether the reason is a good one.
+    """
+    known_ids = {item.item_id for item in bank.closed}
+    for position, entry in enumerate(bank.amendments):
+        label = f"amendment {position + 1}"
+        if not isinstance(entry, Mapping):
+            problems.append(f"{label}: not a mapping")
+            continue
+        missing = [key for key in AMENDMENT_KEYS if key not in entry]
+        if missing:
+            problems.append(f"{label}: missing field(s) {missing}")
+        blank = [
+            key
+            for key in ("item_id", "field", "date", "authorized_by", "reason", "log_citation")
+            if key in entry and not str(entry[key]).strip()
+        ]
+        if blank:
+            problems.append(f"{label}: empty field(s) {blank}")
+        item_id = entry.get("item_id")
+        if item_id is not None and item_id not in known_ids:
+            problems.append(f"{label}: names item {item_id!r}, which is not in the bank")
+        if "old_value" in entry and "new_value" in entry and entry["old_value"] == entry["new_value"]:
+            problems.append(f"{label}: old and new value are the same")
+
+
 def check_public_payload(
     public_payload: Mapping[str, Any], bank: Bank, problems: list[str]
 ) -> None:
@@ -365,6 +400,7 @@ def validate_bank(
     _check_texts_and_domains(bank, spec, problems)
     _check_dimension_coverage(bank, spec, problems)
     _check_open_items(bank, spec, problems)
+    _check_amendments(bank, problems)
     if public_payload is not None:
         check_public_payload(public_payload, bank, problems)
     return problems

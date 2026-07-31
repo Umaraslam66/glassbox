@@ -24,6 +24,11 @@ Vocabulary used throughout:
   topic_domain    what the item is *about*, independent of which trait it
                   measures. Needed later to stratify held-out probe items by
                   semantic distance from the interview set.
+  amendment       a written, owner-authorised change to one field of one item
+                  after the bank was frozen. The bank is final once planted, so
+                  every later edit has to say what changed, when, who allowed it
+                  and which log entry justifies it. Amendments live on the
+                  private side only.
 """
 
 from __future__ import annotations
@@ -126,6 +131,19 @@ PRIVATE_ONLY_KEYS: tuple[str, ...] = (
     "design_notes",
     "seed",
     "spec",
+    "amendments",
+)
+
+#: Every field an entry in the private file's ``amendments`` list must carry.
+AMENDMENT_KEYS: tuple[str, ...] = (
+    "item_id",
+    "field",
+    "old_value",
+    "new_value",
+    "date",
+    "authorized_by",
+    "reason",
+    "log_citation",
 )
 
 
@@ -368,6 +386,8 @@ class Bank:
     spec: BankSpec = field(default_factory=BankSpec)
     seed: int = 0
     generator: str = ""
+    #: Owner-authorised post-freeze edits, newest last. Private side only.
+    amendments: list[dict[str, Any]] = field(default_factory=list)
 
     def public_payload(self) -> dict[str, Any]:
         return {
@@ -380,15 +400,20 @@ class Bank:
         }
 
     def private_payload(self) -> dict[str, Any]:
-        return {
+        payload: dict[str, Any] = {
             "bank_version": BANK_FORMAT_VERSION,
             "seed": self.seed,
             "generator": self.generator,
             "dimensions": list(DIMENSIONS),
             "spec": self.spec.to_dict(),
             "n_closed": len(self.closed),
-            "items": [item.to_private() for item in self.closed],
         }
+        # Only written once there is something to write, so a bank that was
+        # never amended keeps exactly the payload it has always had.
+        if self.amendments:
+            payload["amendments"] = [dict(entry) for entry in self.amendments]
+        payload["items"] = [item.to_private() for item in self.closed]
+        return payload
 
     def open_private_payload(self) -> dict[str, Any]:
         return {
@@ -414,6 +439,7 @@ class Bank:
             spec=BankSpec.from_dict(closed_payload.get("spec") or {}),
             seed=int(closed_payload.get("seed", 0)),
             generator=str(closed_payload.get("generator", "")),
+            amendments=[dict(entry) for entry in (closed_payload.get("amendments") or [])],
         )
 
 

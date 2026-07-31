@@ -15,6 +15,7 @@ import pytest
 
 from src.bank import generate, validate
 from src.bank.schema import (
+    AMENDMENT_KEYS,
     DIMENSIONS,
     OPEN_PRIVATE_FILENAME,
     PRIVATE_FILENAME,
@@ -429,6 +430,74 @@ def test_validator_catches_a_distractor_with_a_loading(reduced) -> None:
     distractor = next(item for item in bank.closed if item.strength_class == "none")
     distractor.loadings = {"ENV": 0.0, "SOC": 0.9}
     assert any("non-zero loading" in p for p in validate.validate_bank(bank))
+
+
+# --------------------------------------------------------------------------
+# Post-freeze amendments
+# --------------------------------------------------------------------------
+
+
+def an_amendment(item_id: str, **overrides) -> dict:
+    entry = {
+        "item_id": item_id,
+        "field": "loadings.TRU",
+        "old_value": 0.25,
+        "new_value": -0.25,
+        "date": "2026-07-31",
+        "authorized_by": "owner (test)",
+        "reason": "the verifier flagged this item before any fitting",
+        "log_citation": "results/PROJECT_LOG.md, some entry heading",
+    }
+    entry.update(overrides)
+    return entry
+
+
+def test_a_written_up_amendment_validates_and_survives_a_round_trip(tmp_path, reduced) -> None:
+    bank = generate.generate_bank(FakeClient(), spec=reduced, seed=28)
+    weak = next(item for item in bank.closed if item.strength_class == "weak")
+    bank.amendments = [an_amendment(weak.item_id)]
+
+    paths = write_bank(bank, public_dir=tmp_path / "public", private_dir=tmp_path / "keys")
+    reloaded = read_bank(tmp_path / "keys")
+
+    assert validate.validate_bank(reloaded, public_payload=read_json(paths["public"])) == []
+    assert reloaded.amendments == bank.amendments
+    assert set(an_amendment(weak.item_id)) == set(AMENDMENT_KEYS)
+    # the amendment log is design material: it never crosses to the public side
+    assert "amendments" in PRIVATE_ONLY_KEYS
+    assert "amendments" not in paths["public"].read_text(encoding="utf-8")
+    assert '"amendments"' in paths["private"].read_text(encoding="utf-8")
+
+
+def test_a_bank_with_no_amendments_writes_no_amendment_block(tmp_path, reduced) -> None:
+    """The file a never-amended bank writes is exactly the file it always wrote."""
+    bank = generate.generate_bank(FakeClient(), spec=reduced, seed=29)
+    assert bank.amendments == []
+    assert "amendments" not in bank.private_payload()
+
+    write_bank(bank, public_dir=tmp_path / "public", private_dir=tmp_path / "keys")
+    assert "amendments" not in (tmp_path / "keys" / PRIVATE_FILENAME).read_text(encoding="utf-8")
+
+
+def test_validator_catches_an_amendment_that_is_not_written_up(reduced) -> None:
+    bank = generate.generate_bank(FakeClient(), spec=reduced, seed=30)
+    weak = next(item for item in bank.closed if item.strength_class == "weak")
+
+    incomplete = an_amendment(weak.item_id)
+    del incomplete["log_citation"]
+    del incomplete["authorized_by"]
+    bank.amendments = [incomplete]
+    problems = validate.validate_bank(bank)
+    assert any("missing field(s)" in p and "log_citation" in p for p in problems)
+
+    bank.amendments = [an_amendment(weak.item_id, reason="   ")]
+    assert any("empty field(s)" in p for p in validate.validate_bank(bank))
+
+    bank.amendments = [an_amendment("q999")]
+    assert any("not in the bank" in p for p in validate.validate_bank(bank))
+
+    bank.amendments = [an_amendment(weak.item_id, new_value=0.25)]
+    assert any("old and new value are the same" in p for p in validate.validate_bank(bank))
 
 
 # --------------------------------------------------------------------------
