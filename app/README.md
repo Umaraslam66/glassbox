@@ -148,6 +148,60 @@ Same rule as the other pages: every panel checks for its file first, so a clone 
 Stage 4 run shows the command that produces the report, and a checkout with the report
 but no pictures renders every table and chart without them.
 
+## What page 5 (Interviewer) shows
+
+Stage 5, from `results/stage5_strategies.json` plus the two pictures next to it
+(`stage5_rmse_vs_n.png`, `stage5_blur_vs_truth.png`), and the RL run's own two
+reports (`results/stage5_rl_training.json`, `results/stage5_rl_proxy_watch.json`,
+with the quarantined oracle arm's watch beside them).
+
+Top of the page is the Gate 5 verdict table — every comparison the frozen bar asks
+for, its threshold, the two medians and the ratio — under a banner that states the
+report's own verdict. **Both frozen bars are UNDEFINED**, and the page says so
+rather than softening it.
+
+- **Bar (a) UNDEFINED** — no strategy (random, fixed, heuristic, RL) reaches
+  per-dimension RMSE ≤ 0.5 on all eight dimensions at any N ≤ 150. 0 of 51
+  replicates cross for every arm, so every median is censored at the budget. The
+  full 202-item bank through the same machinery floors at pooled **0.525** and
+  worst dimension **0.56**: the target sits below the floor, which is why no
+  interview length helps.
+- **Bar (b) UNDEFINED at the frozen target**, and a **tie** on the pre-declared
+  exploratory grid — 0.60: RL 84 against heuristic 77 (1.091); 0.65: RL 37 against
+  heuristic 40 (0.925); 0.70: RL 25 against heuristic 24 (1.042). Two thresholds go
+  to the heuristic by one question, one to the RL policy by three. The PRD accepts
+  a match; the heuristic is not beaten.
+- Owner **RULING 1**, recorded before any Stage 5 compute, is printed under the
+  table: an unreached target is reported exactly as written, not reinterpreted.
+
+Under that:
+
+- **error against interview length** — the deliverable plot (worst dimension and
+  pooled error, random / fixed / heuristic / RL plus the two cold-start arms), with
+  a table of each arm's error at N=25, at the end, and the full-bank floor;
+- the **exploratory grid** — questions-to-target at 0.60 / 0.65 / 0.70 for random,
+  heuristic and RL, with each adaptive arm's ratio to random against the 0.50
+  reference, and the fraction of the full matrix reached at N = 5, 10, 15, 25.
+  Both adaptive arms roughly halve random at 0.65 and 0.70. Labelled exploratory
+  everywhere, because that is what it is;
+- the **proxy-gaming watch** (owner RULING 2) — declared blur shrinks to 24–41% of
+  where it started while truth-side error only falls to 55–65%. The panel states
+  the finding: that gap is a property of the posterior, not RL reward hacking. On
+  the same held-out sittings the never-trained heuristic's gap is **larger** than
+  the trained policy's (0.255 against 0.239 at N=25), and the quarantined
+  oracle-reward arm — trained on truth-side error, which cannot be gamed — ends on
+  the same accuracy as the blur-trained policy (0.629 against 0.626);
+- **RL training** — the reward and entropy curves and the item-choice histogram,
+  with return, entropy, interviews simulated and the 1.30 CPU core-hours the whole
+  RL effort cost. Plus the static-order finding: deployed greedily at its training
+  horizon the policy asks a near-fixed 25-item set across all 100 personas, against
+  118 distinct items for the heuristic — the RL win is a good fixed order, not a
+  per-person interview.
+
+Same rule as the other pages: every panel checks for its file first, so a clone with
+no Stage 5 run shows the commands that produce the reports, and a checkout with the
+Gate 5 report but no pictures or no RL run renders everything else.
+
 ## Producing the files it reads
 
 ```bash
@@ -185,6 +239,20 @@ but no pictures renders every table and chart without them.
     --baselines results/stage4_baselines.npz \
     --splits experiments/splits_v1.json \
     --out results
+
+./.venv/bin/python -m src.rl.train \
+    --config experiments/stage5_rl.json --profile confirmatory \
+    --fit results/stage2_v2_fit.npz \
+    --episodes <episode cache> \
+    --out-dir <policy dir> --results results
+
+./.venv/bin/python -m src.eval.gate5 \
+    --episodes <episode caches> \
+    --fit results/stage2_v2_fit.npz \
+    --backbone results/stage3_person_backbone.npz \
+    --policy <trained policy .npz> \
+    --truth <truth dir> --splits experiments/splits_v1.json \
+    --out results
 ```
 
 `--out-prefix` is the filename stem for everything the run writes into `--out`
@@ -202,5 +270,6 @@ individual values.
 The Calibration page follows the same rule: it reads the Gate 4 report and the pictures
 written next to it, never the 50-sample truth store those numbers were graded against.
 
-The last page (interviewer, Stage 5) gets added when that stage produces the data it
-shows. See PRD section 8.
+So does the Interviewer page: it reads the Gate 5 report, the RL training and watch
+reports and the pictures written beside them, never the truth store the episodes were
+graded against. That is the last page in PRD section 8.

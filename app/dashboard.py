@@ -1,5 +1,5 @@
 """GLASSBOX monitoring dashboard -- page 1 Population, page 2 Recovery,
-page 3 Person encoder, page 4 Calibration.
+page 3 Person encoder, page 4 Calibration, page 5 Interviewer.
 
     streamlit run app/dashboard.py
 
@@ -134,6 +134,51 @@ QWEN_ARM = "qwen_no_interview"
 #: Near first, then same-domain, then far -- how far a probe item sits from the
 #: items the interview asked about.
 STRATUM_ORDER = ("near", "same-domain", "far")
+
+#: Stage 5. The Gate 5 report carries both frozen bars, the pre-declared
+#: exploratory grid, every strategy's curve and the blur-against-truth watch;
+#: two pictures sit next to it. The RL policy's own training report and the
+#: training-side watch are separate files, shown compactly on the same page.
+GATE5_PATH = RESULTS_DIR / "stage5_strategies.json"
+RMSE_VS_N_PATH = RESULTS_DIR / "stage5_rmse_vs_n.png"
+BLUR_VS_TRUTH_PATH = RESULTS_DIR / "stage5_blur_vs_truth.png"
+RL_TRAINING_PATH = RESULTS_DIR / "stage5_rl_training.json"
+RL_TRAINING_PLOT = RESULTS_DIR / "stage5_rl_training.png"
+RL_WATCH_PATH = RESULTS_DIR / "stage5_rl_proxy_watch.json"
+RL_WATCH_PLOT = RESULTS_DIR / "stage5_rl_proxy_watch.png"
+ORACLE_WATCH_PATH = RESULTS_DIR / "stage5_rl_exploratory_oracle_proxy_watch.json"
+
+#: The frozen Gate 5 bars (PREREGISTRATION.md section 6): (a) an adaptive
+#: interviewer reaches the Gate 3 accuracy level in at most half the questions
+#: random ordering needs; (b) the RL policy is at least as good as the
+#: heuristic on questions-to-target. Reference values only -- every verdict on
+#: the page is read from the report, as everywhere else here.
+QUESTIONS_RATIO_BAR = 0.5
+POLICY_VS_HEURISTIC_BAR = 1.0
+
+#: The four confirmatory strategies, in the order the PRD names them. The two
+#: cold-start arms are exploratory; they appear wherever the report carries
+#: them, after the confirmatory four.
+STRATEGY_ORDER = ("random", "fixed", "heuristic", "policy")
+STRATEGY_LABELS = {
+    "random": "random",
+    "fixed": "fixed (Stage 3 order)",
+    "heuristic": "heuristic (info gain)",
+    "policy": "RL policy",
+    "cold_start_random": "random, cold start",
+    "cold_start_heuristic": "heuristic, cold start",
+}
+
+#: Pre-declared before any Stage 5 result existed (PROJECT_LOG, "Stage 5
+#: opened"): attainable thresholds for the questions-to-target grid, and the N
+#: grid for the fraction-of-full-matrix table.
+EXPLORATORY_THRESHOLDS = ("0.60", "0.65", "0.70")
+FULL_MATRIX_GRID = ("5", "10", "15", "25")
+
+#: The Stage 5 RL training bill, summed from results/COSTS.md: confirmatory run
+#: 0.45, abandoned undiscounted run 0.18, smoke tuning 0.25, quarantined oracle
+#: arm 0.42. Each run's own wall clock is read from its report.
+RL_TRAINING_CORE_HOURS = 1.30
 
 INK = "#4c78a8"
 MARK = "#d1495b"
@@ -1814,6 +1859,508 @@ def calibration_page() -> None:
 
 
 # --------------------------------------------------------------------------
+# interviewer: Stage 5, from results/stage5_strategies.json, its two PNGs and
+# the RL training and proxy-watch reports beside it
+# --------------------------------------------------------------------------
+
+
+GATE5_HINT = (
+    "No Gate 5 report in results/ yet. Produce it with:\n\n"
+    "```\n"
+    "python -m src.eval.gate5 \\\n"
+    "    --episodes <episode caches> \\\n"
+    "    --fit results/stage2_v2_fit.npz \\\n"
+    "    --backbone results/stage3_person_backbone.npz \\\n"
+    "    --policy <trained policy .npz> \\\n"
+    "    --truth <planted dir> --splits experiments/splits_v1.json \\\n"
+    "    --out results\n"
+    "```"
+)
+
+RL_TRAINING_HINT = (
+    "No RL training report in results/ yet. Produce it with:\n\n"
+    "```\n"
+    "python -m src.rl.train \\\n"
+    "    --config experiments/stage5_rl.json --profile confirmatory \\\n"
+    "    --fit results/stage2_v2_fit.npz \\\n"
+    "    --episodes <episode cache> \\\n"
+    "    --out-dir <policy dir> --results results\n"
+    "```"
+)
+
+
+def strategy_label(name: str) -> str:
+    """A strategy's name as the page writes it."""
+    return STRATEGY_LABELS.get(name, name)
+
+
+def strategies_in(block: dict[str, Any]) -> list[str]:
+    """The strategies a block carries, confirmatory four first."""
+    order = [name for name in STRATEGY_ORDER if name in block]
+    return order + [name for name in block if name not in order]
+
+
+def at_n(curve: dict[str, Any], key: str, n: int) -> Any:
+    """One value off a by-N curve, or None if that N was never reached."""
+    grid = curve.get("n_grid") or []
+    values = curve.get(key) or []
+    if n not in grid:
+        return None
+    index = grid.index(n)
+    return values[index] if index < len(values) else None
+
+
+def gate5_verdict_panel(frozen: dict[str, Any], exploratory: dict[str, Any]) -> None:
+    """Both frozen bars, exactly as the report writes them, plus RULING 1.
+
+    Bar (a) is questions-to-target at the frozen threshold and bar (b) is the
+    RL policy against the heuristic on the same quantity. The report decides
+    neither: at the frozen target no strategy ever crosses, so every ratio the
+    bars ask for is undefined. Nothing is re-decided here.
+    """
+    st.subheader("Gate 5 verdict")
+    comparison = frozen.get("comparison") or {}
+    if not comparison:
+        st.info("This report has no verdict block.")
+        return
+
+    target = (frozen.get("target") or {}).get("value")
+    budget = frozen.get("question_budget")
+    table(
+        [
+            {
+                "bar": key.replace("_", " "),
+                "must be": "<= "
+                + bar_threshold(
+                    entry.get("bar")
+                    if entry.get("bar") is not None
+                    else (
+                        POLICY_VS_HEURISTIC_BAR
+                        if key == "policy_vs_heuristic"
+                        else QUESTIONS_RATIO_BAR
+                    )
+                ),
+                "adaptive median": fmt(entry.get("adaptive_median"), 0),
+                "compared with": fmt(entry.get("random_median"), 0),
+                "ratio": fmt(entry.get("ratio")),
+                "verdict": entry.get("verdict", "--"),
+            }
+            for key, entry in comparison.items()
+        ]
+    )
+
+    st.error(
+        f"Gate 5 frozen bar (a): **{frozen.get('verdict', 'UNDEFINED')}** -- no strategy "
+        f"(random, fixed, heuristic, RL) reaches per-dimension RMSE <= {fmt(target, 2)} on all "
+        f"eight dimensions at any N <= {budget}, so the comparison the bar asks for does not "
+        f"exist at the frozen threshold. This is reported exactly as written, not reinterpreted."
+    )
+
+    crossing = frozen.get("population_curve_crossing") or {}
+    full_bank = ((exploratory.get("fraction_of_full_matrix") or {}).get("full_bank_pooled_rmse")) or {}
+    if crossing:
+        table(
+            [
+                {
+                    "strategy": strategy_label(name),
+                    "replicates reaching the target": f"{(crossing[name] or {}).get('n_reached', 0)}"
+                    f" of {(crossing[name] or {}).get('n_replicates', 0)}",
+                    "median questions": fmt((crossing[name] or {}).get("median"), 0),
+                    "censored": "yes" if (crossing[name] or {}).get("median_is_censored") else "no",
+                    "at least": fmt((crossing[name] or {}).get("median_lower_bound"), 0),
+                    "questions available": (crossing[name] or {}).get("budget"),
+                    "full-bank pooled RMSE": fmt(full_bank.get(name)),
+                }
+                for name in strategies_in(crossing)
+            ]
+        )
+        st.caption(
+            "Zero replicates cross at the frozen target, so every median is censored at the "
+            "question budget and the page shows the lower bound instead. The last column is the "
+            "floor: what the same machinery reaches when the whole 202-item bank is asked in the "
+            "same sitting. The target sits below that floor, which is why no interview length "
+            "helps."
+        )
+
+    grid = exploratory.get("threshold_grid") or {}
+    ties = []
+    for threshold in EXPLORATORY_THRESHOLDS:
+        entry = (grid.get(threshold) or {}).get("policy_vs_heuristic") or {}
+        if not entry:
+            continue
+        ties.append(
+            f"{threshold}: RL {fmt(entry.get('adaptive_median'), 0)} against heuristic "
+            f"{fmt(entry.get('random_median'), 0)}, ratio {fmt(entry.get('ratio'))} "
+            f"({entry.get('verdict', '--')})"
+        )
+    if ties:
+        st.warning(
+            "**Frozen bar (b) -- RL against the heuristic:** UNDEFINED at the frozen target, for "
+            "the same reason as bar (a). On the pre-declared exploratory grid it is a **tie** -- "
+            + "; ".join(ties)
+            + ". Two thresholds go to the heuristic by one question, one goes to the RL policy by "
+            "three. The PRD accepts a match, and the heuristic is not beaten."
+        )
+
+    if frozen.get("ruling_1"):
+        st.caption(f"**RULING 1, pre-declared:** {frozen['ruling_1']}.")
+    if frozen.get("grader_reading"):
+        st.caption(f"**How the wording was read:** {frozen['grader_reading']}")
+
+
+def gate5_curves_panel(curves: dict[str, Any]) -> None:
+    """The deliverable plot: truth-side error against interview length."""
+    st.subheader("Error against interview length")
+    if RMSE_VS_N_PATH.is_file():
+        st.image(str(RMSE_VS_N_PATH), width="stretch")
+    else:
+        st.info(f"{RMSE_VS_N_PATH.name} not found -- the Gate 5 run writes it unless --no-plots.")
+
+    if not curves:
+        st.info("This report has no strategy curves.")
+        return
+
+    rows = []
+    for name in strategies_in(curves):
+        curve = curves.get(name) or {}
+        grid = curve.get("n_grid") or []
+        last = grid[-1] if grid else None
+        pooled = curve.get("pooled_rmse_mean_by_n") or []
+        worst = curve.get("rmse_worst_dim_mean_by_n") or []
+        per_dimension_full = curve.get("rmse_full_bank_per_dim") or []
+        rows.append(
+            {
+                "strategy": strategy_label(name),
+                "questions asked": last,
+                "pooled RMSE at N=25": fmt(at_n(curve, "pooled_rmse_mean_by_n", 25)),
+                "pooled RMSE at the end": fmt(pooled[-1] if pooled else None),
+                "worst dimension at the end": fmt(worst[-1] if worst else None),
+                "full-bank pooled": fmt(curve.get("pooled_rmse_full_bank")),
+                "full-bank worst dimension": fmt(
+                    max(per_dimension_full) if per_dimension_full else None
+                ),
+                "distinct items used": fmt(curve.get("mean_distinct_items_used"), 1),
+            }
+        )
+    table(rows)
+    st.caption(
+        f"Mean over replicates, on the held-out personas. The left picture is the worst dimension "
+        f"-- what the frozen bar is read on -- and the right one is pooled error with the "
+        f"inter-quartile band. The full-bank columns are the floor: every candidate item asked in "
+        f"the same sitting. The frozen {PERSON_RMSE_BAR} target is below that floor for every "
+        f"strategy, so the curves flatten above it rather than crossing it. Both adaptive arms "
+        f"land on the same floor as random; what they win is how fast they get there."
+    )
+
+
+def gate5_grid_panel(exploratory: dict[str, Any]) -> None:
+    """The pre-declared exploratory grid: attainable thresholds, and how much
+    of the full matrix each strategy has recovered by N = 5, 10, 15, 25."""
+    st.subheader("Questions to target, exploratory grid")
+    grid = exploratory.get("threshold_grid") or {}
+    if not grid:
+        st.info("This report has no exploratory grid.")
+        return
+
+    ratio_key = {"heuristic": "heuristic_vs_random", "policy": "policy_vs_random"}
+    rows = []
+    for threshold, block in grid.items():
+        per_strategy = block.get("per_strategy") or {}
+        for name in ("random", "heuristic", "policy"):
+            entry = per_strategy.get(name)
+            if not entry:
+                continue
+            ratio = (block.get(ratio_key[name]) or {}) if name in ratio_key else {}
+            rows.append(
+                {
+                    "target (all dims)": threshold,
+                    "strategy": strategy_label(name),
+                    "replicates reaching it": f"{entry.get('n_reached', 0)} of "
+                    f"{entry.get('n_replicates', 0)}",
+                    "median questions": fmt(entry.get("median"), 0),
+                    "quartiles": f"{fmt(entry.get('q25'), 0)}-{fmt(entry.get('q75'), 0)}",
+                    "ratio to random": fmt(ratio.get("ratio")) if name in ratio_key else "1.000",
+                    "against the 0.50 reference": ratio.get("verdict", "--")
+                    if name in ratio_key
+                    else "--",
+                }
+            )
+    table(rows)
+    st.caption(
+        f"**{exploratory.get('label', 'EXPLORATORY')}** The 0.50 column is the frozen bar's "
+        f"comparison applied at a threshold the strategies can actually reach; it is a reference, "
+        f"not a gate. Both adaptive arms roughly halve random at 0.65 and 0.70. At 0.60 the "
+        f"random median is itself conservative -- 15 of its 51 replicates never crossed -- so the "
+        f"ratio there is an upper bound."
+    )
+
+    fraction = exploratory.get("fraction_of_full_matrix") or {}
+    per_strategy = fraction.get("per_strategy") or {}
+    if not per_strategy:
+        st.info("This report has no fraction-of-full-matrix table.")
+        return
+
+    st.markdown("**Fraction of the full matrix reached, by interview length**")
+    full_bank = fraction.get("full_bank_pooled_rmse") or {}
+    table(
+        [
+            {
+                "strategy": strategy_label(name),
+                **{
+                    f"N={n}": fmt((per_strategy.get(name) or {}).get(n))
+                    for n in FULL_MATRIX_GRID
+                },
+                "full-bank pooled RMSE": fmt(full_bank.get(name)),
+            }
+            for name in strategies_in(per_strategy)
+        ]
+    )
+    st.caption(
+        f"1.00 means the strategy has closed the whole gap between asking nothing (pooled RMSE "
+        f"{fmt(fraction.get('rmse_at_n0'))}) and asking every candidate item in the same sitting. "
+        f"A blank cell is an N the strategy never reaches -- the fixed order stops at its own 15 "
+        f"items. {fraction.get('definition', '')}"
+    )
+
+
+def gate5_proxy_panel(
+    watch: dict[str, Any],
+    rl_watch: dict[str, Any] | None,
+    oracle_watch: dict[str, Any] | None,
+) -> None:
+    """The RULING 2 watch: declared blur against truth-side error.
+
+    The finding is the point of the panel, so it is spelled out under the
+    numbers: the two curves diverge, but the divergence is a property of the
+    posterior rather than something the RL policy learned to do.
+    """
+    st.subheader("Proxy-gaming watch")
+    left, right = st.columns(2)
+    with left:
+        st.markdown("**Held-out strategies: what the system says against what it does**")
+        if BLUR_VS_TRUTH_PATH.is_file():
+            st.image(str(BLUR_VS_TRUTH_PATH), width="stretch")
+        else:
+            st.info(
+                f"{BLUR_VS_TRUTH_PATH.name} not found -- the Gate 5 run writes it unless --no-plots."
+            )
+    with right:
+        st.markdown("**The same watch across RL training**")
+        if RL_WATCH_PLOT.is_file():
+            st.image(str(RL_WATCH_PLOT), width="stretch")
+        else:
+            st.info(f"{RL_WATCH_PLOT.name} not found -- src.eval.rl_proxy_watch writes it.")
+
+    if not watch:
+        st.info("This report has no blur-against-truth watch.")
+        return
+
+    rows = []
+    for name in strategies_in(watch):
+        entry = watch.get(name) or {}
+        largest = entry.get("largest_gap") or {}
+        at_25 = next((step for step in entry.get("by_n") or [] if step.get("n") == 25), {})
+        rows.append(
+            {
+                "strategy": strategy_label(name),
+                "blur left at N=25": fmt(at_25.get("blur_remaining")),
+                "error left at N=25": fmt(at_25.get("error_remaining")),
+                "gap at N=25": fmt(at_25.get("gap")),
+                "widest gap": fmt(largest.get("gap")),
+                "at N": largest.get("n"),
+                "blur left there": fmt(largest.get("blur_remaining")),
+                "error left there": fmt(largest.get("error_remaining")),
+            }
+        )
+    table(rows)
+
+    policy = ((watch.get("policy") or {}).get("largest_gap")) or {}
+    heuristic = ((watch.get("heuristic") or {}).get("largest_gap")) or {}
+    st.warning(
+        "**The watch fires.** Declared blur shrinks to roughly 24-41% of where it started while "
+        "truth-side error only ever falls to 55-65%."
+        + (
+            f" At the widest, the heuristic has declared away "
+            f"{1 - float(heuristic['blur_remaining']):.0%} of its uncertainty having removed "
+            f"{1 - float(heuristic['error_remaining']):.0%} of its error, a gap of "
+            f"{fmt(heuristic.get('gap'))} at N={heuristic.get('n')}."
+            if heuristic.get("blur_remaining") is not None
+            and heuristic.get("error_remaining") is not None
+            else ""
+        )
+        + " The posterior prices answer noise but not card distortion, so the system's own "
+        "confidence runs ahead of its accuracy."
+    )
+
+    policy_25 = next(
+        (step for step in (watch.get("policy") or {}).get("by_n") or [] if step.get("n") == 25), {}
+    )
+    heuristic_25 = next(
+        (step for step in (watch.get("heuristic") or {}).get("by_n") or [] if step.get("n") == 25),
+        {},
+    )
+    if policy_25 and heuristic_25:
+        st.caption(
+            f"**This is not reward hacking.** The RL policy is trained on declared blur, so it is "
+            f"the obvious suspect -- but on the same held-out sittings the never-trained heuristic "
+            f"shows a *larger* gap than the trained policy: **{fmt(heuristic_25.get('gap'))}** "
+            f"against **{fmt(policy_25.get('gap'))}** at N=25. The policy ends with the same error "
+            f"and declares *more* uncertainty, not less. The gap is the Stage 2/3 "
+            f"card-transmission blind spot showing up in the adaptive loop; RL adds nothing to it. "
+            f"The widest-gap column above tells the same story: {fmt(policy.get('gap'))} for the "
+            f"policy against {fmt(heuristic.get('gap'))} for the heuristic."
+        )
+
+    oracle_final = ((oracle_watch or {}).get("checkpoints") or [{}])[-1]
+    blur_final = ((rl_watch or {}).get("checkpoints") or [{}])[-1]
+    if oracle_final and blur_final:
+        st.caption(
+            f"**The oracle check.** One exploratory arm was trained on truth-side error reduction "
+            f"instead -- a reward that cannot be gamed, on identical seeds, with its weights "
+            f"quarantined from every confirmatory path. At the end of training it sits on the same "
+            f"truth-side error as the blur-trained policy: "
+            f"**{fmt(oracle_final.get('truth_rmse_final'))}** against "
+            f"**{fmt(blur_final.get('truth_rmse_final'))}** at N="
+            f"{(oracle_watch.get('design') or {}).get('horizon', '?')}. Buying the un-gameable "
+            f"reward buys no accuracy, so there was no accuracy being lost to the proxy. Its own "
+            f"declared-against-true gap is {fmt(oracle_final.get('gap_final'))} against the "
+            f"confirmatory arm's {fmt(blur_final.get('gap_final'))}. Both readings score the "
+            f"policy's own training personas, which is why no Gate 5 number is taken off them; "
+            f"they come from {ORACLE_WATCH_PATH.name} and {RL_WATCH_PATH.name}."
+        )
+
+
+def gate5_rl_panel(training: dict[str, Any] | None, watch: dict[str, Any] | None,
+                   curves: dict[str, Any]) -> None:
+    """The RL run itself: reward, exploration, and what the policy learned."""
+    st.subheader("RL training")
+    if RL_TRAINING_PLOT.is_file():
+        st.image(str(RL_TRAINING_PLOT), width="stretch")
+    else:
+        st.info(f"{RL_TRAINING_PLOT.name} not found -- the training run writes it next to its report.")
+
+    if training is None:
+        st.info(RL_TRAINING_HINT)
+        return
+
+    config = training.get("config") or {}
+    history = training.get("history") or []
+    costs = training.get("costs") or {}
+    first, last = (history[0], history[-1]) if history else ({}, {})
+
+    columns = st.columns(4)
+    columns[0].metric(
+        "Episode return",
+        fmt(last.get("episode_return"), 2),
+        delta=fmt(float(last.get("episode_return", 0)) - float(first.get("episode_return", 0)), 2)
+        if history
+        else None,
+        help="declared posterior variance removed minus the per-question cost, discounted",
+    )
+    columns[1].metric(
+        "Policy entropy",
+        fmt(last.get("entropy"), 2),
+        delta=fmt(float(last.get("entropy", 0)) - float(first.get("entropy", 0)), 2)
+        if history
+        else None,
+        delta_color="inverse",
+        help="nats; uniform over 202 items would be about 5.3",
+    )
+    columns[2].metric(
+        "Interviews simulated",
+        f"{costs.get('episodes_simulated', 0):,}",
+        help=f"{costs.get('iterations_run', '?')} iterations x "
+        f"{config.get('batch_personas', '?')} episodes x {config.get('horizon', '?')} questions",
+    )
+    columns[3].metric(
+        "Training cost",
+        f"{RL_TRAINING_CORE_HOURS:.2f} core-h",
+        help="every Stage 5 RL run logged in results/COSTS.md, CPU only",
+    )
+
+    st.caption(
+        f"Reward: {training.get('reward', '?')} -- blur only, per owner RULING 2, so planted truth "
+        f"never touched the reward, the gradient or any weight. REINFORCE, horizon "
+        f"{config.get('horizon', '?')}, {config.get('iterations', '?')} iterations of "
+        f"{config.get('batch_personas', '?')} episodes, discount {config.get('discount', '?')}, "
+        f"entropy bonus {config.get('entropy_bonus', '?')}, per-question cost "
+        f"{config.get('question_cost', '?')}, seed {config.get('seed', '?')}. Config in "
+        f"experiments/stage5_rl.json. This run took "
+        f"{float(costs.get('wall_seconds', 0)) / 3600:.2f} core-hours on CPU; the "
+        f"{RL_TRAINING_CORE_HOURS:.2f} above is every RL run logged for Stage 5, including the "
+        f"smoke tuning, the abandoned undiscounted run and the quarantined oracle arm."
+    )
+
+    checkpoints = training.get("checkpoints") or []
+    declared = (checkpoints[-1].get("declared") if checkpoints else {}) or {}
+    harness = (watch or {}).get("gate5_harness_arms") or {}
+    policy_curve = (curves or {}).get("policy") or {}
+    heuristic_curve = (curves or {}).get("heuristic") or {}
+    st.warning(
+        f"**What it learned: a fixed order, not per-person adaptation.** Entropy falls from "
+        f"{fmt(first.get('entropy'), 2)} to {fmt(last.get('entropy'), 2)} nats and the last "
+        f"training batch touches {last.get('n_distinct_items', '?')} distinct items out of "
+        f"{(training.get('episodes') or {}).get('n_items', '?')}. Deployed greedily at its "
+        f"training horizon the policy asks a near-fixed set: "
+        f"{declared.get('n_distinct_items', '?')} distinct items across all "
+        f"{declared.get('n_personas', '?')} personas"
+        + (
+            f", against {fmt((harness.get('heuristic') or {}).get('mean_distinct_items_used'), 0)} "
+            f"for the never-trained heuristic and "
+            f"{fmt((harness.get('random') or {}).get('mean_distinct_items_used'), 0)} for random "
+            f"on the same sittings"
+            if harness
+            else ""
+        )
+        + ". Past its training horizon it spreads out again -- "
+        f"{fmt(policy_curve.get('mean_distinct_items_used'), 0)} distinct items by N=150 against "
+        f"{fmt(heuristic_curve.get('mean_distinct_items_used'), 0)} for the heuristic. The RL win "
+        f"is a good fixed order, not a per-person interview."
+    )
+
+
+def interviewer_page() -> None:
+    st.header("Interviewer")
+    report = load_json(GATE5_PATH)
+    watch = load_json(RL_WATCH_PATH)
+
+    if report is None:
+        st.info(GATE5_HINT)
+        gate5_curves_panel({})
+        st.divider()
+        gate5_proxy_panel({}, watch, load_json(ORACLE_WATCH_PATH))
+        st.divider()
+        gate5_rl_panel(load_json(RL_TRAINING_PATH), watch, {})
+        return
+
+    design = report.get("design") or {}
+    frozen = report.get("frozen_bar") or {}
+    exploratory = report.get("exploratory") or {}
+    curves = report.get("curves") or {}
+    st.caption(
+        f"Gate 5, {design.get('n_replicates', '?')} replicates on "
+        f"{design.get('n_personas_holdout', '?')} held-out personas, up to "
+        f"{design.get('question_budget', '?')} closed questions picked one at a time out of "
+        f"{design.get('n_candidate_items', '?')} candidates, with a full posterior update after "
+        f"every answer. Strategies: {', '.join(design.get('strategies_evaluated') or [])}. Every "
+        f"number below is read straight out of {GATE5_PATH.name}, with the RL run's own numbers "
+        f"out of {RL_TRAINING_PATH.name} and {RL_WATCH_PATH.name}."
+    )
+
+    gate5_verdict_panel(frozen, exploratory)
+    st.divider()
+    gate5_curves_panel(curves)
+    st.divider()
+    gate5_grid_panel(exploratory)
+    st.divider()
+    gate5_proxy_panel(
+        exploratory.get("blur_vs_truth") or {}, watch, load_json(ORACLE_WATCH_PATH)
+    )
+    st.divider()
+    gate5_rl_panel(load_json(RL_TRAINING_PATH), watch, curves)
+
+
+# --------------------------------------------------------------------------
 # page
 # --------------------------------------------------------------------------
 
@@ -1844,7 +2391,13 @@ def main() -> None:
 
     page = st.sidebar.radio(
         "Page",
-        ["1. Population", "2. Recovery", "3. Person encoder", "4. Calibration"],
+        [
+            "1. Population",
+            "2. Recovery",
+            "3. Person encoder",
+            "4. Calibration",
+            "5. Interviewer",
+        ],
         help="One page per stage, added as the stage produces its files.",
     )
 
@@ -1854,6 +2407,8 @@ def main() -> None:
         person_encoder_page()
     elif page == "4. Calibration":
         calibration_page()
+    elif page == "5. Interviewer":
+        interviewer_page()
     else:
         population_page(summary, reports)
 

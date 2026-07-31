@@ -38,12 +38,27 @@ GATE3_PICTURES = ("stage3_blur_vs_n.png", "stage3_gate3_curves.png")
 GATE4_REPORT = REPO_ROOT / "results" / "stage4_gate4.json"
 GATE4_PICTURES = ("stage4_reliability.png", "stage4_aggregate.png")
 
+#: Stage 5 -- the Gate 5 report, the RL run's own two reports, and the pictures.
+GATE5_REPORT = REPO_ROOT / "results" / "stage5_strategies.json"
+RL_TRAINING_REPORT = REPO_ROOT / "results" / "stage5_rl_training.json"
+RL_WATCH_REPORT = REPO_ROOT / "results" / "stage5_rl_proxy_watch.json"
+ORACLE_WATCH_REPORT = REPO_ROOT / "results" / "stage5_rl_exploratory_oracle_proxy_watch.json"
+GATE5_PICTURES = (
+    "stage5_rmse_vs_n.png",
+    "stage5_blur_vs_truth.png",
+    "stage5_rl_training.png",
+    "stage5_rl_proxy_watch.png",
+)
+#: The pre-declared exploratory thresholds the tie is read at.
+GATE5_THRESHOLDS = ("0.60", "0.65", "0.70")
+
 #: The wording the monotonicity row must carry, exactly.
 MONOTONICITY_RULING = "orchestrator ruling on qualitative wording; both readings reported"
 
 RECOVERY_PAGE = "2. Recovery"
 PERSON_ENCODER_PAGE = "3. Person encoder"
 CALIBRATION_PAGE = "4. Calibration"
+INTERVIEWER_PAGE = "5. Interviewer"
 
 #: The line in the dashboard that decides where every file it opens lives.
 ROOT_LINE = "REPO_ROOT = Path(__file__).resolve().parents[1]"
@@ -79,6 +94,12 @@ def open_person_encoder(app: AppTest) -> AppTest:
 def open_calibration(app: AppTest) -> AppTest:
     """Flip the sidebar selector to page 4 and re-run."""
     app.sidebar.radio[0].set_value(CALIBRATION_PAGE).run()
+    return app
+
+
+def open_interviewer(app: AppTest) -> AppTest:
+    """Flip the sidebar selector to page 5 and re-run."""
+    app.sidebar.radio[0].set_value(INTERVIEWER_PAGE).run()
     return app
 
 
@@ -501,4 +522,220 @@ def test_calibration_page_survives_missing_pictures(tmp_path: Path) -> None:
     assert "Gate 4 verdict" in text
     assert "Per-stratum performance" in text
     for picture in GATE4_PICTURES:
+        assert f"{picture} not found" in text
+
+
+def test_interviewer_page_renders_with_the_real_report() -> None:
+    """Page 5 against results/stage5_strategies.json as it actually stands."""
+    if not GATE5_REPORT.is_file():
+        pytest.skip("no Gate 5 report in this checkout")
+
+    report = json.loads(GATE5_REPORT.read_text(encoding="utf-8"))
+    frozen = report.get("frozen_bar") or {}
+    comparison = frozen.get("comparison") or {}
+
+    app = open_interviewer(run_app())
+    assert not app.exception
+
+    text = all_text(app)
+    for heading in (
+        "Gate 5 verdict",
+        "Error against interview length",
+        "Questions to target, exploratory grid",
+        "Proxy-gaming watch",
+        "RL training",
+    ):
+        assert heading in text, f"the interviewer page is missing its {heading!r} panel"
+    assert GATE5_REPORT.name in text
+
+    # the banner states the report's own verdict on the frozen target
+    assert any(
+        f"Gate 5 frozen bar (a): **{frozen.get('verdict')}**" in str(e.value) for e in app.error
+    )
+    assert not app.success
+
+    # one row per comparison the frozen bar asks for, with the report's verdict
+    frame = app.dataframe[0].value
+    assert list(frame["bar"]) == [key.replace("_", " ") for key in comparison]
+    assert list(frame["verdict"]) == [entry.get("verdict") for entry in comparison.values()]
+    assert list(frame["ratio"]) == [
+        "--" if entry.get("ratio") is None else f"{float(entry['ratio']):.3f}"
+        for entry in comparison.values()
+    ]
+
+    # the pre-declaration that makes an undefined bar reportable is on screen
+    assert str(frozen.get("ruling_1")) in text
+
+
+def test_the_censored_crossing_table_shows_no_strategy_reaching_the_target() -> None:
+    """Every strategy's median is censored at the budget, and the page says so."""
+    if not GATE5_REPORT.is_file():
+        pytest.skip("no Gate 5 report in this checkout")
+
+    crossing = (
+        json.loads(GATE5_REPORT.read_text(encoding="utf-8")).get("frozen_bar") or {}
+    ).get("population_curve_crossing") or {}
+    if not crossing:
+        pytest.skip("this Gate 5 report has no population-curve crossing block")
+
+    app = open_interviewer(run_app())
+    assert not app.exception
+
+    # dataframe 0 is the verdict table, dataframe 1 the per-strategy crossing
+    frame = app.dataframe[1].value
+    assert len(frame) == len(crossing)
+    for name, censored in zip(crossing, frame["censored"]):
+        assert censored == ("yes" if crossing[name].get("median_is_censored") else "no")
+    for name, reached in zip(crossing, frame["replicates reaching the target"]):
+        assert reached == f"{crossing[name]['n_reached']} of {crossing[name]['n_replicates']}"
+
+
+def test_the_exploratory_grid_carries_the_pre_declared_thresholds() -> None:
+    """The grid table and the tie note, both read out of the report."""
+    if not GATE5_REPORT.is_file():
+        pytest.skip("no Gate 5 report in this checkout")
+
+    exploratory = json.loads(GATE5_REPORT.read_text(encoding="utf-8")).get("exploratory") or {}
+    grid = exploratory.get("threshold_grid") or {}
+    if not grid:
+        pytest.skip("this Gate 5 report has no exploratory grid")
+
+    app = open_interviewer(run_app())
+    assert not app.exception
+
+    # dataframe 3 is the threshold grid, dataframe 4 the fraction of full matrix
+    frame = app.dataframe[3].value
+    for threshold, block in grid.items():
+        per_strategy = block.get("per_strategy") or {}
+        for name in ("random", "heuristic", "policy"):
+            rows = frame[
+                (frame["target (all dims)"] == threshold)
+                & (frame["strategy"].str.startswith(name.replace("policy", "RL")))
+            ]
+            assert len(rows) == 1, f"{name} missing from the {threshold} row of the grid"
+            median = per_strategy[name].get("median")
+            assert rows["median questions"].iloc[0] == (
+                "--" if median is None else f"{float(median):.0f}"
+            )
+
+    # the exploratory label is never dropped, and the tie is stated per threshold
+    text = all_text(app)
+    assert str(exploratory.get("label")) in text
+    tie = [str(e.value) for e in app.warning if "frozen bar (b)" in str(e.value).lower()]
+    assert tie, "the page does not state frozen bar (b)"
+    for threshold in GATE5_THRESHOLDS:
+        entry = (grid.get(threshold) or {}).get("policy_vs_heuristic") or {}
+        if not entry:
+            continue
+        assert f"{threshold}: RL {float(entry['adaptive_median']):.0f}" in tie[0]
+        assert f"heuristic {float(entry['random_median']):.0f}" in tie[0]
+
+    # fraction of the full matrix at every pre-declared N
+    fraction = (exploratory.get("fraction_of_full_matrix") or {}).get("per_strategy") or {}
+    if fraction:
+        frame = app.dataframe[4].value
+        for column in ("N=5", "N=10", "N=15", "N=25"):
+            assert column in frame.columns
+
+
+def test_the_proxy_watch_states_the_finding() -> None:
+    """Blur against truth: the gap, and that the trained policy is not the cause."""
+    if not GATE5_REPORT.is_file():
+        pytest.skip("no Gate 5 report in this checkout")
+
+    watch = (
+        json.loads(GATE5_REPORT.read_text(encoding="utf-8")).get("exploratory") or {}
+    ).get("blur_vs_truth") or {}
+    if not watch:
+        pytest.skip("this Gate 5 report has no blur-against-truth watch")
+
+    app = open_interviewer(run_app())
+    assert not app.exception
+
+    # dataframe 5 is the watch table, one row per strategy
+    frame = app.dataframe[5].value
+    assert len(frame) == len(watch)
+    for name, shown in zip(watch, frame["widest gap"]):
+        assert shown == f"{float(watch[name]['largest_gap']['gap']):.3f}"
+
+    text = all_text(app)
+
+    def gap_at_25(name: str) -> float:
+        steps = (watch.get(name) or {}).get("by_n") or []
+        return float(next(step for step in steps if step["n"] == 25)["gap"])
+
+    # the finding: the never-trained heuristic's gap is the larger of the two
+    assert gap_at_25("heuristic") > gap_at_25("policy")
+    assert f"{gap_at_25('heuristic'):.3f}" in text
+    assert f"{gap_at_25('policy'):.3f}" in text
+    assert "not reward hacking" in text.lower()
+
+    if ORACLE_WATCH_REPORT.is_file() and RL_WATCH_REPORT.is_file():
+        oracle = json.loads(ORACLE_WATCH_REPORT.read_text(encoding="utf-8"))["checkpoints"][-1]
+        blur = json.loads(RL_WATCH_REPORT.read_text(encoding="utf-8"))["checkpoints"][-1]
+        assert f"{float(oracle['truth_rmse_final']):.3f}" in text
+        assert f"{float(blur['truth_rmse_final']):.3f}" in text
+
+
+def test_the_rl_panel_carries_the_training_numbers() -> None:
+    """Reward, entropy and the static-order finding, from the training report."""
+    if not (GATE5_REPORT.is_file() and RL_TRAINING_REPORT.is_file()):
+        pytest.skip("both the Gate 5 and the RL training reports are needed here")
+
+    training = json.loads(RL_TRAINING_REPORT.read_text(encoding="utf-8"))
+    history = training.get("history") or []
+    if not history:
+        pytest.skip("this RL training report has no history")
+
+    app = open_interviewer(run_app())
+    assert not app.exception
+
+    shown = [str(element.value) for element in app.metric]
+    assert f"{float(history[-1]['episode_return']):.2f}" in shown
+    assert f"{float(history[-1]['entropy']):.2f}" in shown
+    assert "1.30 core-h" in shown
+
+    text = all_text(app)
+    assert str(training.get("reward")) in text
+    assert f"discount {training['config']['discount']}" in text
+
+    # the static-order finding, with the number it rests on
+    declared = (training.get("checkpoints") or [{}])[-1].get("declared") or {}
+    static = [str(e.value) for e in app.warning if "fixed order" in str(e.value)]
+    assert static, "the page does not carry the static-order finding"
+    assert f"{declared['n_distinct_items']} distinct items across all" in static[0]
+
+
+def test_interviewer_page_survives_missing_files(tmp_path: Path) -> None:
+    """A fresh clone gets the how-to-produce-it notes, not a traceback."""
+    (tmp_path / "results").mkdir()
+
+    app = open_interviewer(run_app(root=tmp_path))
+    assert not app.exception
+
+    text = all_text(app)
+    assert "python -m src.eval.gate5" in text
+    assert "python -m src.rl.train" in text
+    for picture in GATE5_PICTURES:
+        assert f"{picture} not found" in text
+
+
+def test_interviewer_page_survives_missing_pictures(tmp_path: Path) -> None:
+    """The Gate 5 report alone still renders; the panels say what is missing."""
+    if not GATE5_REPORT.is_file():
+        pytest.skip("no Gate 5 report in this checkout")
+    results = tmp_path / "results"
+    results.mkdir()
+    (results / GATE5_REPORT.name).write_text(
+        GATE5_REPORT.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+
+    app = open_interviewer(run_app(root=tmp_path))
+    assert not app.exception
+
+    text = all_text(app)
+    assert "Gate 5 verdict" in text
+    assert "Questions to target, exploratory grid" in text
+    assert "python -m src.rl.train" in text
+    for picture in GATE5_PICTURES:
         assert f"{picture} not found" in text
