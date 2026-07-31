@@ -112,10 +112,13 @@ The last one matters more than it looks, and §11 is about it.
 | **Power at design point** | 0.96 |
 | **Model** | Multidimensional graded-response IRT + item text encoder + person encoder. **No LLM in the predictor.** |
 
-Rough field cost at typical panel rates (25 min main + 8 min retest,
-incentive-equivalent $4.50 and $1.75): **≈ $7,200 field spend**, plus the depth
-subsample and quota top-ups. Compute is trivial next to that — the whole
-GLASSBOX synthetic study used 127.7 GPU core-hours end to end.
+**Cost structure** (the shape is fixed; the rates are not): 1,500 main sessions
+at ~25 minutes each, plus ~280 retest sessions at ~8 minutes, plus the 300-person
+depth subsample at ~35 minutes, plus quota top-ups and a 15% screen-out
+allowance. Field spend
+**[placeholder — replace with the owner's real panel rates before circulation]**.
+Compute is trivial next to the field spend either way: the whole GLASSBOX
+synthetic study used 127.7 GPU core-hours end to end.
 
 ---
 
@@ -134,11 +137,15 @@ the participant's observed answer:
 Brier(p, j) = (1 / C_j) · Σ_c ( p̂_c − 1[y = c] )²
 ```
 
-The `1 / C_j` matters. It is the form frozen in `PREREGISTRATION.md` §5 and used
-by Gate 4. Without it, mixing binary and 5-point items reweights the score: on
-GLASSBOX's own held-out cells the per-category form gives a 27.1% lift and the
-sum form gives 23.1% on identical predictions. **Write the divisor into the
-pre-registration or the result is not comparable to anything.**
+The `1 / C_j` matters. **This is the Gate-4 metric definition carried over
+unchanged** — `PREREGISTRATION.md` §5 and the `metric_definitions` block of
+`results/stage4_gate4.json` define the Brier score as the mean over that item's
+own answer categories, and keeping the divisor is what makes a human result
+comparable to the synthetic one at all. Without it, mixing binary and 5-point
+items reweights the score: on GLASSBOX's own held-out cells the per-category
+form gives a 27.1% lift and the sum form gives 23.1% on identical predictions.
+**Write the divisor into the pre-registration or the result is not comparable to
+anything.**
 
 **Relative lift.**
 
@@ -305,6 +312,13 @@ The middle term does not depend on N. That is the floor.
 - **Why 3% and not 0%:** a lift of one or two percent is statistically real and
   commercially worthless. A model that needs a 25-minute interview to beat the
   population average by 2% should not be shipped. The bar encodes that.
+- **Flagged for sign-off.** The 3% floor is a judgement call, not a measurement,
+  and it is the one number here most worth arguing about. The owner may lower it
+  to a nil null (`H₀: lift ≤ 0`) at pre-registration sign-off. The consequence is
+  already priced in §3.6: at the recommended design the minimum detectable lift
+  at 90% power moves from **8.3%** (against 3%) to **5.5%** (against nil). A nil
+  null buys sensitivity and gives up the claim that the detected effect is worth
+  anything commercially. Decide once, before fieldwork, and do not revisit.
 - **α = 0.025 one-sided** (equivalent to 0.05 two-sided). **Power target 0.90.**
 - **Variance:** crossed person × item, as above, inflated by **×1.15** as a
   standing conservatism allowance for real-panel heterogeneity that the
@@ -808,9 +822,15 @@ demographics-only model gets 2–5% lift over the marginal, and the interview
 model beats it by 5 points. **If the interview does not beat demographics by a
 clear margin, the product case is weak regardless of E1.**
 
-**E9b — a pre-registered expectation of failure.** GLASSBOX's item encoder
-predicted loading *direction* well (cosine 0.861) and *discrimination magnitude*
-badly (r 0.504 against a 0.6 bar). The sharper reading: it is a weak/strong
+**E9b — a pre-registered expectation of failure.** The bar stays frozen at 0.6
+while the filed prediction is 0.42, following this project's own precedent: at
+Stage 3 a projection filed *before any measurement* said the person-encoder RMSE
+bar was unreachable, the bar was not moved, the stage ran, and the measurement
+came in within 0.083 of the filed number on every dimension (PROJECT_LOG,
+"Stage 3 design decided; pre-measurement projection filed"). Filing an expected
+fail is what makes the eventual fail informative rather than embarrassing.
+GLASSBOX's item encoder predicted loading *direction* well (cosine 0.861) and
+*discrimination magnitude* badly (r 0.504 against a 0.6 bar). The sharper reading: it is a weak/strong
 detector, not a graded predictor — dropping the weakest-fitted quintile
 collapsed the correlation to 0.231. And a clean negative worth repeating:
 **directly asking an LLM to rate how much people would disagree about an item
@@ -986,6 +1006,19 @@ methods are available and should be used.
    the pre-cutoff half, stop and report that instead of the headline number.**
    This is the strongest of the five checks and the only one that tests the
    thing you actually care about.
+
+   **Precondition, decided before the run, not discovered during it.** This check
+   requires a *reliably documented* pretraining cutoff for the model being
+   checked. For GLASSBOX's frozen system-side model (Qwen3.6-27B) that is
+   unlikely to be available, and the same is true of most open-weight
+   checkpoints. **If the cutoff is not documented by the model's publisher —
+   a date in a model card or technical report, not a guess and not a
+   self-report elicited from the model — check #4 is declared INAPPLICABLE.**
+   Record the declaration and the reason in the results file, run the remaining
+   four checks, and state plainly in every writeup that the contamination
+   evidence is weaker because the one check that tests the outcome directly
+   could not be run. Do not substitute an inferred cutoff; an inferred date
+   produces a temporal split that means nothing and a false sense of clearance.
 5. **Demographic-swap control.** Re-run predictions with each respondent's
    demographic block replaced by a random other respondent's from the same
    condition. If the model's predictions barely change, it is reproducing a
@@ -994,7 +1027,8 @@ methods are available and should be used.
 
 **What the check can rule out:** strong verbatim memorisation of stimulus text;
 explicit recall of study identity and design; a large temporal advantage on
-studies the model could have seen; predictions that ignore the person entirely.
+studies the model could have seen (**only if check #4 was applicable** — see the
+precondition above); predictions that ignore the person entirely.
 
 **What it cannot rule out, and this must be written next to any number:**
 
@@ -1010,13 +1044,22 @@ studies the model could have seen; predictions that ignore the person entirely.
 - Contamination of the *base* model of any comparison system, which we cannot
   inspect at all for closed models.
 - A negative result on all five checks is weak evidence of cleanliness, not
-  proof. Say so in those words.
+  proof. Say so in those words. If check #4 was declared inapplicable, a negative
+  result on the remaining four is weaker still, and the writeup says *that*.
 
 ### 10.4 Reference baseline: Socrates-Qwen-14B
 
 **Camera-ready figures only.** All numbers below were read from the ACL
 Anthology camera-ready PDF text of `2025.emnlp-main.1530`, not from a search
 summary and not from a secondary source.
+
+> **⚠ Note to future editors — do not "correct" these numbers.** A web search
+> summary of the Anthology landing page returns **36% over base / 15% over
+> GPT-4o**. Those figures are wrong and appear nowhere in the paper. The
+> camera-ready PDF, arXiv v1 (6 Sep 2025) and arXiv v2 (5 Nov 2025) all state
+> **26% / 13%**, consistent with Table 2 below (26.3% / 13.2%). Verified by
+> extracting the PDF text directly, 2026-08-01. If you are about to raise these
+> numbers, you are reading a summariser, not the paper.
 
 **Their metric** (needed to compare at all): for each (condition, outcome) pair,
 responses are standardised to [0,1] and the **Wasserstein distance** is computed
