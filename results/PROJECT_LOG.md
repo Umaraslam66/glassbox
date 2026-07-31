@@ -867,8 +867,10 @@ vs +0.239 at N=25) — the policy ends with the same error and MORE
 declared uncertainty. The Stage-2/3 card-transmission blind spot is
 the whole story; RL adds nothing malign to it. And the oracle-reward
 exploratory arm (identical trainer, truth-side error-reduction reward,
-weights quarantined with a loader-refusal test) lands within ±0.014
-RMSE of the confirmatory policy at every N — THE DEPLOYABLE PROXY
+weights quarantined with a loader-refusal test) lands within ±0.024
+RMSE of the confirmatory policy at every N (max gap at N=5; 0.003 at
+N=25 — corrected from a first-report ±0.014 that failed recomputation
+against the watch files; the result file wins) — THE DEPLOYABLE PROXY
 REWARD COSTS NOTHING MEASURABLE. Together: the proxy is honest about
 ordering decisions and dishonest only about absolute confidence,
 exactly as the pre-registered watch framed it.
