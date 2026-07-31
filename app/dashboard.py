@@ -2426,8 +2426,9 @@ GATES: tuple[dict[str, Any], ...] = (
         "recorded_mark": None,
         "line": (
             "An interview does beat knowing nothing, but not by the required margin: "
-            "accuracy and lift both miss, coverage passes, and the shortfall lands where "
-            "the Gate 2 projection said it would."
+            "trait accuracy, lift and the item encoder's discrimination head all miss, "
+            "coverage passes, and the shortfall lands where the Gate 2 projection said "
+            "it would."
         ),
         "page": "3. Person encoder",
     },
