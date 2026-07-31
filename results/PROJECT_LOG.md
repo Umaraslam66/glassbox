@@ -473,6 +473,13 @@ the truth-derived Procrustes rotation is off-limits system-side);
 (3) the system-side logprob ban stands — encoder confidence comes from
 sampled-score spread, not token probabilities.
 
+OUTCOME ADDENDUM (written after measurement — see the Gate 3 entry
+below): the projection held on RMSE (measured 0.627–0.817 closed-only,
+within 0.083 of the filed number on every dimension) and was corrected
+upward on one input: its r(θ̂₁₅, θ̂_full)=0.758 shared noise with its own
+reference; on an independent interview sitting the true number is 0.686
+(closed-only) / 0.770 (fused).
+
 ARCHITECTURE DECISIONS (from the proposal in the session scratchpad):
 item encoder = hybrid — prompt-elicited Qwen judgments against the
 eight pole descriptions → small ridge head for loading DIRECTION;
@@ -488,3 +495,63 @@ calibrated on training-split residuals only). Full-LLM extraction and
 amortized inference are ablation arms, not the primary. Qwen3.6-27B has
 never run on this cluster in this project: the first Stage 3 GPU job is
 a smoke test.
+
+## 2026-07-31 — Stage 3 run: Gate 3 verdict — 2 of 5 bars FAIL, projection confirmed
+
+Machinery (all committed): consistency-rule interview answers (Gemma never
+re-queried on closed items; the interview is a genuinely fresh noise
+sitting — 33% of the 15 cells differ from the main round), 1,500 open
+answers (zero leak rejects), Qwen's first runs in this project (thinking
+channel closed via a --no-thinking driver flag; Gemma path byte-identical
+with the flag off — verified), 23,340/23,340 pole judgments parsed clean,
+item embeddings via vLLM pooling.
+
+ITEM ENCODER (results/stage3_item_encoder.json): median held-out loading
+cosine 0.861 PASS (bar 0.7; pre-filed projection band 0.80–0.93; leakage
+hunt on the passing bar clean — topic-domain-only reaches 0.265, barely
+above a no-text constant). Discrimination r 0.504 FAIL (bar 0.6; raw
+scale confirmatory by orchestrator ruling, log-scale 0.577 reported
+alongside — fails on both). The sharper caveat: it is a weak/strong
+detector, not a graded predictor — excluding the weakest-fitted quintile
+collapses r to 0.231. Clean negative worth keeping: asking the model
+directly how much people would disagree about an item predicts fitted
+discrimination at r −0.003.
+
+PERSON ENCODER (results/stage3_gate3.json; fused = closed posterior +
+open-answer pseudo-item block, confirmatory): per-dimension RMSE vs
+planted θ FAIL on 0/8 dims (worst TRD 0.788, best TEC 0.559, bar 0.5) —
+exactly as the pre-measurement projection filed above said before any
+compute was spent. Blur coverage 0.649 PASS (band 60–75) — the
+anticipation note did NOT fire at N=15; its mechanism is visible anyway:
+coverage decays 0.746 → 0.649 across N=1→15, heading toward the
+full-matrix 0.358. Monotone blur shrinkage: ORCHESTRATOR RULING — PASS
+under the frozen "in expectation" wording (the mean-blur curves shrink
+by 0.19–0.42 with worst uptick 0.00228, i.e. 0.9% of that dimension's
+shrinkage; the fixed-θ control is exactly monotone, so upticks are MAP
+relocation, not information loss). The strict per-step reading (15.2% of
+individual steps rise) is reported in full alongside; like the Gate 2
+weak-item check, this is a grader's reading of qualitative frozen
+wording, and both readings are preserved so the call can be re-made.
+Lift over the public-profile baseline: 26.8% FAIL (bar ≥ 30; closed-only
+21.4). The baseline is intercept-only (profile carries ~zero trait
+signal), so this bar coincides with lift over zero information.
+
+STOP-AND-INVESTIGATE (the lift bar's own clause) — investigation run and
+concluded: the encoder is not broken and the transcript is not failing
+to add signal (fused r to the full-matrix estimate is 0.770; the fused
+point estimate reaches r 0.71 max against planted per-dimension). The
+shortfall is the accepted card-transmission ceiling downstream: even the
+FULL 202-item answer matrix only achieves pooled RMSE 0.529 (lift ~44%),
+so 15 closed + 3 open reaching 26.8% is the expected fraction of a
+ceiling that Gate 2 already documented, not a new defect. A leakage hunt
+fired on the other side (TEC and TRU beat the filed projection by >0.10)
+and came back clean on five checks; the open-answer channel — built for
+exactly this — is what produced the beat, and it is uneven across
+dimensions (worth 0.3 to 9.2 closed items depending on axis; ~3 items
+pooled). The three open answers move the point estimate strongly
+(r 0.686 → 0.770) while buying only ~3 items of declared precision.
+
+Costs, Stage 3: 23.39 GPU core-hours (open answers 4.28; Qwen smoke +
+embeddings 10.05; judgment batch 9.06) + local CPU at zero. Gate 3 is a
+hard stop per the owner's order: verdict delivered, decision with the
+owner.

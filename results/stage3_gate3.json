@@ -1,0 +1,3257 @@
+{
+  "module": "src.eval.gate3",
+  "verdict": {
+    "gate": "Gate 3 -- person encoder (translators)",
+    "confirmatory_track": "fused",
+    "confirmatory_n": 15,
+    "n_holdout_personas": 100,
+    "bars": {
+      "rmse": {
+        "statement": "per-dimension RMSE(theta_hat, theta_true) <= 0.5 on all 8 dimensions, held-out personas, N = 15",
+        "value": 0.7877916507652674,
+        "value_label": "worst dimension TRD",
+        "bar": 0.5,
+        "pass": false,
+        "n_dimensions_passing": 0
+      },
+      "blur_coverage": {
+        "statement": "pooled coverage of the calibrated +/-1 blur inside 60-75%",
+        "value": 0.64875,
+        "bar": [
+          0.6,
+          0.75
+        ],
+        "pass": true
+      },
+      "monotone_blur": {
+        "statement": "blur shrinks monotonically in expectation as N grows",
+        "value": 0.002282102021943788,
+        "value_label": "largest uptick in the mean blur curve, any dimension",
+        "bar": "two readings reported; the call is the orchestrator's",
+        "pass": null,
+        "mean_curve_verdict": "FAIL",
+        "strict_per_step_verdict": "FAIL"
+      },
+      "lift": {
+        "statement": "RMSE improvement over the public-profile-only baseline >= 30%",
+        "value": 0.26791313524854077,
+        "bar": 0.3,
+        "pass": false
+      }
+    },
+    "all_decided_bars_pass": false,
+    "failed_bars": [
+      "rmse",
+      "lift"
+    ],
+    "undecided_bars": [
+      "monotone_blur"
+    ],
+    "closed_only_for_comparison": {
+      "rmse_worst": 0.8173909360474685,
+      "rmse_pass": false,
+      "coverage": 0.68875,
+      "coverage_pass": true,
+      "lift": 0.21421446321184778,
+      "lift_pass": false
+    }
+  },
+  "tracks": {
+    "fused": {
+      "n": 15,
+      "bars": {
+        "rmse": {
+          "per_dimension_rmse": {
+            "TRU": 0.647706027830694,
+            "RSK": 0.7485887593989146,
+            "ENV": 0.6361218341615998,
+            "PRC": 0.749751406570839,
+            "TRD": 0.7877916507652674,
+            "SOC": 0.6493637193097029,
+            "TEC": 0.5594937796179678,
+            "LOC": 0.7655469333897216
+          },
+          "per_dimension_r": {
+            "TRU": 0.7483623030387438,
+            "RSK": 0.6069440410325196,
+            "ENV": 0.7213447382333695,
+            "PRC": 0.6558737852293075,
+            "TRD": 0.6558277039297229,
+            "SOC": 0.7354975302698019,
+            "TEC": 0.8125209466073109,
+            "LOC": 0.6939010599742964
+          },
+          "worst_dimension": "TRD",
+          "worst_rmse": 0.7877916507652674,
+          "best_rmse": 0.5594937796179678,
+          "pooled_rmse": 0.6971433416417577,
+          "mean_of_per_dimension_rmse": 0.6930455138805884,
+          "n_dimensions_passing": 0,
+          "n_personas": 100,
+          "bar": 0.5,
+          "pass": false,
+          "projection": {
+            "filed": {
+              "TRU": 0.762,
+              "RSK": 0.752,
+              "ENV": 0.718,
+              "PRC": 0.712,
+              "TRD": 0.797,
+              "SOC": 0.742,
+              "TEC": 0.697,
+              "LOC": 0.807
+            },
+            "per_dimension_outcome_minus_projection": {
+              "TRU": -0.11429397216930604,
+              "RSK": -0.0034112406010854412,
+              "ENV": -0.08187816583840013,
+              "PRC": 0.037751406570839086,
+              "TRD": -0.009208349234732682,
+              "SOC": -0.09263628069029706,
+              "TEC": -0.1375062203820322,
+              "LOC": -0.04145306661027848
+            },
+            "quote": "PROJECTION, FILED BEFORE ANY STAGE 3 MEASUREMENT (a prediction, not a result): from Stage 2's own numbers, the Gate 3 person-encoder RMSE bar (<= 0.5 per dimension at N=15) is projected unreachable -- the full 252-item fit already sits at RMSE 0.458-0.580 with 5/8 dimensions above 0.50, the transmission ceiling puts 4/8 dimensions above the bar even with infinite interview data, and Fisher-information plus a direct 15-item MAP scoring of held-out personas (two independent methods that agree) put N=15 at RMSE 0.70-0.81 on every dimension. Projected lift from closed items alone: ~23% vs the 30% bar (the open answers are the only legal lever); projected coverage ~0.60 -- near the band floor, with the anticipation-note blind spot expected to surface as N grows rather than at N=15.",
+            "independent_sitting_correction": "the projection chained through r(theta_hat_15, theta_hat_full) = 0.758, which was measured by re-scoring the SAME noised answers the full-matrix fit had already seen. The interview is an independent sitting of the frozen noise layer, so its answers carry fresh noise; the backbone measured 0.686 instead. Numbers below are from the independent sitting.",
+            "scope": "the filed per-dimension projection is for the CLOSED-ONLY arm; it is shown against both arms because it is the only filed per-dimension prediction"
+          }
+        },
+        "coverage": {
+          "pooled_coverage": 0.64875,
+          "per_dimension_coverage": {
+            "TRU": 0.78,
+            "RSK": 0.66,
+            "ENV": 0.69,
+            "PRC": 0.66,
+            "TRD": 0.58,
+            "SOC": 0.62,
+            "TEC": 0.67,
+            "LOC": 0.53
+          },
+          "n_cells": 800,
+          "mean_blur": 0.621215587035171,
+          "mean_blur_per_dimension": {
+            "TRU": 0.7134834763069746,
+            "RSK": 0.7195877059166584,
+            "ENV": 0.6239916051666722,
+            "PRC": 0.6471621404516087,
+            "TRD": 0.5464896979864369,
+            "SOC": 0.6491889119031753,
+            "TEC": 0.5145983374813734,
+            "LOC": 0.5552228210684675
+          },
+          "diagnostics": {
+            "mean_predicted_variance": 0.39475772439667745,
+            "mean_actual_squared_error": 0.4860088387954366,
+            "variance_ratio_actual_over_predicted": 1.2311572611738544,
+            "blur_multiplier_for_nominal_68pct": 1.0687604688074548,
+            "per_dimension_variance_ratio": {
+              "TRU": 0.8240266758825114,
+              "RSK": 1.0731327360744536,
+              "ENV": 1.028470025851198,
+              "PRC": 1.333193524136778,
+              "TRD": 2.037934607207176,
+              "SOC": 0.9974252805797538,
+              "TEC": 1.1605078200720818,
+              "LOC": 1.8626903069210106
+            },
+            "note": "a ratio above 1 means the posterior is more confident than it has earned; the multiplier is how much wider the interval would have to be to reach the nominal 68 percent. Reported to size the miss -- the blur itself is left exactly as calibrated on system-side training residuals."
+          },
+          "band": [
+            0.6,
+            0.75
+          ],
+          "pass": true,
+          "projection": {
+            "filed_pooled_coverage": 0.598,
+            "outcome_minus_projection": 0.05075000000000007
+          }
+        },
+        "lift": {
+          "definition": "1 - RMSE(encoder) / RMSE(public-profile-only baseline)",
+          "pooled_lift": 0.26791313524854077,
+          "mean_of_per_dimension_lift": 0.2726937768960041,
+          "per_dimension_lift": {
+            "TRU": 0.2918757202314679,
+            "RSK": 0.19057823001756036,
+            "ENV": 0.30401638705787515,
+            "PRC": 0.23226754948154227,
+            "TRD": 0.23097934870054548,
+            "SOC": 0.29518049160195936,
+            "TEC": 0.3996797861576594,
+            "LOC": 0.236972701919423
+          },
+          "encoder_rmse_per_dimension": {
+            "TRU": 0.647706027830694,
+            "RSK": 0.7485887593989146,
+            "ENV": 0.6361218341615998,
+            "PRC": 0.749751406570839,
+            "TRD": 0.7877916507652674,
+            "SOC": 0.6493637193097029,
+            "TEC": 0.5594937796179678,
+            "LOC": 0.7655469333897216
+          },
+          "baseline_rmse_per_dimension": {
+            "TRU": 0.9146784629986316,
+            "RSK": 0.9248438665235742,
+            "ENV": 0.9139896720736399,
+            "PRC": 0.9765790231538658,
+            "TRD": 1.0244089666956206,
+            "SOC": 0.9213191626684948,
+            "TEC": 0.9319922380040081,
+            "LOC": 1.0033021561816764
+          },
+          "pooled_encoder_rmse": 0.6971433416417577,
+          "pooled_baseline_rmse": 0.9522686107453046,
+          "population_rms_per_dimension": {
+            "TRU": 0.9146895476061809,
+            "RSK": 0.9248575744945812,
+            "ENV": 0.9140671998819344,
+            "PRC": 0.976206614759396,
+            "TRD": 1.0243796598429706,
+            "SOC": 0.9213232990649916,
+            "TEC": 0.9320004133582774,
+            "LOC": 1.0032578244897967
+          },
+          "baseline_is_intercept_only": true,
+          "baseline_note": "the public-profile ridge selected the intercept-only model in cross-validation, so it predicts the training mean for every persona and its RMSE is the population spread in planted units (compare baseline_rmse_per_dimension with population_rms_per_dimension). The Gate 3 lift bar and the PRD's zero-information baseline are the same bar here.",
+          "bar": 0.3,
+          "pass": false,
+          "projection": {
+            "filed_closed_only_lift": 0.23,
+            "outcome_minus_projection": 0.03791313524854076
+          }
+        },
+        "monotonicity": {
+          "bar_wording": "PREREGISTRATION Gate 3: blur shrinks monotonically in expectation as N grows (plot required).",
+          "mean_curve_reading": {
+            "what": "blur averaged over the 100 held-out personas, per dimension, zero tolerance",
+            "verdict": "FAIL",
+            "n_dimensions_monotone": 4,
+            "largest_uptick": 0.002282102021943788,
+            "largest_uptick_as_fraction_of_smallest_total_shrinkage": 0.012966847681753579,
+            "total_shrinkage_per_dimension": {
+              "TRU": 0.20914485013627904,
+              "RSK": 0.17599512834218523,
+              "ENV": 0.2793644491142744,
+              "PRC": 0.3002959498488823,
+              "TRD": 0.2452330559313689,
+              "SOC": 0.2596679769855029,
+              "TEC": 0.29943389672973,
+              "LOC": 0.18236956217022826
+            },
+            "upticks_per_dimension": {
+              "TRU": {
+                "n_upticks": 1,
+                "largest": 9.93017845593025e-05,
+                "as_fraction_of_total_shrinkage": 0.00047479909017409386,
+                "steps": [
+                  {
+                    "from_n": 8,
+                    "to_n": 9,
+                    "increase": 9.93017845593025e-05
+                  }
+                ]
+              },
+              "RSK": {
+                "n_upticks": 0,
+                "largest": -2.827266885285784e-05,
+                "as_fraction_of_total_shrinkage": -0.0001606446105592629,
+                "steps": []
+              },
+              "ENV": {
+                "n_upticks": 1,
+                "largest": 0.00012715378590621995,
+                "as_fraction_of_total_shrinkage": 0.0004551537832009811,
+                "steps": [
+                  {
+                    "from_n": 8,
+                    "to_n": 9,
+                    "increase": 0.00012715378590621995
+                  }
+                ]
+              },
+              "PRC": {
+                "n_upticks": 0,
+                "largest": -0.00037913911710985015,
+                "as_fraction_of_total_shrinkage": -0.001262551550564182,
+                "steps": []
+              },
+              "TRD": {
+                "n_upticks": 0,
+                "largest": -8.968591847502427e-05,
+                "as_fraction_of_total_shrinkage": -0.00036571708546552484,
+                "steps": []
+              },
+              "SOC": {
+                "n_upticks": 2,
+                "largest": 0.002282102021943788,
+                "as_fraction_of_total_shrinkage": 0.008788538534619524,
+                "steps": [
+                  {
+                    "from_n": 10,
+                    "to_n": 11,
+                    "increase": 0.0008216015775802665
+                  },
+                  {
+                    "from_n": 14,
+                    "to_n": 15,
+                    "increase": 0.002282102021943788
+                  }
+                ]
+              },
+              "TEC": {
+                "n_upticks": 2,
+                "largest": 8.62750072448959e-05,
+                "as_fraction_of_total_shrinkage": 0.00028812705637921814,
+                "steps": [
+                  {
+                    "from_n": 5,
+                    "to_n": 6,
+                    "increase": 8.62750072448959e-05
+                  },
+                  {
+                    "from_n": 6,
+                    "to_n": 7,
+                    "increase": 3.926134289755634e-05
+                  }
+                ]
+              },
+              "LOC": {
+                "n_upticks": 0,
+                "largest": -0.00037969409304461355,
+                "as_fraction_of_total_shrinkage": -0.002082003644282469,
+                "steps": []
+              }
+            },
+            "axis_note": "dimension labels here are the FITTED axes of the encoder, not the planted ones -- blur is a system-side quantity and the monotonicity bar is about it directly, before any rotation"
+          },
+          "strict_per_step_reading": {
+            "what": "every persona x dimension x step of N counted individually",
+            "n_steps_checked": 11200,
+            "n_increases": 1700,
+            "fraction_increasing": 0.15178571428571427,
+            "largest_increase": 0.05646719998439276,
+            "verdict": "FAIL"
+          },
+          "fixed_theta_control": {
+            "what": "the same sweep with theta pinned at its N=15 value, so the information matrices nest exactly and monotonicity is a theorem",
+            "verdict": "PASS",
+            "largest_uptick": -1.1432018100387964e-05
+          },
+          "reading": "the open-answer block adds a positive semi-definite term that does not depend on N, so it cannot break monotonicity; at a fixed theta the information matrices still nest and the curve is monotone by construction. Any rise in the real sweep is the MAP moving between prefixes, not information being lost.",
+          "verdict": null,
+          "note": "this grader does not choose between the two readings. Both are reported with their uptick sizes; the call is the orchestrator's."
+        }
+      },
+      "alignment": {
+        "method": "orthogonal Procrustes, fitted on the 400 training personas' own estimate at this N, applied unchanged to held-out -- the same convention and the same code as Stage 2 (src.eval.recovery.procrustes_rotation)",
+        "rotation_determinant": -0.999999999999999,
+        "rotation": [
+          [
+            0.45353983607021076,
+            0.49285151369407665,
+            0.31022611356865404,
+            -0.12365800759472248,
+            -0.012356172991731085,
+            0.4342287627271597,
+            -0.08629587813631584,
+            -0.493673157251613
+          ],
+          [
+            0.22291891344102382,
+            -0.36395085835198726,
+            -0.4488011412252353,
+            0.14221930376352238,
+            0.31094227730809254,
+            0.5990374386084606,
+            -0.3598184016410366,
+            0.10582013596396228
+          ],
+          [
+            -0.02428569052092383,
+            0.4079511117255134,
+            -0.12548211553734473,
+            -0.1403607291880146,
+            0.6319566126663543,
+            0.11934111171045197,
+            0.5180996620446973,
+            0.33985361409299836
+          ],
+          [
+            -0.04025665777760978,
+            0.0012106181688782136,
+            -0.29137356867367237,
+            -0.20093237714107423,
+            0.5072254961921174,
+            -0.48165422045351025,
+            -0.26973111041456216,
+            -0.5577474295857753
+          ],
+          [
+            -0.5895426941943301,
+            0.033569013879394705,
+            0.21046477072120356,
+            -0.6198534914751159,
+            0.03623710352161322,
+            0.29750098517209544,
+            -0.350275477173593,
+            0.1014193702477198
+          ],
+          [
+            -0.2735863975721946,
+            0.6388719388965862,
+            -0.21355823494596923,
+            0.4780287385925975,
+            -0.06536135148971156,
+            -0.05297189129896118,
+            -0.45587531682489657,
+            0.16725460260861935
+          ],
+          [
+            0.1379729901679046,
+            0.21298672711008848,
+            -0.689160881744872,
+            -0.45586572861533525,
+            -0.48471873121888703,
+            6.01624913527804e-05,
+            0.13343108188040603,
+            0.00936584112351005
+          ],
+          [
+            0.5485906767689956,
+            0.059699280334770566,
+            0.1919575888010691,
+            -0.2895928589807712,
+            0.07731674176229544,
+            -0.3391954874039567,
+            -0.41663237933423497,
+            0.5293000365360064
+          ]
+        ],
+        "scale_linking": "none applied. The Stage 2 fit pinned the latent metric (src.model.mirt.link_scale) and stored the loadings after linking; the encoder reads those linked loadings under the same N(0, I) prior, so its theta is already in the unit Gate 2 graded. Rotation only, exactly as recovery.py does."
+      },
+      "prior_shrinkage_diagnostic": {
+        "label": "EXPLORATORY -- reported, never applied",
+        "per_dimension": {
+          "TRU": {
+            "sd_estimate": 0.8971612952198926,
+            "sd_planted": 0.914677885016906,
+            "regression_of_planted_on_estimate": 0.7568969504431587,
+            "rmse_as_measured": 0.647706027830694,
+            "rmse_if_optimally_rescaled": 0.6095427107996225
+          },
+          "RSK": {
+            "sd_estimate": 0.6920356629792395,
+            "sd_planted": 0.924839929247759,
+            "regression_of_planted_on_estimate": 0.8063911002694926,
+            "rmse_as_measured": 0.7485887593989146,
+            "rmse_if_optimally_rescaled": 0.736438167400684
+          },
+          "ENV": {
+            "sd_estimate": 0.7159173438841172,
+            "sd_planted": 0.9130118673812515,
+            "regression_of_planted_on_estimate": 0.9147605169675423,
+            "rmse_as_measured": 0.6361218341615998,
+            "rmse_if_optimally_rescaled": 0.6331484968516254
+          },
+          "PRC": {
+            "sd_estimate": 0.7885954522484616,
+            "sd_planted": 0.9678396914422347,
+            "regression_of_planted_on_estimate": 0.8125014496553998,
+            "rmse_as_measured": 0.749751406570839,
+            "rmse_if_optimally_rescaled": 0.7349436565506676
+          },
+          "TRD": {
+            "sd_estimate": 0.8210896731256425,
+            "sd_planted": 1.0241592490911753,
+            "regression_of_planted_on_estimate": 0.8179645638304047,
+            "rmse_as_measured": 0.7877916507652674,
+            "rmse_if_optimally_rescaled": 0.7734824297972391
+          },
+          "SOC": {
+            "sd_estimate": 0.8628078864014274,
+            "sd_planted": 0.910904373600215,
+            "regression_of_planted_on_estimate": 0.7845660326826671,
+            "rmse_as_measured": 0.6493637193097029,
+            "rmse_if_optimally_rescaled": 0.621963633143076
+          },
+          "TEC": {
+            "sd_estimate": 0.8828734102363817,
+            "sd_planted": 0.9317629156491473,
+            "regression_of_planted_on_estimate": 0.8542997327029779,
+            "rmse_as_measured": 0.5594937796179678,
+            "rmse_if_optimally_rescaled": 0.544415842214654
+          },
+          "LOC": {
+            "sd_estimate": 0.781505154125271,
+            "sd_planted": 1.0030964093166719,
+            "regression_of_planted_on_estimate": 0.8106667544002999,
+            "rmse_as_measured": 0.7655469333897216,
+            "rmse_if_optimally_rescaled": 0.7495358172543777
+          }
+        },
+        "note": "the optimal rescaling is fitted against planted theta, so using it anywhere would be a Wall breach. It is here only to show how much of the measured RMSE is prior shrinkage rather than lost signal."
+      }
+    },
+    "closed_only": {
+      "n": 15,
+      "bars": {
+        "rmse": {
+          "per_dimension_rmse": {
+            "TRU": 0.7962395324791992,
+            "RSK": 0.7829734499827554,
+            "ENV": 0.6350675796692223,
+            "PRC": 0.7685518003560333,
+            "TRD": 0.8173909360474685,
+            "SOC": 0.7671154620219479,
+            "TEC": 0.6266215320505161,
+            "LOC": 0.7675370021040817
+          },
+          "per_dimension_r": {
+            "TRU": 0.4971602167477881,
+            "RSK": 0.5484384021376183,
+            "ENV": 0.7190120809512155,
+            "PRC": 0.627314174120626,
+            "TRD": 0.6068903748629204,
+            "SOC": 0.5555877264198942,
+            "TEC": 0.7438497646355863,
+            "LOC": 0.6881958773788364
+          },
+          "worst_dimension": "TRD",
+          "worst_rmse": 0.8173909360474685,
+          "best_rmse": 0.6266215320505161,
+          "pooled_rmse": 0.7482804609128834,
+          "mean_of_per_dimension_rmse": 0.745187161838903,
+          "n_dimensions_passing": 0,
+          "n_personas": 100,
+          "bar": 0.5,
+          "pass": false,
+          "projection": {
+            "filed": {
+              "TRU": 0.762,
+              "RSK": 0.752,
+              "ENV": 0.718,
+              "PRC": 0.712,
+              "TRD": 0.797,
+              "SOC": 0.742,
+              "TEC": 0.697,
+              "LOC": 0.807
+            },
+            "per_dimension_outcome_minus_projection": {
+              "TRU": 0.0342395324791992,
+              "RSK": 0.03097344998275542,
+              "ENV": -0.08293242033077763,
+              "PRC": 0.056551800356033355,
+              "TRD": 0.020390936047468444,
+              "SOC": 0.02511546202194792,
+              "TEC": -0.07037846794948388,
+              "LOC": -0.03946299789591834
+            },
+            "quote": "PROJECTION, FILED BEFORE ANY STAGE 3 MEASUREMENT (a prediction, not a result): from Stage 2's own numbers, the Gate 3 person-encoder RMSE bar (<= 0.5 per dimension at N=15) is projected unreachable -- the full 252-item fit already sits at RMSE 0.458-0.580 with 5/8 dimensions above 0.50, the transmission ceiling puts 4/8 dimensions above the bar even with infinite interview data, and Fisher-information plus a direct 15-item MAP scoring of held-out personas (two independent methods that agree) put N=15 at RMSE 0.70-0.81 on every dimension. Projected lift from closed items alone: ~23% vs the 30% bar (the open answers are the only legal lever); projected coverage ~0.60 -- near the band floor, with the anticipation-note blind spot expected to surface as N grows rather than at N=15.",
+            "independent_sitting_correction": "the projection chained through r(theta_hat_15, theta_hat_full) = 0.758, which was measured by re-scoring the SAME noised answers the full-matrix fit had already seen. The interview is an independent sitting of the frozen noise layer, so its answers carry fresh noise; the backbone measured 0.686 instead. Numbers below are from the independent sitting.",
+            "scope": "the filed per-dimension projection is for the CLOSED-ONLY arm; it is shown against both arms because it is the only filed per-dimension prediction"
+          }
+        },
+        "coverage": {
+          "pooled_coverage": 0.68875,
+          "per_dimension_coverage": {
+            "TRU": 0.76,
+            "RSK": 0.68,
+            "ENV": 0.77,
+            "PRC": 0.69,
+            "TRD": 0.63,
+            "SOC": 0.74,
+            "TEC": 0.71,
+            "LOC": 0.53
+          },
+          "n_cells": 800,
+          "mean_blur": 0.7003616120422137,
+          "mean_blur_per_dimension": {
+            "TRU": 0.8547081660052711,
+            "RSK": 0.7694538914305467,
+            "ENV": 0.677062712719934,
+            "PRC": 0.6811707159363265,
+            "TRD": 0.6919467270152738,
+            "SOC": 0.7611897526656354,
+            "TEC": 0.5930938488707526,
+            "LOC": 0.57426708169397
+          },
+          "diagnostics": {
+            "mean_predicted_variance": 0.5013264816135657,
+            "mean_actual_squared_error": 0.5599236481839971,
+            "variance_ratio_actual_over_predicted": 1.1168842435409176,
+            "blur_multiplier_for_nominal_68pct": 0.9803330834403399,
+            "per_dimension_variance_ratio": {
+              "TRU": 0.8675145711108296,
+              "RSK": 1.0284168379506526,
+              "ENV": 0.8733380507253863,
+              "PRC": 1.2657436246459723,
+              "TRD": 1.3860272886386227,
+              "SOC": 1.0127144463979711,
+              "TEC": 1.1013878775860406,
+              "LOC": 1.755467789744973
+            },
+            "note": "a ratio above 1 means the posterior is more confident than it has earned; the multiplier is how much wider the interval would have to be to reach the nominal 68 percent. Reported to size the miss -- the blur itself is left exactly as calibrated on system-side training residuals."
+          },
+          "band": [
+            0.6,
+            0.75
+          ],
+          "pass": true,
+          "projection": {
+            "filed_pooled_coverage": 0.598,
+            "outcome_minus_projection": 0.09075
+          }
+        },
+        "lift": {
+          "definition": "1 - RMSE(encoder) / RMSE(public-profile-only baseline)",
+          "pooled_lift": 0.21421446321184778,
+          "mean_of_per_dimension_lift": 0.2166482392198702,
+          "per_dimension_lift": {
+            "TRU": 0.12948652813017414,
+            "RSK": 0.15339986045837883,
+            "ENV": 0.3051909835876867,
+            "PRC": 0.21302790662150917,
+            "TRD": 0.20206612412860103,
+            "SOC": 0.16736476202493467,
+            "TEC": 0.32766094824109404,
+            "LOC": 0.2349888005665829
+          },
+          "encoder_rmse_per_dimension": {
+            "TRU": 0.7962395324791992,
+            "RSK": 0.7829734499827554,
+            "ENV": 0.6350675796692223,
+            "PRC": 0.7685518003560333,
+            "TRD": 0.8173909360474685,
+            "SOC": 0.7671154620219479,
+            "TEC": 0.6266215320505161,
+            "LOC": 0.7675370021040817
+          },
+          "baseline_rmse_per_dimension": {
+            "TRU": 0.914678012700838,
+            "RSK": 0.9248444612904086,
+            "ENV": 0.9140174705107177,
+            "PRC": 0.976593460965841,
+            "TRD": 1.0243843014620992,
+            "SOC": 0.9213103494004664,
+            "TEC": 0.9320022842808428,
+            "LOC": 1.003301654501967
+          },
+          "pooled_encoder_rmse": 0.7482804609128834,
+          "pooled_baseline_rmse": 0.9522705953222702,
+          "population_rms_per_dimension": {
+            "TRU": 0.9146895476061809,
+            "RSK": 0.9248575744945812,
+            "ENV": 0.9140671998819344,
+            "PRC": 0.976206614759396,
+            "TRD": 1.0243796598429706,
+            "SOC": 0.9213232990649916,
+            "TEC": 0.9320004133582774,
+            "LOC": 1.0032578244897967
+          },
+          "baseline_is_intercept_only": true,
+          "baseline_note": "the public-profile ridge selected the intercept-only model in cross-validation, so it predicts the training mean for every persona and its RMSE is the population spread in planted units (compare baseline_rmse_per_dimension with population_rms_per_dimension). The Gate 3 lift bar and the PRD's zero-information baseline are the same bar here.",
+          "bar": 0.3,
+          "pass": false,
+          "projection": {
+            "filed_closed_only_lift": 0.23,
+            "outcome_minus_projection": -0.015785536788152227
+          }
+        },
+        "monotonicity": {
+          "bar_wording": "PREREGISTRATION Gate 3: blur shrinks monotonically in expectation as N grows (plot required).",
+          "mean_curve_reading": {
+            "what": "blur averaged over the 100 held-out personas, per dimension, zero tolerance",
+            "verdict": "FAIL",
+            "n_dimensions_monotone": 0,
+            "largest_uptick": 0.004124198214688346,
+            "largest_uptick_as_fraction_of_smallest_total_shrinkage": 0.021495261296491295,
+            "total_shrinkage_per_dimension": {
+              "TRU": 0.21865217759264588,
+              "RSK": 0.2931529749728604,
+              "ENV": 0.4190935818917636,
+              "PRC": 0.3410017517199867,
+              "TRD": 0.29563309412629135,
+              "SOC": 0.3291135897781343,
+              "TEC": 0.3337336199570782,
+              "LOC": 0.19186546084748202
+            },
+            "upticks_per_dimension": {
+              "TRU": {
+                "n_upticks": 2,
+                "largest": 0.0010259932509519842,
+                "as_fraction_of_total_shrinkage": 0.0046923532262433424,
+                "steps": [
+                  {
+                    "from_n": 3,
+                    "to_n": 4,
+                    "increase": 0.0010259932509519842
+                  },
+                  {
+                    "from_n": 8,
+                    "to_n": 9,
+                    "increase": 0.0008934077064524093
+                  }
+                ]
+              },
+              "RSK": {
+                "n_upticks": 1,
+                "largest": 0.0005642903803562138,
+                "as_fraction_of_total_shrinkage": 0.0019249007464735939,
+                "steps": [
+                  {
+                    "from_n": 8,
+                    "to_n": 9,
+                    "increase": 0.0005642903803562138
+                  }
+                ]
+              },
+              "ENV": {
+                "n_upticks": 2,
+                "largest": 0.0013231361408229114,
+                "as_fraction_of_total_shrinkage": 0.003157137684739416,
+                "steps": [
+                  {
+                    "from_n": 4,
+                    "to_n": 5,
+                    "increase": 0.0013231361408229114
+                  },
+                  {
+                    "from_n": 8,
+                    "to_n": 9,
+                    "increase": 0.0004925568965565841
+                  }
+                ]
+              },
+              "PRC": {
+                "n_upticks": 3,
+                "largest": 0.0011652843061075169,
+                "as_fraction_of_total_shrinkage": 0.0034172384752568343,
+                "steps": [
+                  {
+                    "from_n": 2,
+                    "to_n": 3,
+                    "increase": 0.0011652843061075169
+                  },
+                  {
+                    "from_n": 4,
+                    "to_n": 5,
+                    "increase": 4.4566438475723835e-05
+                  },
+                  {
+                    "from_n": 11,
+                    "to_n": 12,
+                    "increase": 8.401904747146194e-05
+                  }
+                ]
+              },
+              "TRD": {
+                "n_upticks": 2,
+                "largest": 0.00021889371806738112,
+                "as_fraction_of_total_shrinkage": 0.0007404235940306197,
+                "steps": [
+                  {
+                    "from_n": 2,
+                    "to_n": 3,
+                    "increase": 6.971034619496219e-05
+                  },
+                  {
+                    "from_n": 12,
+                    "to_n": 13,
+                    "increase": 0.00021889371806738112
+                  }
+                ]
+              },
+              "SOC": {
+                "n_upticks": 3,
+                "largest": 0.004124198214688346,
+                "as_fraction_of_total_shrinkage": 0.0125312303799688,
+                "steps": [
+                  {
+                    "from_n": 1,
+                    "to_n": 2,
+                    "increase": 0.00018086642991599344
+                  },
+                  {
+                    "from_n": 10,
+                    "to_n": 11,
+                    "increase": 0.0012495518585315946
+                  },
+                  {
+                    "from_n": 14,
+                    "to_n": 15,
+                    "increase": 0.004124198214688346
+                  }
+                ]
+              },
+              "TEC": {
+                "n_upticks": 2,
+                "largest": 0.0019128014204083943,
+                "as_fraction_of_total_shrinkage": 0.005731521507046254,
+                "steps": [
+                  {
+                    "from_n": 2,
+                    "to_n": 3,
+                    "increase": 0.0019128014204083943
+                  },
+                  {
+                    "from_n": 5,
+                    "to_n": 6,
+                    "increase": 0.00033287629401079766
+                  }
+                ]
+              },
+              "LOC": {
+                "n_upticks": 1,
+                "largest": 0.0006497620652803349,
+                "as_fraction_of_total_shrinkage": 0.0033865504630708116,
+                "steps": [
+                  {
+                    "from_n": 2,
+                    "to_n": 3,
+                    "increase": 0.0006497620652803349
+                  }
+                ]
+              }
+            },
+            "axis_note": "dimension labels here are the FITTED axes of the encoder, not the planted ones -- blur is a system-side quantity and the monotonicity bar is about it directly, before any rotation"
+          },
+          "strict_per_step_reading": {
+            "what": "every persona x dimension x step of N counted individually",
+            "n_steps_checked": 11200,
+            "n_increases": 1987,
+            "fraction_increasing": 0.17741071428571428,
+            "largest_increase": 0.052356881369082786,
+            "verdict": "FAIL"
+          },
+          "fixed_theta_control": null,
+          "reading": "the open-answer block adds a positive semi-definite term that does not depend on N, so it cannot break monotonicity; at a fixed theta the information matrices still nest and the curve is monotone by construction. Any rise in the real sweep is the MAP moving between prefixes, not information being lost.",
+          "verdict": null,
+          "note": "this grader does not choose between the two readings. Both are reported with their uptick sizes; the call is the orchestrator's."
+        }
+      },
+      "alignment": {
+        "method": "orthogonal Procrustes, fitted on the 400 training personas' own estimate at this N, applied unchanged to held-out -- the same convention and the same code as Stage 2 (src.eval.recovery.procrustes_rotation)",
+        "rotation_determinant": -0.9999999999999989,
+        "rotation": [
+          [
+            0.4031818077798065,
+            0.5117061147444724,
+            0.21419898037784887,
+            -0.06879579515543066,
+            -0.1971111297512891,
+            0.4782841042255322,
+            -0.11809502821870105,
+            -0.4933885891119908
+          ],
+          [
+            0.18188381439688187,
+            -0.38830806479340885,
+            -0.5198185219108585,
+            0.16152749329798424,
+            0.1740880122445523,
+            0.6086420195018476,
+            -0.33104787133713104,
+            0.09740770522256104
+          ],
+          [
+            0.19766359162173547,
+            0.41447055732232163,
+            -0.14715989272101854,
+            -0.15643433796781991,
+            0.609246932925759,
+            0.154504003147656,
+            0.481779912818464,
+            0.3403679316204238
+          ],
+          [
+            0.07435923128084751,
+            0.022693563970708614,
+            -0.30141720268301564,
+            -0.22106565715076068,
+            0.5033404974495659,
+            -0.4324888401826003,
+            -0.31571180705544066,
+            -0.5605008061219868
+          ],
+          [
+            -0.5274420019526679,
+            -0.017158172461841092,
+            0.27260777698489363,
+            -0.6476886013724321,
+            0.16890830640376292,
+            0.3376181446005667,
+            -0.27877694163841255,
+            0.08638516393759468
+          ],
+          [
+            -0.4433328867292222,
+            0.585277639820867,
+            -0.14754352299961468,
+            0.4899814735649443,
+            0.07340804098149672,
+            -0.019386592249417786,
+            -0.4086910376992282,
+            0.1620560258632186
+          ],
+          [
+            -0.11511336795569166,
+            0.24361148735173388,
+            -0.6798197801526238,
+            -0.42050909686262583,
+            -0.5138708580299763,
+            -0.06196966218515637,
+            0.13913925267150962,
+            0.03400429854294565
+          ],
+          [
+            0.5213178644980042,
+            0.1134988233000995,
+            0.11471753242656202,
+            -0.24377040690371077,
+            -0.09124181981579002,
+            -0.26772940316079163,
+            -0.5296889300001223,
+            0.5312128689818119
+          ]
+        ],
+        "scale_linking": "none applied. The Stage 2 fit pinned the latent metric (src.model.mirt.link_scale) and stored the loadings after linking; the encoder reads those linked loadings under the same N(0, I) prior, so its theta is already in the unit Gate 2 graded. Rotation only, exactly as recovery.py does."
+      },
+      "prior_shrinkage_diagnostic": {
+        "label": "EXPLORATORY -- reported, never applied",
+        "per_dimension": {
+          "TRU": {
+            "sd_estimate": 0.5048569605444038,
+            "sd_planted": 0.914677885016906,
+            "regression_of_planted_on_estimate": 0.8944082686829863,
+            "rmse_as_measured": 0.7962395324791992,
+            "rmse_if_optimally_rescaled": 0.7944387195516137
+          },
+          "RSK": {
+            "sd_estimate": 0.6089550747361363,
+            "sd_planted": 0.924839929247759,
+            "regression_of_planted_on_estimate": 0.8233280536139888,
+            "rmse_as_measured": 0.7829734499827554,
+            "rmse_if_optimally_rescaled": 0.77546846396828
+          },
+          "ENV": {
+            "sd_estimate": 0.6765917661503623,
+            "sd_planted": 0.9130118673812515,
+            "regression_of_planted_on_estimate": 0.9683723311725562,
+            "rmse_as_measured": 0.6350675796692223,
+            "rmse_if_optimally_rescaled": 0.634704099837635
+          },
+          "PRC": {
+            "sd_estimate": 0.7476612504720795,
+            "sd_planted": 0.9678396914422347,
+            "regression_of_planted_on_estimate": 0.8208968637631568,
+            "rmse_as_measured": 0.7685518003560333,
+            "rmse_if_optimally_rescaled": 0.7566790141201956
+          },
+          "TRD": {
+            "sd_estimate": 0.6864105041336325,
+            "sd_planted": 1.0241592490911753,
+            "regression_of_planted_on_estimate": 0.9043565742972022,
+            "rmse_as_measured": 0.8173909360474685,
+            "rmse_if_optimally_rescaled": 0.8147488886647473
+          },
+          "SOC": {
+            "sd_estimate": 0.6252545206040144,
+            "sd_planted": 0.910904373600215,
+            "regression_of_planted_on_estimate": 0.8225044858139897,
+            "rmse_as_measured": 0.7671154620219479,
+            "rmse_if_optimally_rescaled": 0.7587810360990923
+          },
+          "TEC": {
+            "sd_estimate": 0.7383158263114409,
+            "sd_planted": 0.9317629156491473,
+            "regression_of_planted_on_estimate": 0.9322413142478513,
+            "rmse_as_measured": 0.6266215320505161,
+            "rmse_if_optimally_rescaled": 0.6246012182462266
+          },
+          "LOC": {
+            "sd_estimate": 0.7532358010557,
+            "sd_planted": 1.0030964093166719,
+            "regression_of_planted_on_estimate": 0.8304035965948907,
+            "rmse_as_measured": 0.7675370021040817,
+            "rmse_if_optimally_rescaled": 0.7556085719069986
+          }
+        },
+        "note": "the optimal rescaling is fitted against planted theta, so using it anywhere would be a Wall breach. It is here only to show how much of the measured RMSE is prior shrinkage rather than lost signal."
+      }
+    }
+  },
+  "curves": {
+    "fused": [
+      {
+        "n": 1,
+        "pooled_rmse": 0.779610133758297,
+        "rmse_per_dimension": {
+          "TRU": 0.6312963520999975,
+          "RSK": 0.734701712160267,
+          "ENV": 0.8933082289029929,
+          "PRC": 0.8876309380840246,
+          "TRD": 0.8307657904396487,
+          "SOC": 0.6430845704249779,
+          "TEC": 0.5749091340764664,
+          "LOC": 0.950723748228303
+        },
+        "worst_dimension_rmse": 0.950723748228303,
+        "pooled_coverage": 0.74625,
+        "mean_calibrated_blur": 0.8755301259025288,
+        "pooled_lift": 0.18131503813697625,
+        "mean_r": 0.5618968823564192
+      },
+      {
+        "n": 2,
+        "pooled_rmse": 0.7881063374451546,
+        "rmse_per_dimension": {
+          "TRU": 0.630427800217247,
+          "RSK": 0.7357029874820923,
+          "ENV": 0.8936940374516817,
+          "PRC": 0.8898391886617043,
+          "TRD": 0.8782701889994453,
+          "SOC": 0.6580365215998916,
+          "TEC": 0.573920187204319,
+          "LOC": 0.9518071820032874
+        },
+        "worst_dimension_rmse": 0.9518071820032874,
+        "pooled_coverage": 0.72875,
+        "mean_calibrated_blur": 0.8382419797592198,
+        "pooled_lift": 0.17239370742584792,
+        "mean_r": 0.5565750533936795
+      },
+      {
+        "n": 3,
+        "pooled_rmse": 0.7850944875222371,
+        "rmse_per_dimension": {
+          "TRU": 0.6292404654158851,
+          "RSK": 0.7424520227504396,
+          "ENV": 0.9054047307909977,
+          "PRC": 0.8920266554537675,
+          "TRD": 0.8160363259561674,
+          "SOC": 0.6797073354002392,
+          "TEC": 0.5690363013552443,
+          "LOC": 0.957402384258401
+        },
+        "worst_dimension_rmse": 0.957402384258401,
+        "pooled_coverage": 0.715,
+        "mean_calibrated_blur": 0.8315044327745693,
+        "pooled_lift": 0.17555523250523353,
+        "mean_r": 0.5563132986100905
+      },
+      {
+        "n": 4,
+        "pooled_rmse": 0.7938101703865779,
+        "rmse_per_dimension": {
+          "TRU": 0.6303743481997505,
+          "RSK": 0.7497681908317125,
+          "ENV": 0.9185940471405862,
+          "PRC": 0.8832754577259748,
+          "TRD": 0.8136188828535872,
+          "SOC": 0.6821471576449353,
+          "TEC": 0.6339020997309294,
+          "LOC": 0.9635505555478692
+        },
+        "worst_dimension_rmse": 0.9635505555478692,
+        "pooled_coverage": 0.685,
+        "mean_calibrated_blur": 0.808673205383578,
+        "pooled_lift": 0.1664048763872903,
+        "mean_r": 0.5465627531577194
+      },
+      {
+        "n": 5,
+        "pooled_rmse": 0.7886360665963951,
+        "rmse_per_dimension": {
+          "TRU": 0.6304174597087504,
+          "RSK": 0.7445577140288265,
+          "ENV": 0.9211696509064068,
+          "PRC": 0.8532137703518962,
+          "TRD": 0.8163480733781326,
+          "SOC": 0.6825716940633897,
+          "TEC": 0.6380579557541316,
+          "LOC": 0.9527900546566264
+        },
+        "worst_dimension_rmse": 0.9527900546566264,
+        "pooled_coverage": 0.68875,
+        "mean_calibrated_blur": 0.8046075604988927,
+        "pooled_lift": 0.17183640469477424,
+        "mean_r": 0.5555504414568897
+      },
+      {
+        "n": 6,
+        "pooled_rmse": 0.7852181328122648,
+        "rmse_per_dimension": {
+          "TRU": 0.6348469122427818,
+          "RSK": 0.7553324182330106,
+          "ENV": 0.9234647057678362,
+          "PRC": 0.8540579620166799,
+          "TRD": 0.8167281082650109,
+          "SOC": 0.6844358639265089,
+          "TEC": 0.5654709677857916,
+          "LOC": 0.9599613166211352
+        },
+        "worst_dimension_rmse": 0.9599613166211352,
+        "pooled_coverage": 0.6875,
+        "mean_calibrated_blur": 0.7946683946631401,
+        "pooled_lift": 0.1754253020220351,
+        "mean_r": 0.5582351001660975
+      },
+      {
+        "n": 7,
+        "pooled_rmse": 0.7838475811566148,
+        "rmse_per_dimension": {
+          "TRU": 0.6386289175867892,
+          "RSK": 0.7524528632854091,
+          "ENV": 0.9233826401071621,
+          "PRC": 0.8536097326906393,
+          "TRD": 0.8134776259920926,
+          "SOC": 0.6697747141404644,
+          "TEC": 0.5645907266350033,
+          "LOC": 0.9648379438780136
+        },
+        "worst_dimension_rmse": 0.9648379438780136,
+        "pooled_coverage": 0.68375,
+        "mean_calibrated_blur": 0.788125950064276,
+        "pooled_lift": 0.17686727218962406,
+        "mean_r": 0.5610963925346544
+      },
+      {
+        "n": 8,
+        "pooled_rmse": 0.7471441683796218,
+        "rmse_per_dimension": {
+          "TRU": 0.6495212446302023,
+          "RSK": 0.7536154185802433,
+          "ENV": 0.6401565519953833,
+          "PRC": 0.8573604687310763,
+          "TRD": 0.7976337343735538,
+          "SOC": 0.6721599424766529,
+          "TEC": 0.5643672376553585,
+          "LOC": 0.9615533758333565
+        },
+        "worst_dimension_rmse": 0.9615533758333565,
+        "pooled_coverage": 0.6925,
+        "mean_calibrated_blur": 0.7467299431695966,
+        "pooled_lift": 0.21540964549806307,
+        "mean_r": 0.6295687767253073
+      },
+      {
+        "n": 9,
+        "pooled_rmse": 0.7442563233364403,
+        "rmse_per_dimension": {
+          "TRU": 0.6635367319927685,
+          "RSK": 0.7474618317618978,
+          "ENV": 0.6441754180065163,
+          "PRC": 0.8266762666889639,
+          "TRD": 0.7940707319317537,
+          "SOC": 0.6648824690071962,
+          "TEC": 0.5644371412277005,
+          "LOC": 0.9709776946943752
+        },
+        "worst_dimension_rmse": 0.9709776946943752,
+        "pooled_coverage": 0.6775,
+        "mean_calibrated_blur": 0.7139308779031669,
+        "pooled_lift": 0.21843445938174555,
+        "mean_r": 0.6397216134332502
+      },
+      {
+        "n": 10,
+        "pooled_rmse": 0.7249963801991507,
+        "rmse_per_dimension": {
+          "TRU": 0.6617800675980388,
+          "RSK": 0.7443272496792016,
+          "ENV": 0.6396419272203026,
+          "PRC": 0.8285119555494073,
+          "TRD": 0.8137744644301647,
+          "SOC": 0.670180044693021,
+          "TEC": 0.5578957631336295,
+          "LOC": 0.8335408739814147
+        },
+        "worst_dimension_rmse": 0.8335408739814147,
+        "pooled_coverage": 0.6775,
+        "mean_calibrated_blur": 0.6681098997830466,
+        "pooled_lift": 0.23865663094353218,
+        "mean_r": 0.6733022050542214
+      },
+      {
+        "n": 11,
+        "pooled_rmse": 0.7132323618057784,
+        "rmse_per_dimension": {
+          "TRU": 0.662307084271635,
+          "RSK": 0.7381741609698472,
+          "ENV": 0.6467458252885051,
+          "PRC": 0.8240427797338463,
+          "TRD": 0.8105270459733547,
+          "SOC": 0.6740728755771918,
+          "TEC": 0.5590600531180921,
+          "LOC": 0.751563907742557
+        },
+        "worst_dimension_rmse": 0.8240427797338463,
+        "pooled_coverage": 0.66125,
+        "mean_calibrated_blur": 0.6608670436850709,
+        "pooled_lift": 0.25101090700748496,
+        "mean_r": 0.686146491568753
+      },
+      {
+        "n": 12,
+        "pooled_rmse": 0.7135886251113743,
+        "rmse_per_dimension": {
+          "TRU": 0.661306651245505,
+          "RSK": 0.740896301411729,
+          "ENV": 0.6424952491591238,
+          "PRC": 0.8258669055714724,
+          "TRD": 0.808922907133496,
+          "SOC": 0.6768497493825327,
+          "TEC": 0.5602552606866745,
+          "LOC": 0.7524572344776596
+        },
+        "worst_dimension_rmse": 0.8258669055714724,
+        "pooled_coverage": 0.665,
+        "mean_calibrated_blur": 0.6587246921832086,
+        "pooled_lift": 0.25063661884873134,
+        "mean_r": 0.6861967092785654
+      },
+      {
+        "n": 13,
+        "pooled_rmse": 0.7121885622515005,
+        "rmse_per_dimension": {
+          "TRU": 0.6611764526233214,
+          "RSK": 0.7364334542194426,
+          "ENV": 0.6423802011925954,
+          "PRC": 0.8361436825642723,
+          "TRD": 0.7946939066504094,
+          "SOC": 0.6729571124780973,
+          "TEC": 0.5633091949792813,
+          "LOC": 0.751462800936281
+        },
+        "worst_dimension_rmse": 0.8361436825642723,
+        "pooled_coverage": 0.6575,
+        "mean_calibrated_blur": 0.642997829453208,
+        "pooled_lift": 0.2521078434892159,
+        "mean_r": 0.6874313412870048
+      },
+      {
+        "n": 14,
+        "pooled_rmse": 0.7099567800935122,
+        "rmse_per_dimension": {
+          "TRU": 0.6597588085554902,
+          "RSK": 0.732273474483866,
+          "ENV": 0.6438222587084336,
+          "PRC": 0.8428108096196171,
+          "TRD": 0.7946381727482548,
+          "SOC": 0.6511783155726084,
+          "TEC": 0.5632874268822952,
+          "LOC": 0.7504598581818368
+        },
+        "worst_dimension_rmse": 0.8428108096196171,
+        "pooled_coverage": 0.6625,
+        "mean_calibrated_blur": 0.6398065101733443,
+        "pooled_lift": 0.2544529057457823,
+        "mean_r": 0.6900445905022912
+      },
+      {
+        "n": 15,
+        "pooled_rmse": 0.6971433416417577,
+        "rmse_per_dimension": {
+          "TRU": 0.647706027830694,
+          "RSK": 0.7485887593989144,
+          "ENV": 0.6361218341615998,
+          "PRC": 0.749751406570839,
+          "TRD": 0.7877916507652674,
+          "SOC": 0.649363719309703,
+          "TEC": 0.5594937796179678,
+          "LOC": 0.7655469333897215
+        },
+        "worst_dimension_rmse": 0.7877916507652674,
+        "pooled_coverage": 0.64875,
+        "mean_calibrated_blur": 0.621215587035171,
+        "pooled_lift": 0.26791313524854077,
+        "mean_r": 0.703784013539384
+      }
+    ],
+    "closed_only": [
+      {
+        "n": 1,
+        "pooled_rmse": 0.9201736958781331,
+        "rmse_per_dimension": {
+          "TRU": 0.9050412394311895,
+          "RSK": 0.807822568439197,
+          "ENV": 0.9154461481770592,
+          "PRC": 0.9691246937994269,
+          "TRD": 1.0072123516600064,
+          "SOC": 0.8607800460766006,
+          "TEC": 0.8896566693922539,
+          "LOC": 0.988902308996727
+        },
+        "worst_dimension_rmse": 1.0072123516600064,
+        "pooled_coverage": 0.7325,
+        "mean_calibrated_blur": 1.0317926760360363,
+        "pooled_lift": 0.033667362641862986,
+        "mean_r": 0.21982483848619944
+      },
+      {
+        "n": 2,
+        "pooled_rmse": 0.8805111514751067,
+        "rmse_per_dimension": {
+          "TRU": 0.8680559114798098,
+          "RSK": 0.7918763683812093,
+          "ENV": 0.918427178905292,
+          "PRC": 0.9689516153695235,
+          "TRD": 0.8811709785298495,
+          "SOC": 0.7945938116731374,
+          "TEC": 0.8319098944731379,
+          "LOC": 0.9692875978606882
+        },
+        "worst_dimension_rmse": 0.9692875978606882,
+        "pooled_coverage": 0.73375,
+        "mean_calibrated_blur": 0.9830751438931641,
+        "pooled_lift": 0.07526505722924048,
+        "mean_r": 0.3450450785301375
+      },
+      {
+        "n": 3,
+        "pooled_rmse": 0.8754048154800375,
+        "rmse_per_dimension": {
+          "TRU": 0.8832978640541915,
+          "RSK": 0.7896462456351184,
+          "ENV": 0.9189267119354749,
+          "PRC": 0.9636934167226765,
+          "TRD": 0.8435456437061783,
+          "SOC": 0.8251381139204574,
+          "TEC": 0.8249759154342826,
+          "LOC": 0.9384954413246183
+        },
+        "worst_dimension_rmse": 0.9636934167226765,
+        "pooled_coverage": 0.7275,
+        "mean_calibrated_blur": 0.9739780295998065,
+        "pooled_lift": 0.08071385742324211,
+        "mean_r": 0.3551099659901017
+      },
+      {
+        "n": 4,
+        "pooled_rmse": 0.8676591655658186,
+        "rmse_per_dimension": {
+          "TRU": 0.8779459293603635,
+          "RSK": 0.7883888334787871,
+          "ENV": 0.9205384743131043,
+          "PRC": 0.9451836861173681,
+          "TRD": 0.8509701532451858,
+          "SOC": 0.8367372415898173,
+          "TEC": 0.7542597080033826,
+          "LOC": 0.9467644953210763
+        },
+        "worst_dimension_rmse": 0.9467644953210763,
+        "pooled_coverage": 0.73125,
+        "mean_calibrated_blur": 0.9223757439132751,
+        "pooled_lift": 0.0889336484740948,
+        "mean_r": 0.37632614348957566
+      },
+      {
+        "n": 5,
+        "pooled_rmse": 0.8637680966138017,
+        "rmse_per_dimension": {
+          "TRU": 0.8753431379911135,
+          "RSK": 0.7817700919940765,
+          "ENV": 0.9238350091939336,
+          "PRC": 0.9088888128687348,
+          "TRD": 0.8539273185224368,
+          "SOC": 0.844199841430273,
+          "TEC": 0.7582441700283792,
+          "LOC": 0.9460565810330515
+        },
+        "worst_dimension_rmse": 0.9460565810330515,
+        "pooled_coverage": 0.72625,
+        "mean_calibrated_blur": 0.9178996513663604,
+        "pooled_lift": 0.09295213084807297,
+        "mean_r": 0.3863045011883102
+      },
+      {
+        "n": 6,
+        "pooled_rmse": 0.8567725211848009,
+        "rmse_per_dimension": {
+          "TRU": 0.8825772773695592,
+          "RSK": 0.7907676332233302,
+          "ENV": 0.9480668923545099,
+          "PRC": 0.9071699671248864,
+          "TRD": 0.8466009845499872,
+          "SOC": 0.8614132163601167,
+          "TEC": 0.6242849181122908,
+          "LOC": 0.9475923845202244
+        },
+        "worst_dimension_rmse": 0.9480668923545099,
+        "pooled_coverage": 0.7225,
+        "mean_calibrated_blur": 0.9057813151601677,
+        "pooled_lift": 0.10030764589771846,
+        "mean_r": 0.3843808899517191
+      },
+      {
+        "n": 7,
+        "pooled_rmse": 0.8495756713353511,
+        "rmse_per_dimension": {
+          "TRU": 0.8744246196161949,
+          "RSK": 0.7953005706563278,
+          "ENV": 0.9489498202198603,
+          "PRC": 0.9175671862422731,
+          "TRD": 0.8422215102006868,
+          "SOC": 0.8098634567178,
+          "TEC": 0.6234108100294328,
+          "LOC": 0.9385184740456854
+        },
+        "worst_dimension_rmse": 0.9489498202198603,
+        "pooled_coverage": 0.7075,
+        "mean_calibrated_blur": 0.8949516734452981,
+        "pooled_lift": 0.10784930408963966,
+        "mean_r": 0.40253524063397317
+      },
+      {
+        "n": 8,
+        "pooled_rmse": 0.8122738318574886,
+        "rmse_per_dimension": {
+          "TRU": 0.8584922027760613,
+          "RSK": 0.8105698073663313,
+          "ENV": 0.6366710582922682,
+          "PRC": 0.9203324027083979,
+          "TRD": 0.821450276889375,
+          "SOC": 0.8248113573681035,
+          "TEC": 0.6155455419458358,
+          "LOC": 0.9475893275707308
+        },
+        "worst_dimension_rmse": 0.9475893275707308,
+        "pooled_coverage": 0.7175,
+        "mean_calibrated_blur": 0.8474193696914765,
+        "pooled_lift": 0.14702961552438842,
+        "mean_r": 0.5018391717319715
+      },
+      {
+        "n": 9,
+        "pooled_rmse": 0.8048600316312523,
+        "rmse_per_dimension": {
+          "TRU": 0.8587730239186115,
+          "RSK": 0.8001569357695566,
+          "ENV": 0.6358978596070454,
+          "PRC": 0.8740339731470602,
+          "TRD": 0.8183168527969686,
+          "SOC": 0.8168627021649132,
+          "TEC": 0.620859863684015,
+          "LOC": 0.9560227745758733
+        },
+        "worst_dimension_rmse": 0.9560227745758733,
+        "pooled_coverage": 0.71125,
+        "mean_calibrated_blur": 0.8115512319935104,
+        "pooled_lift": 0.15479903905362657,
+        "mean_r": 0.5255090434579051
+      },
+      {
+        "n": 10,
+        "pooled_rmse": 0.7906139023953864,
+        "rmse_per_dimension": {
+          "TRU": 0.8610071721020893,
+          "RSK": 0.7964424448534417,
+          "ENV": 0.6369454815634501,
+          "PRC": 0.8757229456943939,
+          "TRD": 0.8310614138695954,
+          "SOC": 0.814450831304255,
+          "TEC": 0.6176528581777476,
+          "LOC": 0.8466583226789325
+        },
+        "worst_dimension_rmse": 0.8757229456943939,
+        "pooled_coverage": 0.6875,
+        "mean_calibrated_blur": 0.7581511691463705,
+        "pooled_lift": 0.16974990528917366,
+        "mean_r": 0.5603463528878251
+      },
+      {
+        "n": 11,
+        "pooled_rmse": 0.7773191632731126,
+        "rmse_per_dimension": {
+          "TRU": 0.8605418967657856,
+          "RSK": 0.7859142239522885,
+          "ENV": 0.6419659929464714,
+          "PRC": 0.8721472516735149,
+          "TRD": 0.8239576050004292,
+          "SOC": 0.8180845115948201,
+          "TEC": 0.619104482499249,
+          "LOC": 0.7559015817761299
+        },
+        "worst_dimension_rmse": 0.8721472516735149,
+        "pooled_coverage": 0.6925,
+        "mean_calibrated_blur": 0.7498521969544103,
+        "pooled_lift": 0.1837112007001317,
+        "mean_r": 0.5768363888571738
+      },
+      {
+        "n": 12,
+        "pooled_rmse": 0.7721631935129524,
+        "rmse_per_dimension": {
+          "TRU": 0.81176142787322,
+          "RSK": 0.7883940666952186,
+          "ENV": 0.6429676938630521,
+          "PRC": 0.8698605050453114,
+          "TRD": 0.8278747746274289,
+          "SOC": 0.8195556461110932,
+          "TEC": 0.6226697035453844,
+          "LOC": 0.7579813627698477
+        },
+        "worst_dimension_rmse": 0.8698605050453114,
+        "pooled_coverage": 0.69375,
+        "mean_calibrated_blur": 0.7439505598634588,
+        "pooled_lift": 0.18912289473877564,
+        "mean_r": 0.5885702718823098
+      },
+      {
+        "n": 13,
+        "pooled_rmse": 0.7702401425609992,
+        "rmse_per_dimension": {
+          "TRU": 0.8148359159708658,
+          "RSK": 0.7801662732495918,
+          "ENV": 0.6414553561900821,
+          "PRC": 0.8760126140264043,
+          "TRD": 0.8160338699267282,
+          "SOC": 0.8145857948619057,
+          "TEC": 0.6267118846692811,
+          "LOC": 0.7566041762139782
+        },
+        "worst_dimension_rmse": 0.8760126140264043,
+        "pooled_coverage": 0.68375,
+        "mean_calibrated_blur": 0.7262731054596745,
+        "pooled_lift": 0.19114542932378253,
+        "mean_r": 0.5913808917122225
+      },
+      {
+        "n": 14,
+        "pooled_rmse": 0.7647633611115903,
+        "rmse_per_dimension": {
+          "TRU": 0.8178932772896071,
+          "RSK": 0.7742280065106156,
+          "ENV": 0.6435758029394333,
+          "PRC": 0.8793510656703166,
+          "TRD": 0.8161624444107323,
+          "SOC": 0.769790353228988,
+          "TEC": 0.6285261331320217,
+          "LOC": 0.7545422681620793
+        },
+        "worst_dimension_rmse": 0.8793510656703166,
+        "pooled_coverage": 0.685,
+        "mean_calibrated_blur": 0.7216091693770236,
+        "pooled_lift": 0.19690045621767271,
+        "mean_r": 0.6005449284354097
+      },
+      {
+        "n": 15,
+        "pooled_rmse": 0.7482804609128834,
+        "rmse_per_dimension": {
+          "TRU": 0.7962395324791992,
+          "RSK": 0.7829734499827555,
+          "ENV": 0.6350675796692226,
+          "PRC": 0.7685518003560332,
+          "TRD": 0.8173909360474687,
+          "SOC": 0.7671154620219478,
+          "TEC": 0.6266215320505161,
+          "LOC": 0.7675370021040818
+        },
+        "worst_dimension_rmse": 0.8173909360474687,
+        "pooled_coverage": 0.68875,
+        "mean_calibrated_blur": 0.7003616120422137,
+        "pooled_lift": 0.21421446321184778,
+        "mean_r": 0.6233060771568106
+      }
+    ]
+  },
+  "blur_vs_n": [
+    {
+      "n": 0,
+      "closed_only": {
+        "mean_blur": 1.0,
+        "mean_blur_calibrated": 1.0670064376723074,
+        "mean_blur_per_dim": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.8772112207755753,
+        "mean_blur_calibrated": 0.898234446457119,
+        "mean_blur_per_dim": [
+          0.9174713866754395,
+          0.8131917546837976,
+          0.8271972839422754,
+          0.9136017395190259,
+          0.8478926203108466,
+          0.8967675615403111,
+          0.942556296963382,
+          0.8590111225695243
+        ]
+      }
+    },
+    {
+      "n": 1,
+      "closed_only": {
+        "mean_blur": 0.9653438861149533,
+        "mean_blur_calibrated": 1.0303506752876268,
+        "mean_blur_per_dim": [
+          0.884989700986494,
+          0.9991493335077369,
+          0.9918210105332027,
+          0.9645226944681329,
+          0.9770488297334333,
+          0.9682717238409598,
+          0.9822893438806382,
+          0.9546584519690284
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.8572871575923868,
+        "mean_blur_calibrated": 0.8778089284953858,
+        "mean_blur_per_dim": [
+          0.8233623236156713,
+          0.813146141132867,
+          0.8261254698009148,
+          0.9023450233928025,
+          0.8392925345818099,
+          0.8738493719870561,
+          0.9341847169595592,
+          0.8459916792684129
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "closed_only": {
+        "mean_blur": 0.9213598091252876,
+        "mean_blur_calibrated": 0.9835045880910847,
+        "mean_blur_per_dim": [
+          0.8837439449406567,
+          0.9616136204329855,
+          0.8441555720183932,
+          0.9093845600132184,
+          0.9770468450395334,
+          0.9684525902708758,
+          0.8853794805186871,
+          0.9411018597679509
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.8258036252265893,
+        "mean_blur_calibrated": 0.8449205151147626,
+        "mean_blur_per_dim": [
+          0.8201772178321752,
+          0.809390083793722,
+          0.724187208574257,
+          0.8333531601330958,
+          0.8390340256986203,
+          0.8724063584279785,
+          0.8658081821474062,
+          0.8420727652054597
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "closed_only": {
+        "mean_blur": 0.9135377119826957,
+        "mean_blur_calibrated": 0.9750924176702667,
+        "mean_blur_per_dim": [
+          0.8800925479497386,
+          0.9350079143121636,
+          0.82354049282636,
+          0.910549844319326,
+          0.9771165553857284,
+          0.9529504372959223,
+          0.8872922819390955,
+          0.9417516218332312
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.8197916492244699,
+        "mean_blur_calibrated": 0.8387931533034799,
+        "mean_blur_per_dim": [
+          0.820078076710231,
+          0.7971089339722464,
+          0.7061347478147532,
+          0.8254553107153416,
+          0.8389374714090729,
+          0.8649696617936264,
+          0.8639559202680727,
+          0.8416930711124151
+        ]
+      }
+    },
+    {
+      "n": 4,
+      "closed_only": {
+        "mean_blur": 0.8683081783747519,
+        "mean_blur_calibrated": 0.9261175825964423,
+        "mean_blur_per_dim": [
+          0.8811185412006906,
+          0.867901190960746,
+          0.6925862749309379,
+          0.8928425798115471,
+          0.9049423779819482,
+          0.9123539600822034,
+          0.8792938818417315,
+          0.9154266201882113
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.8003775673945117,
+        "mean_blur_calibrated": 0.8189273152355449,
+        "mean_blur_per_dim": [
+          0.8172754820320806,
+          0.7698210203316479,
+          0.6447780005334899,
+          0.8201726893427387,
+          0.8100908645768105,
+          0.8539488660024407,
+          0.8590767583903142,
+          0.8278568579465708
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "closed_only": {
+        "mean_blur": 0.8648425417727299,
+        "mean_blur_calibrated": 0.9223915690384206,
+        "mean_blur_per_dim": [
+          0.8739683333326691,
+          0.8675849291156515,
+          0.6939094110717609,
+          0.8928871462500229,
+          0.8983111197379453,
+          0.904891839742037,
+          0.8724277176114308,
+          0.9147598373203221
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.796115794528387,
+        "mean_blur_calibrated": 0.8145210211554723,
+        "mean_blur_per_dim": [
+          0.807825556373692,
+          0.7691602503027098,
+          0.6446891087057728,
+          0.8193113941723198,
+          0.8023162718746306,
+          0.8471514497279885,
+          0.8521715045940472,
+          0.8263008204759358
+        ]
+      }
+    },
+    {
+      "n": 6,
+      "closed_only": {
+        "mean_blur": 0.8557895633936002,
+        "mean_blur_calibrated": 0.9123422860293416,
+        "mean_blur_per_dim": [
+          0.8710962693154781,
+          0.8670934048261206,
+          0.686741230346406,
+          0.8856301635861427,
+          0.8866740290483287,
+          0.8678050986338703,
+          0.8727605939054416,
+          0.9085157174870139
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.7893339312495153,
+        "mean_blur_calibrated": 0.8074423701939623,
+        "mean_blur_per_dim": [
+          0.8077362308783104,
+          0.7665879153588883,
+          0.6363880526930419,
+          0.8161549653621195,
+          0.7956970175292435,
+          0.8240545536028253,
+          0.8522577796012921,
+          0.8157949349704026
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "closed_only": {
+        "mean_blur": 0.8459063627012424,
+        "mean_blur_calibrated": 0.9019585717874989,
+        "mean_blur_per_dim": [
+          0.856718749696382,
+          0.8308880273000047,
+          0.6856691629337892,
+          0.8617799788758741,
+          0.8857613218047206,
+          0.8656364434534818,
+          0.8726792607743857,
+          0.9081179567713012
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.7835139061552677,
+        "mean_blur_calibrated": 0.8017054154693054,
+        "mean_blur_per_dim": [
+          0.7950646309286572,
+          0.748029664789435,
+          0.6362984260259373,
+          0.8056109734334537,
+          0.794524753683286,
+          0.8227637000440835,
+          0.8522970409441897,
+          0.8135220593930995
+        ]
+      }
+    },
+    {
+      "n": 8,
+      "closed_only": {
+        "mean_blur": 0.800363778987509,
+        "mean_blur_calibrated": 0.854167684177847,
+        "mean_blur_per_dim": [
+          0.8187419738231203,
+          0.7597789956118242,
+          0.6714511041902527,
+          0.8274979967510693,
+          0.8642062852068493,
+          0.8357098910407088,
+          0.739881736112318,
+          0.8856422491639293
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.740488466800356,
+        "mean_blur_calibrated": 0.7584737562685149,
+        "mean_blur_per_dim": [
+          0.7676473081473338,
+          0.6746643747871368,
+          0.6248254264740458,
+          0.772224499947185,
+          0.7620396394054764,
+          0.8022826841185282,
+          0.7221772680244808,
+          0.7980465334986608
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "closed_only": {
+        "mean_blur": 0.7665227238284426,
+        "mean_blur_calibrated": 0.8164500772190503,
+        "mean_blur_per_dim": [
+          0.8196353815295727,
+          0.7603432859921804,
+          0.6719436610868093,
+          0.8202257039795917,
+          0.7843086899176314,
+          0.6864154457929075,
+          0.7108438611117216,
+          0.878465761217126
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.7064247507622162,
+        "mean_blur_calibrated": 0.7223217985654301,
+        "mean_blur_per_dim": [
+          0.7677466099318931,
+          0.6745586446496155,
+          0.624952580259952,
+          0.764615167341915,
+          0.669882611970333,
+          0.6594003928127574,
+          0.696892262044057,
+          0.7933497370872066
+        ]
+      }
+    },
+    {
+      "n": 10,
+      "closed_only": {
+        "mean_blur": 0.7173590953863984,
+        "mean_blur_calibrated": 0.7641610590118448,
+        "mean_blur_per_dim": [
+          0.7245420577685902,
+          0.7597313966846211,
+          0.6179380661766782,
+          0.680670553590738,
+          0.7749985515760516,
+          0.6737394673582804,
+          0.7095500994509046,
+          0.7977025704853227
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.6615015965083018,
+        "mean_blur_calibrated": 0.6758863905354394,
+        "mean_blur_per_dim": [
+          0.67291800988522,
+          0.6744380703077064,
+          0.5866798079872781,
+          0.6495400901200756,
+          0.6654742359895489,
+          0.6483542616358403,
+          0.695190890697416,
+          0.6994174054433286
+        ]
+      }
+    },
+    {
+      "n": 11,
+      "closed_only": {
+        "mean_blur": 0.7103812445383938,
+        "mean_blur_calibrated": 0.7567302275459185,
+        "mean_blur_per_dim": [
+          0.7139184253683069,
+          0.7513859149439729,
+          0.6170062947518471,
+          0.6462971043678297,
+          0.7748526226194712,
+          0.674989019216812,
+          0.7078456857634942,
+          0.796754889275416
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.6552579387255131,
+        "mean_blur_calibrated": 0.6693988615017605,
+        "mean_blur_per_dim": [
+          0.6591190257841365,
+          0.6707956772671078,
+          0.5860797110362846,
+          0.6210931185507671,
+          0.6653746700038498,
+          0.6491758632134206,
+          0.6938745191876484,
+          0.6965509247608892
+        ]
+      }
+    },
+    {
+      "n": 12,
+      "closed_only": {
+        "mean_blur": 0.7050040153585113,
+        "mean_blur_calibrated": 0.7510440876222055,
+        "mean_blur_per_dim": [
+          0.702127845939957,
+          0.7510278662747193,
+          0.6157397049832458,
+          0.6463811234153012,
+          0.7618057790058949,
+          0.6730340838790252,
+          0.7076226795608239,
+          0.7822930398091229
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.6530558724323634,
+        "mean_blur_calibrated": 0.6671466327159172,
+        "mean_blur_per_dim": [
+          0.6531550549651776,
+          0.6707674045982549,
+          0.5855104549802623,
+          0.6207139794336572,
+          0.6608040635885173,
+          0.64873513923057,
+          0.693730589706671,
+          0.6910302929557968
+        ]
+      }
+    },
+    {
+      "n": 13,
+      "closed_only": {
+        "mean_blur": 0.6862671482867639,
+        "mean_blur_calibrated": 0.73092568952395,
+        "mean_blur_per_dim": [
+          0.6702566399625037,
+          0.7303795990311197,
+          0.5838636093505896,
+          0.636348640461436,
+          0.7620246727239622,
+          0.6362648565313285,
+          0.6950783373992544,
+          0.7759208308339178
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.6350622347341248,
+        "mean_blur_calibrated": 0.6487058320300028,
+        "mean_blur_per_dim": [
+          0.6177766135549103,
+          0.6540666692706195,
+          0.5560187023836016,
+          0.6112379759098904,
+          0.6607143776700423,
+          0.6133041989581158,
+          0.6831539225228959,
+          0.684225417602923
+        ]
+      }
+    },
+    {
+      "n": 14,
+      "closed_only": {
+        "mean_blur": 0.681769947425363,
+        "mean_blur_calibrated": 0.7261812121758249,
+        "mean_blur_per_dim": [
+          0.6663414344924496,
+          0.7154677369036497,
+          0.5825112552747447,
+          0.6323085334246585,
+          0.7552438970165645,
+          0.6350339358481372,
+          0.6937016698896578,
+          0.7735511165530418
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.6316903020676776,
+        "mean_blur_calibrated": 0.6453646746745081,
+        "mean_blur_per_dim": [
+          0.6144747540693953,
+          0.643992418689111,
+          0.5554485166715599,
+          0.6089467546916717,
+          0.6551559868685031,
+          0.6118992929796094,
+          0.6812981256661631,
+          0.6823065669054077
+        ]
+      }
+    },
+    {
+      "n": 15,
+      "closed_only": {
+        "mean_blur": 0.6625631047541729,
+        "mean_blur_calibrated": 0.7056081395836304,
+        "mean_blur_per_dim": [
+          0.6663375233938481,
+          0.7059963585348765,
+          0.5727274286414391,
+          0.6235209427481462,
+          0.681415735607142,
+          0.6391581340628255,
+          0.64855572392356,
+          0.7627929911215464
+        ]
+      },
+      "fused": {
+        "mean_blur": 0.6133490489350804,
+        "mean_blur_calibrated": 0.6264478594858907,
+        "mean_blur_per_dim": [
+          0.6142174734793923,
+          0.6371510127906818,
+          0.5467610206866405,
+          0.6020490735439202,
+          0.594059478650441,
+          0.6141813950015532,
+          0.6347508202298292,
+          0.6636221170981846
+        ]
+      }
+    }
+  ],
+  "full_matrix_reference": {
+    "what": "Stage 2 fit, all 202 training items answered, held-out personas",
+    "per_dimension_rmse": {
+      "TRU": 0.4577686007252337,
+      "RSK": 0.5654816472291164,
+      "ENV": 0.4570420760247191,
+      "PRC": 0.5491644192075444,
+      "TRD": 0.5553585448179027,
+      "SOC": 0.5549896313654868,
+      "TEC": 0.49787787167335723,
+      "LOC": 0.5801218720469455
+    },
+    "per_dimension_r": {
+      "TRU": 0.8721506174786876,
+      "RSK": 0.7982907859590265,
+      "ENV": 0.874760640484173,
+      "PRC": 0.8320066019208484,
+      "TRD": 0.8404825837465151,
+      "SOC": 0.7996166866981669,
+      "TEC": 0.859970188248205,
+      "LOC": 0.8314493883860321
+    },
+    "pooled_rmse": 0.5292271451723424,
+    "mean_r": 0.8385909366152069,
+    "n_items": 202
+  },
+  "transcript_vs_full_matrix": {
+    "what": "the same held-out personas graded against planted truth twice: from all 202 answered training items, and from the 15-question interview plus three open answers",
+    "full_matrix_pooled_rmse": 0.5292271451723424,
+    "n15_fused_pooled_rmse": 0.6971433416417577,
+    "n15_closed_only_pooled_rmse": 0.7482804609128834,
+    "system_side_agreement_at_n15": {
+      "what": "r and RMSE of the interview estimate against the full-matrix estimate -- no planted value involved, restated from the fusion artifact for the comparison",
+      "fused": {
+        "r_per_dim": [
+          0.7563684981897099,
+          0.8219841960705496,
+          0.7242866669214889,
+          0.744814940616263,
+          0.8321447002775262,
+          0.7256187114877128,
+          0.7586802387327062,
+          0.7930163754488287
+        ],
+        "rmse_per_dim": [
+          0.5550905006169399,
+          0.5752504744480104,
+          0.5675717244792355,
+          0.5547744628892173,
+          0.5062163196628049,
+          0.5880381094023419,
+          0.6074819211590806,
+          0.5870168479206618
+        ],
+        "r_mean": 0.7696142909680982,
+        "rmse_mean": 0.5676800450722865,
+        "n_personas": 100
+      },
+      "closed_only": {
+        "r_per_dim": [
+          0.6889399310794193,
+          0.7435442359398459,
+          0.6385313660195459,
+          0.7088471620925358,
+          0.690610186089467,
+          0.5991815814401781,
+          0.7326958557110917,
+          0.6884561334725932
+        ],
+        "rmse_per_dim": [
+          0.5964760320283039,
+          0.6378047330339038,
+          0.6158765310554604,
+          0.5802825552421824,
+          0.628489014580198,
+          0.6855802426702017,
+          0.6343032736471766,
+          0.6749924202688234
+        ],
+        "r_mean": 0.6863508064805846,
+        "rmse_mean": 0.6317256003157813,
+        "n_personas": 100
+      }
+    },
+    "independent_sitting_note": "the projection chained through r(theta_hat_15, theta_hat_full) = 0.758, which was measured by re-scoring the SAME noised answers the full-matrix fit had already seen. The interview is an independent sitting of the frozen noise layer, so its answers carry fresh noise; the backbone measured 0.686 instead. Numbers below are from the independent sitting."
+  },
+  "open_answers_worth_in_closed_items": {
+    "by_mean_blur": {
+      "quantity": "mean posterior blur over held-out personas and dimensions",
+      "reading": "the fused posterior at N is as sharp as the closed-only posterior would be after 'equivalent_closed_n' scripted items; the difference is what the three open answers bought",
+      "per_n": [
+        {
+          "n": 0,
+          "fused_value": 0.8772112207755753,
+          "closed_only_value": 1.0,
+          "equivalent_closed_n": 3.8031586512035194,
+          "worth_in_closed_items": 3.8031586512035194,
+          "extrapolated": false
+        },
+        {
+          "n": 1,
+          "fused_value": 0.8572871575923868,
+          "closed_only_value": 0.9653438861149533,
+          "equivalent_closed_n": 5.834574420034065,
+          "worth_in_closed_items": 4.834574420034065,
+          "extrapolated": false
+        },
+        {
+          "n": 2,
+          "fused_value": 0.8258036252265893,
+          "closed_only_value": 0.9213598091252876,
+          "equivalent_closed_n": 7.441405292264766,
+          "worth_in_closed_items": 5.441405292264766,
+          "extrapolated": false
+        },
+        {
+          "n": 3,
+          "fused_value": 0.8197916492244699,
+          "closed_only_value": 0.9135377119826957,
+          "equivalent_closed_n": 7.573413086111265,
+          "worth_in_closed_items": 4.573413086111265,
+          "extrapolated": false
+        },
+        {
+          "n": 4,
+          "fused_value": 0.8003775673945117,
+          "closed_only_value": 0.8683081783747519,
+          "equivalent_closed_n": 7.999697241441342,
+          "worth_in_closed_items": 3.999697241441342,
+          "extrapolated": false
+        },
+        {
+          "n": 5,
+          "fused_value": 0.796115794528387,
+          "closed_only_value": 0.8648425417727299,
+          "equivalent_closed_n": 8.125527541595698,
+          "worth_in_closed_items": 3.125527541595698,
+          "extrapolated": false
+        },
+        {
+          "n": 6,
+          "fused_value": 0.7893339312495153,
+          "closed_only_value": 0.8557895633936002,
+          "equivalent_closed_n": 8.325930964213407,
+          "worth_in_closed_items": 2.3259309642134074,
+          "extrapolated": false
+        },
+        {
+          "n": 7,
+          "fused_value": 0.7835139061552677,
+          "closed_only_value": 0.8459063627012424,
+          "equivalent_closed_n": 8.497912158856755,
+          "worth_in_closed_items": 1.4979121588567548,
+          "extrapolated": false
+        },
+        {
+          "n": 8,
+          "fused_value": 0.740488466800356,
+          "closed_only_value": 0.800363778987509,
+          "equivalent_closed_n": 9.52954303522932,
+          "worth_in_closed_items": 1.5295430352293202,
+          "extrapolated": false
+        },
+        {
+          "n": 9,
+          "fused_value": 0.7064247507622162,
+          "closed_only_value": 0.7665227238284426,
+          "equivalent_closed_n": 11.73578671167295,
+          "worth_in_closed_items": 2.735786711672951,
+          "extrapolated": false
+        },
+        {
+          "n": 10,
+          "fused_value": 0.6615015965083018,
+          "closed_only_value": 0.7173590953863984,
+          "equivalent_closed_n": 15.055267191179912,
+          "worth_in_closed_items": 5.055267191179912,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 11,
+          "fused_value": 0.6552579387255131,
+          "closed_only_value": 0.7103812445383938,
+          "equivalent_closed_n": 15.380341847627951,
+          "worth_in_closed_items": 4.380341847627951,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 12,
+          "fused_value": 0.6530558724323634,
+          "closed_only_value": 0.7050040153585113,
+          "equivalent_closed_n": 15.494991940349996,
+          "worth_in_closed_items": 3.494991940349996,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 13,
+          "fused_value": 0.6350622347341248,
+          "closed_only_value": 0.6862671482867639,
+          "equivalent_closed_n": 16.431826692749397,
+          "worth_in_closed_items": 3.4318266927493966,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 14,
+          "fused_value": 0.6316903020676776,
+          "closed_only_value": 0.681769947425363,
+          "equivalent_closed_n": 16.607385618501674,
+          "worth_in_closed_items": 2.6073856185016737,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 15,
+          "fused_value": 0.6133490489350804,
+          "closed_only_value": 0.6625631047541729,
+          "equivalent_closed_n": 17.56231889132474,
+          "worth_in_closed_items": 2.5623188913247397,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        }
+      ],
+      "at_n0": 3.8031586512035194,
+      "at_n15": 2.5623188913247397,
+      "median_over_measured_n": 3.4643430963996087,
+      "n_extrapolated_rows": 6
+    },
+    "by_log_determinant": {
+      "quantity": "negative mean log-determinant of the posterior precision",
+      "reading": "the fused posterior at N is as sharp as the closed-only posterior would be after 'equivalent_closed_n' scripted items; the difference is what the three open answers bought",
+      "per_n": [
+        {
+          "n": 0,
+          "fused_value": -2.4146707254398088,
+          "closed_only_value": -0.0,
+          "equivalent_closed_n": 3.180636859641923,
+          "worth_in_closed_items": 3.180636859641923,
+          "extrapolated": false
+        },
+        {
+          "n": 1,
+          "fused_value": -2.8919358203105827,
+          "closed_only_value": -0.7684807249663942,
+          "equivalent_closed_n": 3.6405200561741946,
+          "worth_in_closed_items": 2.6405200561741946,
+          "extrapolated": false
+        },
+        {
+          "n": 2,
+          "fused_value": -3.799626570345127,
+          "closed_only_value": -1.9743458824743596,
+          "equivalent_closed_n": 6.528362991704471,
+          "worth_in_closed_items": 4.528362991704471,
+          "extrapolated": false
+        },
+        {
+          "n": 3,
+          "fused_value": -4.028779349104717,
+          "closed_only_value": -2.2272064549375674,
+          "equivalent_closed_n": 7.14391060022693,
+          "worth_in_closed_items": 4.14391060022693,
+          "extrapolated": false
+        },
+        {
+          "n": 4,
+          "fused_value": -4.622991975314448,
+          "closed_only_value": -3.2650027877228704,
+          "equivalent_closed_n": 7.773935313237479,
+          "worth_in_closed_items": 3.7739353132374793,
+          "extrapolated": false
+        },
+        {
+          "n": 5,
+          "fused_value": -4.70722019094791,
+          "closed_only_value": -3.327768915752178,
+          "equivalent_closed_n": 7.8632398063451925,
+          "worth_in_closed_items": 2.8632398063451925,
+          "extrapolated": false
+        },
+        {
+          "n": 6,
+          "fused_value": -5.020893420015543,
+          "closed_only_value": -3.6949678273702933,
+          "equivalent_closed_n": 8.287187061767769,
+          "worth_in_closed_items": 2.287187061767769,
+          "extrapolated": false
+        },
+        {
+          "n": 7,
+          "fused_value": -5.169930380580763,
+          "closed_only_value": -3.8930489659398404,
+          "equivalent_closed_n": 8.518938791089473,
+          "worth_in_closed_items": 1.5189387910894734,
+          "extrapolated": false
+        },
+        {
+          "n": 8,
+          "fused_value": -6.045444192659051,
+          "closed_only_value": -4.8362066134713295,
+          "equivalent_closed_n": 9.565303556784528,
+          "worth_in_closed_items": 1.565303556784528,
+          "extrapolated": false
+        },
+        {
+          "n": 9,
+          "fused_value": -6.669111086519999,
+          "closed_only_value": -5.479295495705024,
+          "equivalent_closed_n": 10.816621970329141,
+          "worth_in_closed_items": 1.816621970329141,
+          "extrapolated": false
+        },
+        {
+          "n": 10,
+          "fused_value": -7.583425371112399,
+          "closed_only_value": -6.480790515786457,
+          "equivalent_closed_n": 14.86173571387129,
+          "worth_in_closed_items": 4.86173571387129,
+          "extrapolated": false
+        },
+        {
+          "n": 11,
+          "fused_value": -7.801520841909487,
+          "closed_only_value": -6.7113997543030735,
+          "equivalent_closed_n": 15.389131150768293,
+          "worth_in_closed_items": 4.389131150768293,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 12,
+          "fused_value": -7.8526001572570125,
+          "closed_only_value": -6.7888922304631265,
+          "equivalent_closed_n": 15.512650441359941,
+          "worth_in_closed_items": 3.5126504413599413,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 13,
+          "fused_value": -8.177660147847776,
+          "closed_only_value": -7.1352052516817945,
+          "equivalent_closed_n": 16.298705993677448,
+          "worth_in_closed_items": 3.298705993677448,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 14,
+          "fused_value": -8.257766513264267,
+          "closed_only_value": -7.22706912858365,
+          "equivalent_closed_n": 16.492418093395315,
+          "worth_in_closed_items": 2.4924180933953153,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        },
+        {
+          "n": 15,
+          "fused_value": -8.642846349913462,
+          "closed_only_value": -7.64060223019765,
+          "equivalent_closed_n": 17.423612803434843,
+          "worth_in_closed_items": 2.4236128034348425,
+          "extrapolated": true,
+          "note": "below the closed-only curve's last point; extrapolated at the rate of its final step, so this is an estimate, not a measurement"
+        }
+      ],
+      "at_n0": 3.180636859641923,
+      "at_n15": 2.4236128034348425,
+      "median_over_measured_n": 2.8632398063451925,
+      "n_extrapolated_rows": 5
+    },
+    "per_dimension_by_blur": {
+      "dim_0": null,
+      "dim_1": 7.268777897330697,
+      "dim_2": 2.6540134988088617,
+      "dim_3": 2.443430741672614,
+      "dim_4": 1.1832376059354495,
+      "dim_5": null,
+      "dim_6": 0.305783905914776,
+      "dim_7": 9.218229946736855
+    },
+    "note": "blur matching is the number the design promised; the log-determinant version is the same question asked of the whole information matrix instead of one diagonal at a time"
+  },
+  "measurement_model": {
+    "form": "y = B theta + c + eps, eps ~ N(0, Psi); y standardized",
+    "ridge_lambda": 177.82794100389228,
+    "n_factors_in_psi": 1,
+    "psi_form": "diagonal plus rank-1 factor",
+    "fitted_on_n_personas": 400,
+    "fitted_against": "theta_hat from the full training-item matrix",
+    "feature_center": [
+      -0.6275,
+      -0.38,
+      -0.025,
+      0.4225,
+      0.1825,
+      -0.52,
+      -0.83,
+      0.2225,
+      0.0125,
+      -1.0775,
+      0.035,
+      0.0875,
+      2.0825,
+      1.565,
+      0.0625,
+      1.6725,
+      -0.92,
+      -0.0175,
+      0.1175,
+      0.1475,
+      0.4625,
+      0.015,
+      0.4375,
+      0.08
+    ],
+    "feature_scale": [
+      2.3924346908536473,
+      2.0458738964071017,
+      0.34550687402713054,
+      1.0530877218921504,
+      2.357794255230937,
+      1.02936873859662,
+      1.6220665830970071,
+      0.6877454107444123,
+      0.46080771477917115,
+      1.369851725552806,
+      0.3657526486575322,
+      0.6283659363778384,
+      1.5923861811759075,
+      2.1037525995230495,
+      0.6071192222290446,
+      1.3267417796994232,
+      1.6135674761223973,
+      2.29503676441141,
+      0.498692039238648,
+      1.127272704362172,
+      2.1710812398434047,
+      0.42985462658903684,
+      2.626041460068748,
+      0.3789459064299276
+    ],
+    "B": [
+      [
+        0.19523767008995277,
+        0.1503613251725363,
+        0.0070540605418973005,
+        -0.002775524458821901,
+        -0.2923918186591499,
+        -0.22252978308742452,
+        -0.008094523288908586,
+        0.2973579947996456
+      ],
+      [
+        0.026852197791669925,
+        -0.13846236498432227,
+        0.09296957762213633,
+        -0.017305388765357078,
+        -0.02331953396482271,
+        0.07087698111501399,
+        0.057696119889821706,
+        -0.1086671300480061
+      ],
+      [
+        0.05128813106995844,
+        -0.03147486307689739,
+        -0.041262199161369466,
+        0.03290918541644319,
+        -0.0044761587036664715,
+        -0.044941489805031334,
+        -0.06516418076255868,
+        -0.02342349922719574
+      ],
+      [
+        -0.09707404041425627,
+        0.04087906302957954,
+        -0.06720524278258587,
+        -0.02727087844054758,
+        -0.09595040380989399,
+        -0.027607815164932305,
+        -0.016964965457944396,
+        -0.013724475474097287
+      ],
+      [
+        0.08625830693835486,
+        0.1387818839842725,
+        -0.03265978721573635,
+        0.05376684975179541,
+        -0.17303202470316667,
+        -0.13959408027913084,
+        -0.07828477971782682,
+        0.24138549118746946
+      ],
+      [
+        0.08807700047883038,
+        0.0660640499870938,
+        0.04468211666059431,
+        -0.0288716317467731,
+        -0.1682935142620893,
+        -0.17225684268433147,
+        -0.05134290376804049,
+        0.1214416176801309
+      ],
+      [
+        0.13659291999230797,
+        -0.01850072881061174,
+        0.08994120718295892,
+        -0.049899574677414724,
+        -0.22334183483653508,
+        -0.22038153758276333,
+        -0.007014312663444216,
+        0.09132885141770183
+      ],
+      [
+        -0.03767512803660154,
+        0.11072551774088656,
+        0.06175649731466237,
+        -0.06077206902931079,
+        0.05690918528100495,
+        -0.008038071410194065,
+        -0.051450235919579035,
+        0.04424512306134105
+      ],
+      [
+        -0.0107419920021353,
+        -0.018224723054753523,
+        0.019449159126379855,
+        -0.011616833610062001,
+        -0.04138773944154355,
+        0.010114781787361492,
+        -0.05581593422847979,
+        0.07925333850579128
+      ],
+      [
+        0.11603737238887242,
+        -0.17083122968553474,
+        -0.15565972463119956,
+        -0.10766100757900426,
+        0.023316164691820525,
+        0.03904485628859713,
+        0.14458173937313862,
+        -0.10963783454746395
+      ],
+      [
+        0.05942417368685289,
+        -0.06501232003737727,
+        -0.07741589595139285,
+        -0.046645868312715194,
+        0.037024338962365164,
+        -0.013706068792723814,
+        -0.04593794285171781,
+        -0.026390639065688955
+      ],
+      [
+        -0.07096097249442489,
+        0.0008653324221921964,
+        -0.08335905186767571,
+        -0.03263983639861092,
+        -0.08064700879571773,
+        0.09718059843318674,
+        -0.03910773446412376,
+        -0.06102637389168888
+      ],
+      [
+        -0.04661142565251876,
+        0.2611016855305177,
+        0.22149620429689146,
+        0.017280558639833663,
+        0.08479659317771912,
+        -0.003495653718319344,
+        -0.17260603977520902,
+        0.11676443364142614
+      ],
+      [
+        0.16045412096473988,
+        0.32932499070321486,
+        0.22288093527189223,
+        -0.17336055061668998,
+        0.1365550080458068,
+        -0.012274081711885113,
+        -0.042746429575140056,
+        -0.07478281558645286
+      ],
+      [
+        0.03859840249520744,
+        -0.08871158351063108,
+        -0.028194158301539103,
+        -0.10390588220341299,
+        -0.04496979334171695,
+        -0.11175330087385642,
+        -0.02614090505167927,
+        -0.04421956416657803
+      ],
+      [
+        0.05151641219669941,
+        0.23115493025412925,
+        0.23888877128588348,
+        -0.18193141804395216,
+        0.13511021112030697,
+        0.05087438854504955,
+        -0.07297911809336641,
+        -0.022992617266976417
+      ],
+      [
+        0.13083193012136132,
+        -0.1464159783981001,
+        0.18206662051803438,
+        -0.09789206001868903,
+        -0.187513683629165,
+        -0.15712758872785276,
+        0.04590490538225458,
+        -0.030269346853628077
+      ],
+      [
+        0.12296163857328775,
+        -0.29314942485823847,
+        0.20559730515579433,
+        -0.18060544956518512,
+        -0.17978418662224946,
+        -0.13482230575946053,
+        0.13645227671783175,
+        -0.1620847630140554
+      ],
+      [
+        0.03672098151924794,
+        -0.06304205808556752,
+        0.05716716282621185,
+        -0.022335951102829776,
+        -0.10251557570908117,
+        -0.07204503551525235,
+        -0.11478210794075068,
+        -0.03663974169627094
+      ],
+      [
+        -0.08791400200920735,
+        0.11372427490813342,
+        -0.04284548123525999,
+        -0.01972577678179782,
+        -0.004040693962978558,
+        0.10115586173507438,
+        -0.07436085628507266,
+        -0.09262080902435928
+      ],
+      [
+        -0.09131664398879896,
+        0.26247635760419746,
+        -0.20830219480183412,
+        0.16998487569947174,
+        0.15947016533735933,
+        0.14492807469296928,
+        -0.14144710125205454,
+        0.2160335186885536
+      ],
+      [
+        0.06204417174851184,
+        -0.04517091192403995,
+        0.02840880745766422,
+        -0.09263805185478098,
+        0.005054163214299639,
+        -0.11400942118909496,
+        0.0029281545302954617,
+        0.0059300748413345485
+      ],
+      [
+        0.09123083239899493,
+        -0.28777356347139116,
+        0.2476735823754332,
+        -0.150162540184864,
+        -0.23110316347194199,
+        -0.20091726041196434,
+        0.10530943792937975,
+        -0.16838200146458557
+      ],
+      [
+        0.059097312173577124,
+        0.0289934703985725,
+        0.016309177425168533,
+        -0.08107927763767778,
+        0.048449208266202165,
+        -0.055122809205865445,
+        -0.008794014183049278,
+        0.06389162345644935
+      ]
+    ],
+    "c": [
+      -0.0023147997387256655,
+      0.0007858115342527636,
+      -7.222600309737336e-05,
+      -0.0006290921403418797,
+      -0.0018052851389127272,
+      -0.0014631712493454777,
+      -0.0013399779504260608,
+      -0.00046803768043871967,
+      -0.0004878900598323209,
+      0.0011236391997592008,
+      0.00011860375859173431,
+      -0.00021134301197701407,
+      -0.0010905698249786485,
+      -0.0003715047646143963,
+      -0.00030645183683761766,
+      -0.0003901775080094197,
+      -0.0004562909400422774,
+      0.00036825230495956293,
+      -0.0006274287517548503,
+      -0.00019952613308346032,
+      -0.0004966616452161477,
+      -0.00021525410528742796,
+      1.2275288618448533e-05,
+      -0.00027863182394811394
+    ],
+    "psi_diagonal": [
+      0.4693536527498779,
+      0.9272843919455503,
+      1.0154252741274632,
+      0.9872294094507248,
+      0.7482169651823405,
+      0.8595817199843013,
+      0.7675652377977442,
+      0.9615884572009062,
+      1.0175367690417216,
+      0.789510555893234,
+      0.9852519859657689,
+      0.9587367950573477,
+      0.6447253077671405,
+      0.6076933972234331,
+      0.9607885835145126,
+      0.6965898562542363,
+      0.7504913031839228,
+      0.45723191220759235,
+      0.96415180964347,
+      0.9530364291953235,
+      0.4711860562531332,
+      0.986610350082323,
+      0.40846950869737414,
+      0.9830882717587612
+    ],
+    "psi_max_abs_offdiagonal": 0.2960470589959491,
+    "information_matrix_lambda": [
+      [
+        0.2606030954445661,
+        0.07574565688881488,
+        0.14114570583522956,
+        -0.1426481782944379,
+        -0.1806376350797736,
+        -0.22437732469312816,
+        0.020598095773969028,
+        0.11229494399875337
+      ],
+      [
+        0.07574565688881488,
+        0.6414572432828857,
+        0.13852654671104594,
+        0.01518743300066059,
+        0.11844488158166983,
+        -0.005484635758367492,
+        -0.23057237699893146,
+        0.2982105259460355
+      ],
+      [
+        0.14114570583522956,
+        0.13852654671104594,
+        0.5638044364797857,
+        -0.2638560656410098,
+        -0.0636092244964951,
+        -0.180307465704116,
+        -0.04355602949751358,
+        -0.09580510149405798
+      ],
+      [
+        -0.1426481782944379,
+        0.01518743300066059,
+        -0.2638560656410098,
+        0.275752509591166,
+        0.03367412685805448,
+        0.10234608034195325,
+        -0.04928164613754708,
+        0.1617661555913441
+      ],
+      [
+        -0.1806376350797736,
+        0.11844488158166983,
+        -0.0636092244964951,
+        0.03367412685805448,
+        0.5361121962004585,
+        0.37610316827939483,
+        -0.02617511592468571,
+        -0.20829169376305287
+      ],
+      [
+        -0.22437732469312816,
+        -0.005484635758367492,
+        -0.180307465704116,
+        0.10234608034195325,
+        0.37610316827939483,
+        0.3923640709881407,
+        0.012631000585352029,
+        -0.19110215340202585
+      ],
+      [
+        0.020598095773969028,
+        -0.23057237699893146,
+        -0.04355602949751358,
+        -0.04928164613754708,
+        -0.02617511592468571,
+        0.012631000585352029,
+        0.16820835483706548,
+        -0.14027769899647613
+      ],
+      [
+        0.11229494399875337,
+        0.2982105259460355,
+        -0.09580510149405798,
+        0.1617661555913441,
+        -0.20829169376305287,
+        -0.19110215340202585,
+        -0.14027769899647613,
+        0.5031878263815919
+      ]
+    ],
+    "information_eigenvalues": [
+      0.02952762875342982,
+      0.03289247145338132,
+      0.05978060541314916,
+      0.08036640959470849,
+      0.19410001281648442,
+      0.791349106249905,
+      0.9437031064105132,
+      1.2097703925140892
+    ],
+    "information_trace": 3.34148973320566
+  },
+  "model_selection": {
+    "criterion": "mean out-of-fold negative log predictive density of theta_hat_full under the open-answers-only posterior; scores the mean and the spread together, so an over-confident Psi is punished",
+    "folds": 5,
+    "seed": 2026,
+    "lambda_grid": [
+      0.001,
+      0.0017782794100389228,
+      0.0031622776601683794,
+      0.005623413251903491,
+      0.01,
+      0.01778279410038923,
+      0.03162277660168379,
+      0.05623413251903491,
+      0.1,
+      0.1778279410038923,
+      0.31622776601683794,
+      0.5623413251903491,
+      1.0,
+      1.7782794100389228,
+      3.1622776601683795,
+      5.623413251903491,
+      10.0,
+      17.78279410038923,
+      31.622776601683793,
+      56.23413251903491,
+      100.0,
+      177.82794100389228,
+      316.22776601683796,
+      562.341325190349,
+      1000.0,
+      1778.2794100389228,
+      3162.2776601683795,
+      5623.413251903491,
+      10000.0
+    ],
+    "factor_grid": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "selected": {
+      "ridge_lambda": 177.82794100389228,
+      "n_factors": 1,
+      "cv_nll": 9.603697414659932
+    },
+    "selected_is_grid_edge": false,
+    "psi_source": "pooled out-of-fold residuals at the selected lambda",
+    "r2_per_feature_in_sample": [
+      0.561235291228652,
+      0.10752378686507702,
+      0.02413541446169143,
+      0.048258922804972126,
+      0.2992848784065191,
+      0.18099411636895102,
+      0.26233724328963726,
+      0.06647978611742233,
+      0.023517023464590836,
+      0.24454061263249638,
+      0.039045583277019236,
+      0.06465217246909194,
+      0.3762371834006967,
+      0.4348973442934022,
+      0.07388717389026789,
+      0.3328596888898334,
+      0.2834018609028033,
+      0.5740914916173394,
+      0.06760850087325088,
+      0.09479365111017013,
+      0.5553208897256803,
+      0.0568318670793545,
+      0.6247904533966862,
+      0.0427306343173135
+    ],
+    "r2_per_feature_out_of_fold": [
+      0.5306484707557998,
+      0.07271790521215604,
+      -0.015425218076771996,
+      0.012787170133502723,
+      0.2517921930563751,
+      0.14042279791113021,
+      0.23243498129579443,
+      0.03841167898789233,
+      -0.017520866632545262,
+      0.2104902387725912,
+      0.014748422162117358,
+      0.04126883985025698,
+      0.35527723579423276,
+      0.3923118076831331,
+      0.03921511925646448,
+      0.30341068234974167,
+      0.24951281340101628,
+      0.5427688788455685,
+      0.03584831055773785,
+      0.04696439910296524,
+      0.5288149733060383,
+      0.013401594873306055,
+      0.5915314016849307,
+      0.016913420221884023
+    ],
+    "feature_columns": [
+      "oe01:TRU",
+      "oe01:RSK",
+      "oe01:ENV",
+      "oe01:PRC",
+      "oe01:TRD",
+      "oe01:SOC",
+      "oe01:TEC",
+      "oe01:LOC",
+      "oe16:TRU",
+      "oe16:RSK",
+      "oe16:ENV",
+      "oe16:PRC",
+      "oe16:TRD",
+      "oe16:SOC",
+      "oe16:TEC",
+      "oe16:LOC",
+      "oe15:TRU",
+      "oe15:RSK",
+      "oe15:ENV",
+      "oe15:PRC",
+      "oe15:TRD",
+      "oe15:SOC",
+      "oe15:TEC",
+      "oe15:LOC"
+    ]
+  },
+  "blur_calibration": {
+    "closed_only": {
+      "definition": "kappa_d = rms_over_training_personas(theta_hat_N - theta_hat_full)_d / rms_over_training_personas(blur_N)_d, at N = 15, on the 400 training personas only. theta_hat_full is the Stage 2 fit's own point estimate for the same persona from the full training-item matrix. Both terms are system-side fitted quantities; no planted value is involved. The same constants are applied unchanged to held-out personas.",
+      "fitted_at_n": 15,
+      "fitted_on": "training personas only",
+      "n_personas": 400,
+      "kappa_per_dim": [
+        1.0334464558413181,
+        1.024273310220442,
+        1.0957833368912056,
+        1.0893554987022311,
+        1.1100754594480842,
+        1.1389107248200019,
+        1.0275709513406048,
+        1.0166357641145711
+      ],
+      "residual_rms_per_dim": [
+        0.6930390869697799,
+        0.7277928158774178,
+        0.6289228989560662,
+        0.6819652834785453,
+        0.7603297346384944,
+        0.7317048017091797,
+        0.6685381343474674,
+        0.7774468719753844
+      ],
+      "posterior_blur_rms_per_dim": [
+        0.6706095734834989,
+        0.7105455239488606,
+        0.5739482229583389,
+        0.6260263837571691,
+        0.6849351800070609,
+        0.6424601909204265,
+        0.6506004607032433,
+        0.7647250858349391
+      ]
+    },
+    "fused": {
+      "definition": "kappa_d = rms_over_training_personas(theta_hat_N - theta_hat_full)_d / rms_over_training_personas(blur_N)_d, at N = 15, on the 400 training personas only. theta_hat_full is the Stage 2 fit's own point estimate for the same persona from the full training-item matrix. Both terms are system-side fitted quantities; no planted value is involved. The same constants are applied unchanged to held-out personas.",
+      "fitted_at_n": 15,
+      "fitted_on": "training personas only",
+      "n_personas": 400,
+      "kappa_per_dim": [
+        1.0100135522295073,
+        0.9056278815080143,
+        1.051678349681692,
+        1.0766286460655148,
+        1.0645308926699453,
+        1.0692083949155322,
+        1.0134527397077622,
+        0.9924633756402731
+      ],
+      "residual_rms_per_dim": [
+        0.6217018288573812,
+        0.5797901297183381,
+        0.5750254727473685,
+        0.6487733757336239,
+        0.6349729753010125,
+        0.6586059997416158,
+        0.6451207663764132,
+        0.6603432701737934
+      ],
+      "posterior_blur_rms_per_dim": [
+        0.6155381058848512,
+        0.6402079060915123,
+        0.5467693358158505,
+        0.6025971704399038,
+        0.5964814921513828,
+        0.6159753354664279,
+        0.6365573263558786,
+        0.6653578221440994
+      ]
+    }
+  },
+  "leakage_hunt": {
+    "trigger": {
+      "rule": "a hunt is documented when a per-dimension RMSE lands more than 0.1 below its filed projection, or the pooled lift lands more than 0.1 above the filed projection of 0.23",
+      "dimensions_beating_projection_materially": {
+        "TRU": 0.11429397216930604,
+        "TEC": 0.1375062203820322
+      },
+      "pooled_lift_minus_projection": 0.03791313524854076,
+      "fired": true,
+      "note": "the filed projection covers the closed-only arm, so the fused arm is compared against it as the nearest filed prediction; the fused arm was expected to be better, not equal"
+    },
+    "checks_run_regardless": true,
+    "splits": {
+      "n_train": 400,
+      "n_holdout": 100,
+      "train_holdout_overlap": [],
+      "matches_the_fit_archive": true,
+      "matches_the_frozen_split_manifest": true,
+      "verdict": "clean"
+    },
+    "measurement_model_scope": {
+      "fitted_on_n_personas": 400,
+      "fitted_against": "theta_hat from the full training-item matrix",
+      "expected_n_personas": 400,
+      "cross_validation_folds": 5,
+      "cross_validation_seed": 2026,
+      "psi_source": "pooled out-of-fold residuals at the selected lambda",
+      "selection_saw_holdout": false,
+      "verdict": "clean -- B, c, Psi and both hyper-parameters come from the training personas only, against a system-side target"
+    },
+    "feature_provenance": {
+      "available": true,
+      "what": "each pole's judgment averaged over the three open answers, correlated with the planted value of that dimension and with the full-matrix estimate on the same axes",
+      "per_pole": {
+        "TRU": {
+          "r_with_planted_train": 0.722518060069919,
+          "r_with_planted_holdout": 0.671283531249476,
+          "r_with_full_matrix_estimate_train": 0.7178111066173499,
+          "r_with_full_matrix_estimate_holdout": 0.7761476164849913
+        },
+        "RSK": {
+          "r_with_planted_train": 0.4370558349308499,
+          "r_with_planted_holdout": 0.602400724587947,
+          "r_with_full_matrix_estimate_train": 0.3935434734841939,
+          "r_with_full_matrix_estimate_holdout": 0.5980861318462298
+        },
+        "ENV": {
+          "r_with_planted_train": 0.1794778316152675,
+          "r_with_planted_holdout": 0.133061656374429,
+          "r_with_full_matrix_estimate_train": 0.22096505574466788,
+          "r_with_full_matrix_estimate_holdout": 0.1663727154177551
+        },
+        "PRC": {
+          "r_with_planted_train": 0.37344946730892337,
+          "r_with_planted_holdout": 0.4357349345620373,
+          "r_with_full_matrix_estimate_train": 0.31222187105207033,
+          "r_with_full_matrix_estimate_holdout": 0.5370313200242998
+        },
+        "TRD": {
+          "r_with_planted_train": 0.5672594251619746,
+          "r_with_planted_holdout": 0.5366113165761617,
+          "r_with_full_matrix_estimate_train": 0.5096092473207453,
+          "r_with_full_matrix_estimate_holdout": 0.6007952224737771
+        },
+        "SOC": {
+          "r_with_planted_train": 0.5215628549863693,
+          "r_with_planted_holdout": 0.6270060964715997,
+          "r_with_full_matrix_estimate_train": 0.5899757512507287,
+          "r_with_full_matrix_estimate_holdout": 0.6201545756527677
+        },
+        "TEC": {
+          "r_with_planted_train": 0.710188404442975,
+          "r_with_planted_holdout": 0.711012602771628,
+          "r_with_full_matrix_estimate_train": 0.7415715875270928,
+          "r_with_full_matrix_estimate_holdout": 0.7155434390826225
+        },
+        "LOC": {
+          "r_with_planted_train": 0.3648552261635793,
+          "r_with_planted_holdout": 0.23071589681513846,
+          "r_with_full_matrix_estimate_train": 0.3459594212090615,
+          "r_with_full_matrix_estimate_holdout": 0.16885155953632772
+        }
+      },
+      "holdout_minus_train_gap": {
+        "n": 8,
+        "min": -0.13413932934844083,
+        "p25": -0.04762076363573964,
+        "median": -0.014911955128579957,
+        "mean": 0.008932456841069896,
+        "p75": 0.07307491081114305,
+        "max": 0.16534488965709715
+      },
+      "largest_r_with_planted": 0.711012602771628,
+      "transmission_ceiling_for_reference": {
+        "value": [
+          0.82,
+          0.92
+        ],
+        "source": "Stage 2's disattenuated recovery: what an infinitely long interview could read out of these personas' answers. A text feature that beat it would be reading something the answers do not contain.",
+        "alarm_at": 0.92
+      },
+      "verdict": "clean -- the judgments track planted truth about equally on both splits and stay under the transmission ceiling, which is what a reader with no access to planted truth looks like",
+      "note": "the raw feature axes are the published pole names, so the planted correlation is meaningful without any rotation; the full-matrix estimate is rotated onto those axes by Stage 2's own convention. Positive correlation is expected and is the point of the channel -- what would be alarming is a SPLIT-DEPENDENT difference or a correlation above the ceiling."
+    },
+    "closed_only_against_its_projection": {
+      "what": "the closed-only arm is the thing the projection was actually about; if it lands where it was predicted, the fused arm's improvement is the open-answer channel doing its declared job",
+      "per_dimension_outcome_minus_projection": {
+        "TRU": 0.0342395324791992,
+        "RSK": 0.03097344998275542,
+        "ENV": -0.08293242033077763,
+        "PRC": 0.056551800356033355,
+        "TRD": 0.020390936047468444,
+        "SOC": 0.02511546202194792,
+        "TEC": -0.07037846794948388,
+        "LOC": -0.03946299789591834
+      },
+      "closed_only_pooled_lift": 0.21421446321184778,
+      "projected_pooled_lift": 0.23,
+      "verdict": "clean -- the closed-only arm sits within 0.083 of its filed per-dimension projection on every dimension"
+    },
+    "backbone_integrity": {
+      "what": "the closed-only track, recomputed inside the fusion run, against the backbone artifact",
+      "theta_holdout_identical": true,
+      "blur_holdout_identical": true,
+      "kappa_identical": true,
+      "verdict": "clean -- bit-identical"
+    },
+    "verdict": "no leakage found"
+  },
+  "anticipation_note": {
+    "recorded": "PROJECT_LOG, Gate 2 close: if Stage 3 coverage fails while RMSE passes, that is reported as the same phenomenon as Gate 2, not patched, with the same exploratory decomposition -- and no truth-anchored calibration on the system side, ever.",
+    "coverage_bar_failed": false,
+    "branch_taken": "the coverage bar did not fail at N = 15, so the anticipation branch does not fire. The mechanism it describes is still visible in the coverage-against-N curve, which decays as the interview lengthens -- reported below, no bar attached.",
+    "coverage_decay": {
+      "fused": {
+        "at_n1": 0.74625,
+        "at_n5": 0.68875,
+        "at_n10": 0.6775,
+        "at_n15": 0.64875
+      },
+      "closed_only": {
+        "at_n1": 0.7325,
+        "at_n5": 0.72625,
+        "at_n10": 0.6875,
+        "at_n15": 0.68875
+      }
+    },
+    "full_matrix_coverage_for_reference": "Gate 2 measured 0.358 on the same personas from all 202 items -- the end point of the same decay",
+    "no_recalibration": "no confirmatory number in this report was recalibrated against planted truth, and no quantity computed here was written back to the system side"
+  },
+  "counts": {
+    "train_personas": 400,
+    "holdout_personas": 100,
+    "scripted_items": 15,
+    "open_prompts": 3
+  },
+  "inputs": {
+    "fused_report": "results/stage3_person_fused.json",
+    "fused_estimates": "results/stage3_person_fused.npz",
+    "backbone_estimates": "results/stage3_person_backbone.npz",
+    "fit": "results/stage2_v2_fit.npz",
+    "splits": "experiments/splits_v1.json"
+  }
+}
