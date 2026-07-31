@@ -36,6 +36,14 @@ Every cell has its own seed, from the record's identity and ``--seed-base``, so
 the layer is reproducible and the main round and the retest round wobble
 independently of each other.
 
+CONSISTENCY RULE: from Stage 3 onward every closed-form answer a persona gives
+in an interview must come out of this layer, at the parameters frozen in
+PREREGISTRATION.md section 5, addendum -- a = 1.2, b = 4.0, T_noise = 16,
+seed-base 548, seeded per record. No interview path may bypass it or re-run it
+with different numbers, because the true answer distribution that Stage 4 is
+graded against is defined as repeated seeded applications of this same layer.
+The full statement of the rule is in ``src/interview/__init__.py``.
+
 WALL RULE: this is persona-side code. The wobble directory, the answers and the
 item design all arrive as command-line arguments and none of them is written
 down here. The output is a persona-side artifact: keep it with the rest of the
