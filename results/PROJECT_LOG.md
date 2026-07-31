@@ -400,3 +400,45 @@ personas now recover slightly worse, r +0.23; v1 showed −0.10, unexplained).
 Fix-round cost: 8.00 + 10.52 core-hours GPU + local CPU ≈ 18.5 core-hours
 (orchestrator estimate was ~17). Gate 2 second attempt is the ordered hard
 stop: verdict to the owner, no third attempt, no bar moves.
+
+## 2026-07-31 — Gate 2 outcome ACCEPTED AS FINAL by the owner
+
+The documented result, in the owner's fixed phrasing, to be carried into
+every future report and the final REPORT.md: "2 of 4 frozen bars unmet:
+trait recovery 0.798/0.7996 on RSK/SOC vs 0.80; blur coverage 0.358,
+structurally attributable to card-rendering distortion invisible to the
+posterior." No third card round, no bar moved, no recalibration of any
+confirmatory number. The σ×2.18 coverage decomposition stays
+exploratory-labeled wherever it appears. A finding derived from this
+(uncertainty calibrated only against observable data understates error
+against latent ground truth when the rendering step is lossy) is recorded
+in results/STAGE6_NOTES.md for the writeup.
+
+ANTICIPATION NOTE for Gate 3 (recorded before any Stage 3 measurement):
+the Gate 3 blur-coverage bar (60–75% at N=15) may inherit the same
+structural undershoot — the person encoder's uncertainty can only see
+answer-side noise, not card-rendering distortion. If Stage 3 coverage
+fails while RMSE passes, that is reported as the same phenomenon, not
+patched — with the same exploratory decomposition analysis. And the
+standing rule, stated here so it is never even attempted: no
+truth-anchored calibration on the system side, ever — tuning any
+system-side uncertainty against planted θ would be a Wall breach.
+
+## 2026-07-31 — Stage 3 opened (translators)
+
+Scripted interview set: already frozen at split time in
+experiments/splits_v1.json (seed 2026) — 15 closed items in scripted order
+(the list order is the order; manifest records
+scripted_order_is_permutation), all drawn from TRAINING items
+(interview_from_training_items_only: true; re-verified today against the
+holdout list: zero overlap), 3 open-ended prompts (oe01, oe16, oe15).
+Nothing re-drawn. Consistency rule in force for Stage 3: every closed-form
+interview answer is produced by the frozen noise layer (a=1.2, b=4.0,
+T_noise=16, t=0.7, per-record seeds) applied to the persona's recorded
+answer-token distribution from the v2 full sweep — the interview never
+re-queries Gemma on a closed item, so an interview answer can never
+contradict the persona's own answer distribution. Open-ended answers are
+fresh Gemma generations (persona side, batched, cached). Item encoder and
+person encoder run system-side on the frozen Qwen3.6-27B; architectures
+to be proposed by subagents and decided by the orchestrator before any
+training.

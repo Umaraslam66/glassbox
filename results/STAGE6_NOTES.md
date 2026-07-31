@@ -15,3 +15,11 @@ the training data of any LLM used, and the section is void without a check and
 an honest statement of what it can and cannot rule out; (2) any numbers quoted
 from the SocSci210 paper must come from the ACL camera-ready version, not
 arXiv v1. Nothing else in this project touches SocSci210 before Stage 6.
+
+## Finding recorded at the Gate 2 close (owner's wording, 2026-07-31)
+
+Finding for the report and pitch: uncertainty calibrated only against
+observable data understates error against latent ground truth when the
+persona-rendering step is lossy (measured here: 88% card-induced / 12%
+noise-induced). Honest confidence models need truth-anchored feedback —
+connect to Simile's confidence-model direction in the writeup.
