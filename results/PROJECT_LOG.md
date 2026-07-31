@@ -745,3 +745,14 @@ math, no LLM in the loop; RL starts simple per PRD (bounded effort;
 heuristic shipped with the RL attempt documented if RL is unstable).
 GPU only for the new batch's cards and sweep; RL training and all
 episode simulation on CPU.
+
+RULING ADDENDUM (owner clarification, recorded before any Stage 5
+compute): the sequential posterior, info-gain heuristic, and RL state
+use the Stage-2 FITTED loadings/thresholds for the closed training items
+in the adaptive loop — the same machinery as the Stage-3 person-encoder
+backbone, preserving comparability with the Gate-3 accuracy level that
+defines the frozen Gate 5 target. The earlier execution note's
+"item-encoder loadings" applied to Stage 4's held-out probes, where
+zero-shot was mandatory. One labeled-exploratory arm reruns the loop
+with item-encoder-predicted parameters as the product cold-start
+comparison.
