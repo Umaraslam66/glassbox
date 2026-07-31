@@ -1,0 +1,260 @@
+{
+  "schema": "glassbox.stage4.baselines/1",
+  "module": "src.model.stage4_baselines",
+  "generated": "2026-07-31T17:42:05+00:00",
+  "arms": {
+    "marginal": {
+      "what": "per probe item, the add-0.5-smoothed empirical distribution of the 400 training personas' noised main-round answers",
+      "smoothing": 0.5,
+      "role": "the zero-information reference the primary lift bar is measured against"
+    },
+    "profile": {
+      "what": "per-item ridge from the public profile onto the one-hot training answer",
+      "featurization": "src.model.profile_baseline (age, age^2, one-hot occupation / city size / household / region type)",
+      "n_feature_columns": 102,
+      "holdout_rows_with_an_unseen_level": 0,
+      "cross_validation": {
+        "folds": 5,
+        "seed": 2026,
+        "grid_size": 41,
+        "best_lambda": 1778.2794100389228,
+        "best_cv_brier": 0.16123850541917073,
+        "best_lambda_is_grid_edge": false,
+        "curve": [
+          {
+            "lambda": 0.01,
+            "cv_brier": 0.2079134102605476
+          },
+          {
+            "lambda": 0.01778279410038923,
+            "cv_brier": 0.20773266724914957
+          },
+          {
+            "lambda": 0.03162277660168379,
+            "cv_brier": 0.20740892146025794
+          },
+          {
+            "lambda": 0.05623413251903491,
+            "cv_brier": 0.20682875988989827
+          },
+          {
+            "lambda": 0.1,
+            "cv_brier": 0.2057966018116219
+          },
+          {
+            "lambda": 0.1778279410038923,
+            "cv_brier": 0.20399855783319581
+          },
+          {
+            "lambda": 0.31622776601683794,
+            "cv_brier": 0.20097610115293196
+          },
+          {
+            "lambda": 0.5623413251903491,
+            "cv_brier": 0.19633296886619686
+          },
+          {
+            "lambda": 1.0,
+            "cv_brier": 0.19015887834470505
+          },
+          {
+            "lambda": 1.7782794100389228,
+            "cv_brier": 0.1831788745792203
+          },
+          {
+            "lambda": 3.1622776601683795,
+            "cv_brier": 0.17660336115615508
+          },
+          {
+            "lambda": 5.623413251903491,
+            "cv_brier": 0.17140651691526781
+          },
+          {
+            "lambda": 10.0,
+            "cv_brier": 0.16790005001087346
+          },
+          {
+            "lambda": 17.78279410038923,
+            "cv_brier": 0.16570958173551667
+          },
+          {
+            "lambda": 31.622776601683793,
+            "cv_brier": 0.16427510564467634
+          },
+          {
+            "lambda": 56.23413251903491,
+            "cv_brier": 0.1632259808213519
+          },
+          {
+            "lambda": 100.0,
+            "cv_brier": 0.16242918957148023
+          },
+          {
+            "lambda": 177.82794100389228,
+            "cv_brier": 0.16186337230514206
+          },
+          {
+            "lambda": 316.22776601683796,
+            "cv_brier": 0.1615119901927503
+          },
+          {
+            "lambda": 562.341325190349,
+            "cv_brier": 0.16133058968942596
+          },
+          {
+            "lambda": 1000.0,
+            "cv_brier": 0.16125745828989144
+          },
+          {
+            "lambda": 1778.2794100389228,
+            "cv_brier": 0.16123850541917073
+          },
+          {
+            "lambda": 3162.2776601683795,
+            "cv_brier": 0.16123992574967055
+          },
+          {
+            "lambda": 5623.413251903491,
+            "cv_brier": 0.1612460548065358
+          },
+          {
+            "lambda": 10000.0,
+            "cv_brier": 0.16125155896242255
+          },
+          {
+            "lambda": 17782.794100389227,
+            "cv_brier": 0.1612553853366291
+          },
+          {
+            "lambda": 31622.776601683792,
+            "cv_brier": 0.1612577843492961
+          },
+          {
+            "lambda": 56234.13251903491,
+            "cv_brier": 0.16125921466655824
+          },
+          {
+            "lambda": 100000.0,
+            "cv_brier": 0.16126004525199839
+          },
+          {
+            "lambda": 177827.94100389228,
+            "cv_brier": 0.16126052073087635
+          },
+          {
+            "lambda": 316227.7660168379,
+            "cv_brier": 0.16126079078908492
+          },
+          {
+            "lambda": 562341.3251903491,
+            "cv_brier": 0.16126094350375555
+          },
+          {
+            "lambda": 1000000.0,
+            "cv_brier": 0.16126102965083997
+          },
+          {
+            "lambda": 1778279.410038923,
+            "cv_brier": 0.16126107818017532
+          },
+          {
+            "lambda": 3162277.6601683795,
+            "cv_brier": 0.16126110549720946
+          },
+          {
+            "lambda": 5623413.251903491,
+            "cv_brier": 0.16126112086724287
+          },
+          {
+            "lambda": 10000000.0,
+            "cv_brier": 0.1612611295131478
+          },
+          {
+            "lambda": 17782794.100389227,
+            "cv_brier": 0.16126113437595135
+          },
+          {
+            "lambda": 31622776.60168379,
+            "cv_brier": 0.1612611371107768
+          },
+          {
+            "lambda": 56234132.51903491,
+            "cv_brier": 0.16126113864876757
+          },
+          {
+            "lambda": 100000000.0,
+            "cv_brier": 0.16126113951367035
+          }
+        ]
+      },
+      "collapse_check": {
+        "mean_abs_deviation_from_the_marginal": 0.003669542753005078,
+        "max_abs_deviation_from_the_marginal": 0.05018587884378317,
+        "note": "Gate 3 found the public profile carries essentially no trait signal in this population, so this arm is expected to sit on top of the marginal. The two numbers above say how close it got."
+      }
+    },
+    "knn": {
+      "what": "add-0.5-smoothed empirical distribution of the k nearest training personas' noised main-round answers on the probe item",
+      "representation": "the 15 interview_v1 answers, same sitting type on both sides",
+      "distance": "sum over the 15 items of per-item disagreement: binary 0/1, likert-5 |delta| / 4",
+      "k_chosen": 40,
+      "k_selection": "leave-one-out over the 400 TRAINING personas, mean multiclass Brier against their own one-hot noised main-round probe answers; held-out personas take no part",
+      "k_curve": [
+        {
+          "k": 1,
+          "loo_brier": 0.1677071428571429
+        },
+        {
+          "k": 3,
+          "loo_brier": 0.15479277892561982
+        },
+        {
+          "k": 5,
+          "loo_brier": 0.1490078
+        },
+        {
+          "k": 10,
+          "loo_brier": 0.14267587570247936
+        },
+        {
+          "k": 20,
+          "loo_brier": 0.1393521791887125
+        },
+        {
+          "k": 40,
+          "loo_brier": 0.1383639663703225
+        },
+        {
+          "k": 80,
+          "loo_brier": 0.13941365660798027
+        },
+        {
+          "k": 160,
+          "loo_brier": 0.14340053374850714
+        }
+      ],
+      "distance_summary": {
+        "min": 0.5,
+        "median": 6.0,
+        "max": 13.25,
+        "median_nearest": 1.75
+      }
+    }
+  },
+  "counts": {
+    "train_personas": 400,
+    "holdout_personas": 100,
+    "probe_items": 50,
+    "interview_items": 15
+  },
+  "inputs": {
+    "fit": "/Users/umaraslam/Projects/GLASSBOX/results/stage2_v2_fit.npz",
+    "transcripts": "/Users/umaraslam/Projects/GLASSBOX/data/runs/interview_v1/transcripts.jsonl",
+    "answers": "/Users/umaraslam/Projects/GLASSBOX/data/runs/full_sweep_v2/answers_noised.jsonl",
+    "bank": "/Users/umaraslam/Projects/GLASSBOX/data/public/bank_items.json"
+  },
+  "artifacts": {
+    "baselines": "/Users/umaraslam/Projects/GLASSBOX/results/stage4_baselines.npz"
+  },
+  "runtime_seconds": 0.5665221214294434
+}
