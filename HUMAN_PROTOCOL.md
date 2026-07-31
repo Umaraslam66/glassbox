@@ -155,7 +155,7 @@ lift = 1 − mean(Brier_model) / mean(Brier_marginal)
 
 where `Brier_marginal` uses the population answer distribution for that item,
 estimated on the calibration sample only. This is the zero-information baseline
-and it is mandatory in every reported number (CLAUDE.md rule; PRD §2).
+and it is mandatory in every reported number (PREREGISTRATION.md §4; PRD §2).
 
 ### 3.2 The scale problem, and why the synthetic 27.1% is not the number to power against
 
@@ -677,7 +677,7 @@ held-out personas across 51 replicates
 | RMSE ≤ 0.60 | 77 | 84 | 1.09 |
 
 **RL ties the heuristic.** It does not beat it. Both roughly halve random
-ordering (heuristic 0.462 / 0.494 / ≤0.566 of random at the three thresholds).
+ordering (heuristic 0.462 / 0.494 / 0.566 of random at the three thresholds).
 A further finding: deployed greedily, the trained policy converged to a
 near-**static** 25-question order — the value it learned was *which questions to
 ask*, not *how to branch per person*. Given that, a heuristic that needs no
@@ -883,11 +883,13 @@ leakage, not celebration.** Pre-register the triggers:
 
 Each trigger fires a written investigation covering: participant-split
 violations, item-split violations, parameter fitting that saw the probe block,
-and duplicate participants across arms. GLASSBOX ran three such hunts. Two found
-real explanations (a card-writer confound entangling two dimensions planted at
-zero correlation; distractors picking up biography coherence) and one came back
-clean on five checks. **A hunt that finds nothing is still worth running and
-still gets written down.**
+and duplicate participants across arms. GLASSBOX ran four such hunts. One found a
+real confound (the card writer entangling TRU and RSK, two dimensions planted at
+zero correlation). One documented real instrument behaviour rather than a defect
+(distractors picking up biography coherence). Two came back clean — the
+item-encoder direction head, and the two dimensions that beat their filed
+projection, which cleared five separate checks. **A hunt that finds nothing is
+still worth running and still gets written down.**
 
 ### 9.4 Honest-fail reporting
 
@@ -897,7 +899,9 @@ Gate-4 sentence was:
 
 > "2 of 3 frozen bars pass (Brier lift 27.1% vs marginal, beats k-NN; ECE
 > 0.0137). The correlation bar fails at 0.684 vs 0.90, structurally: the
-> full-information ceiling of this model class reaches only 0.786."
+> full-information ceiling of this model class reaches 0.786 — per-cell
+> resolution beyond an 8-dimensional trait model, attributed 67% model class /
+> 18% interview length / 15% zero-shot item encoder."
 
 Commentary comes after, and never replaces it. Bars do not move after fieldwork
 starts. A measurement done differently from this document is labelled
