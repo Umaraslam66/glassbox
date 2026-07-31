@@ -19,3 +19,5 @@ accordingly if it is ever used for bulk development calls.
 | 2026-07-31 | 1 | Temperature pilot, attempt 1 — p0314 card rendered, both answer sweeps died on leaked GPU memory (job 51171292, 1 node × 10m40s) | 5.69 core-hours | 5.69 core-h |
 | 2026-07-31 | 1 | Temperature pilot, attempt 2 — 60 personas × (252 main + 30 retest) at t=0.7 and t=1.0, 33,840 answers (job 51179813, 1 node × 16m42s) | 8.91 core-hours | 8.91 core-h |
 | 2026-07-31 | 1 | Temperature pilot round 2 (clean per-record seeds) — 3 arms t=0.7/1.0/1.3, 50,760 answers, one engine init (job 51189257, 1 node × 13m37s) | 7.26 core-hours | 7.26 core-h |
+| 2026-07-31 | 1 | Re-render t=0.7 arm recording top-20 answer-token logprobs, input to the mechanical noise layer (job 51194936, 1 node × 10m07s) | 5.40 core-hours | 5.40 core-h |
+| 2026-07-31 | 1 | Noise-layer tuning grid (375 configs, offline on the recorded logprobs) | local CPU, no GPU | 0 |
