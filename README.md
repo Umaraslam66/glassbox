@@ -54,6 +54,29 @@ Mint a population (the truth directory is passed in, never hardcoded):
     --completions <gemma completions.jsonl> --out-truth <truth dir>
 ```
 
+Train the adaptive (RL) interviewer. One command; run it again to resume from the
+last checkpoint. Truth-side paths are arguments, never defaults — the trainer is
+handed the recorded material by path and gets coded answers back, and its reward
+is the system's own declared uncertainty, so no planted value reaches a weight:
+
+```bash
+./.venv/bin/python -m src.rl.train \
+    --config experiments/stage5_rl.json --profile confirmatory \
+    --fit results/stage2_v2_fit.npz \
+    --answers <rl batch sweep>/answers.jsonl \
+    --recorded <rl batch sweep>/completions.jsonl \
+    --noise-dir <rl batch noise dir> \
+    --public-bank data/public/bank_items.json \
+    --persona-source data/runs/rl_batch/answers_noised.jsonl \
+    --episodes data/runs/stage5_rl/episode_codes.npz \
+    --out-dir data/runs/stage5_rl/confirmatory \
+    --results results --prefix stage5_rl
+```
+
+Then grade it beside the non-RL strategies with `python -m src.eval.gate5 --policy
+<the final weights>`, and check it for proxy gaming with `python -m
+src.eval.rl_proxy_watch`.
+
 Watch a run on the local dashboard (`app/README.md` lists what each page needs):
 
 ```bash
