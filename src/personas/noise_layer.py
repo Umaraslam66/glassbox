@@ -375,7 +375,9 @@ def apply_noise(
 
     for row in answers:
         pid, item_id, round_name = cell_key(row)
-        record = {k: v for k, v in row.items() if k != "logprobs"}
+        # "raw" is the pre-noise answer -- truth-side material that must not
+        # reach the system-side output (Wall rule; see tests/test_wall.py).
+        record = {k: v for k, v in row.items() if k not in ("logprobs", "raw")}
 
         item_type = types.get(item_id)
         recorded = row.get("logprobs") or logprobs_at.get((pid, item_id, round_name))

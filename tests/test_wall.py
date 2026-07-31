@@ -274,3 +274,34 @@ def test_run_directories_hold_no_raw_material() -> None:
         "raw material found on the system side of the Wall -- move it under "
         "the truth store's runs directory:\n" + "\n".join(f"  - {p}" for p in found)
     )
+
+
+def test_noised_answer_files_carry_no_pre_noise_fields() -> None:
+    """System-side answer records must not reveal the pre-noise answer.
+
+    The noise layer's output is the official world. A ``raw`` field (or inline
+    ``logprobs``) on a record in ``data/runs/`` would hand system-side code the
+    responder's un-noised answer, which is truth-side material.
+    """
+    import json
+
+    runs = REPO_ROOT.joinpath(*RUNS_DIR)
+    if not runs.is_dir():
+        pytest.skip("no run directory in this checkout -- nothing to check")
+
+    offenders: list[str] = []
+    for path in sorted(runs.rglob("answers_noised.jsonl")):
+        with path.open(encoding="utf-8") as fh:
+            for lineno, line in enumerate(fh, start=1):
+                record = json.loads(line)
+                bad = {"raw", "logprobs"} & set(record)
+                if bad:
+                    offenders.append(
+                        f"{path.relative_to(REPO_ROOT)}: line {lineno} has {sorted(bad)}"
+                    )
+                    break  # one finding per file is enough
+
+    assert not offenders, (
+        "pre-noise fields found in system-side answer files:\n"
+        + "\n".join(f"  - {o}" for o in offenders)
+    )

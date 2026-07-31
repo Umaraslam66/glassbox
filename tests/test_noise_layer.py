@@ -237,7 +237,7 @@ def test_layer_keeps_the_schema_and_drops_inline_logprobs():
     rows = [_cell("p1", "q1", "main", 4, CONFIDENT)]
     out, _ = nl.apply_noise(rows, {}, {"p1": 0.3}, {"q1": "likert5"},
                             nl.NoiseConfig(), seed_base=548)
-    assert set(out[0]) == {"pid", "item_id", "round", "answer", "raw"}
+    assert set(out[0]) == {"pid", "item_id", "round", "answer"}  # "raw" is truth-side, dropped
     assert out[0]["answer"] in nl.LIKERT_ANSWERS
 
 
@@ -403,7 +403,7 @@ def test_cli_writes_answers_and_stats(tmp_path, capsys):
     assert rc == 0
     rows = nl.read_jsonl(out)
     assert len(rows) == 50
-    assert all(set(r) == {"pid", "item_id", "round", "answer", "raw"} for r in rows)
+    assert all(set(r) == {"pid", "item_id", "round", "answer"} for r in rows)  # no "raw" on the system side
     stats = json.loads(stats_path.read_text())
     assert stats["config"] == {"a": 0.3, "b": 0.9, "t_noise": 3.0}
     assert stats["n_noise_eligible"] == 50
