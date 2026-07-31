@@ -106,6 +106,46 @@ Same rule as the other pages: every panel checks for its file first, so a clone 
 Stage 3 run shows the commands that produce the reports, and a checkout with the Gate 3
 report but no item-encoder report renders the page without those two bars.
 
+## What page 4 (Calibration) shows
+
+Stage 4, from `results/stage4_gate4.json` plus the two pictures next to it
+(`stage4_reliability.png`, `stage4_aggregate.png`).
+
+Top of the page is the Gate 4 verdict table — each frozen bar, its rule, the threshold,
+the number and pass or fail — under a banner that states the report's own verdict.
+Gate 4 is a partial pass: **2 of the 3 bars pass, 1 is missed**.
+
+- **Primary lift PASS** — 0.271 relative Brier lift over the population marginal on a
+  0.25 bar, and it beats k-NN. The row carries the catch: k-NN's own lift is 0.244, so
+  the model is only 3.6% better than k-NN in relative Brier.
+- **ECE PASS** — 0.0137 against the 0.05 bar.
+- **Correlation FAIL** — 0.684 against the 0.9 bar. Split by item type it is 0.700 on
+  binary and 0.615 on Likert-5, so neither type carries the miss on its own.
+
+Under that:
+
+- the **reliability diagram** with all four arms on it, beside a table of every arm's
+  Brier, log loss, ECE and correlation, and the confirmatory arm's ten bins with the
+  gap between predicted and observed in each;
+- **per-stratum performance** — grouped bars of relative Brier lift over the marginal
+  for the model, k-NN and profile-only, near/same-domain/far, with the primary bar drawn
+  for reference. k-NN wins **near**; the model wins same-domain and far. That is the
+  shape you want: an encoder that only beat k-NN near the interview would be memorising
+  the interview. The report's own k-NN proximity reading is printed under it;
+- the **aggregate check** — predicted vs true population marginals (r **0.9826**) and the
+  2-way cross-tabs (r **0.9671**), with the report's conditional-independence caveat
+  quoted in full;
+- the **Qwen no-interview baseline** slot, which says *pending* until that file lands and
+  shows its numbers once it does.
+
+The per-stratum profile bar is the one number on the page the report does not carry
+ready-made: it is `1 - profile Brier / marginal Brier` from the two Brier scores in the
+same block, and the caption says so. Everything else is read straight out of the report.
+
+Same rule as the other pages: every panel checks for its file first, so a clone with no
+Stage 4 run shows the command that produces the report, and a checkout with the report
+but no pictures renders every table and chart without them.
+
 ## Producing the files it reads
 
 ```bash
@@ -136,6 +176,13 @@ report but no item-encoder report renders the page without those two bars.
 ./.venv/bin/python -m src.model.item_encoder train \
     --judgments <item judgments.jsonl> \
     --out results/stage3_item_encoder.json
+
+./.venv/bin/python -m src.eval.gate4 \
+    --truth50 <50-sample truth dir> \
+    --predictions results/stage4_predictions.npz \
+    --baselines results/stage4_baselines.npz \
+    --splits experiments/splits_v1.json \
+    --out results
 ```
 
 `--out-prefix` is the filename stem for everything the run writes into `--out`
@@ -150,5 +197,8 @@ the suite if it ever does. The export CLI above is the only bridge: it lives in
 `src/eval/`, reads the planted values, and writes out bin counts — no persona ids, no
 individual values.
 
-Later pages (calibration, interviewer) get added as each stage produces the data they
-show. See PRD section 8.
+The Calibration page follows the same rule: it reads the Gate 4 report and the pictures
+written next to it, never the 50-sample truth store those numbers were graded against.
+
+The last page (interviewer, Stage 5) gets added when that stage produces the data it
+shows. See PRD section 8.
