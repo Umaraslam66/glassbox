@@ -1,0 +1,839 @@
+{
+  "schema": "glassbox.stage3.item_encoder/1",
+  "grading_reference": "FITTED parameters of the 50 held-out items in results/stage2_v2_fit.npz, unrotated basis (cosine is invariant under a shared orthogonal rotation, so the truth-derived Procrustes rotation is never needed system-side)",
+  "model": "Qwen3.6-27B (Leonardo, frozen system-side model)",
+  "n_train_items": 202,
+  "n_holdout_items": 50,
+  "repeats_per_item_pole": 5,
+  "bars": {
+    "median_loading_cosine": {
+      "value": 0.8607346557641417,
+      "bar": 0.7,
+      "pass": true
+    },
+    "discrimination_r": {
+      "value": 0.5039854063634698,
+      "bar": 0.6,
+      "pass": false
+    }
+  },
+  "direction_arms": {
+    "primary": {
+      "features": [
+        "judge_mean",
+        "judge_spread"
+      ],
+      "n_features": 16,
+      "lambda": 1e-06,
+      "train_loo_median_cosine": 0.8683303237852067,
+      "holdout_median_cosine": 0.8607346557641417,
+      "holdout_mean_cosine": 0.7804958526518585,
+      "holdout_frac_ge_0.7": 0.78,
+      "holdout_frac_positive": 0.96
+    },
+    "judgments_plus_wording": {
+      "features": [
+        "judge_mean",
+        "judge_spread",
+        "wording"
+      ],
+      "n_features": 20,
+      "lambda": 17.78279410038923,
+      "train_loo_median_cosine": 0.8619027890097695,
+      "holdout_median_cosine": 0.8717603792308466,
+      "holdout_mean_cosine": 0.7763134388383146,
+      "holdout_frac_ge_0.7": 0.8,
+      "holdout_frac_positive": 0.96
+    },
+    "topic_only": {
+      "features": [
+        "topic"
+      ],
+      "n_features": 12,
+      "lambda": 5623.413251903491,
+      "train_loo_median_cosine": 0.1057467048364724,
+      "holdout_median_cosine": 0.26525086029746114,
+      "holdout_mean_cosine": 0.15188629652919133,
+      "holdout_frac_ge_0.7": 0.0,
+      "holdout_frac_positive": 0.7
+    },
+    "embeddings_only": {
+      "features": [
+        "embed"
+      ],
+      "n_features": 64,
+      "lambda": 56.23413251903491,
+      "train_loo_median_cosine": 0.43954284371794966,
+      "holdout_median_cosine": 0.526446175035721,
+      "holdout_mean_cosine": 0.40507071453530424,
+      "holdout_frac_ge_0.7": 0.26,
+      "holdout_frac_positive": 0.86
+    },
+    "constant_no_text": {
+      "features": [],
+      "holdout_median_cosine": 0.2583469778890709,
+      "holdout_frac_ge_0.7": 0.0
+    }
+  },
+  "magnitude_arms": {
+    "primary": {
+      "features": [
+        "judge_mean",
+        "judge_spread",
+        "polar",
+        "wording",
+        "embed"
+      ],
+      "n_features": 86,
+      "lambda": 177.82794100389228,
+      "train_loo_r_log": 0.40358552168974104,
+      "train_loo_r_raw": 0.37875171138016284,
+      "holdout_r": 0.5039854063634698,
+      "holdout_r_log": 0.5769949049678382,
+      "holdout_spearman": 0.5159663865546219
+    },
+    "no_embeddings": {
+      "features": [
+        "judge_mean",
+        "judge_spread",
+        "polar",
+        "wording"
+      ],
+      "n_features": 22,
+      "lambda": 100.0,
+      "train_loo_r_log": 0.25482298918165863,
+      "train_loo_r_raw": 0.20950086784143104,
+      "holdout_r": 0.45324257309251587,
+      "holdout_r_log": 0.5000771984306798,
+      "holdout_spearman": 0.4133973589435774
+    },
+    "judgments_only": {
+      "features": [
+        "judge_mean",
+        "judge_spread"
+      ],
+      "n_features": 16,
+      "lambda": 100.0,
+      "train_loo_r_log": 0.19032806110487274,
+      "train_loo_r_raw": 0.15299906907216013,
+      "holdout_r": 0.3398383586496973,
+      "holdout_r_log": 0.34245985567530046,
+      "holdout_spearman": 0.34223289315726285
+    },
+    "polarization_only": {
+      "features": [
+        "polar"
+      ],
+      "n_features": 2,
+      "lambda": 1000.0,
+      "train_loo_r_log": -0.2954313369760328,
+      "train_loo_r_raw": -0.26554474608558404,
+      "holdout_r": -0.002877192687045411,
+      "holdout_r_log": -0.09954024193590848,
+      "holdout_spearman": -0.023385354141656663
+    },
+    "wording_only": {
+      "features": [
+        "wording"
+      ],
+      "n_features": 4,
+      "lambda": 177.82794100389228,
+      "train_loo_r_log": 0.1055792206502278,
+      "train_loo_r_raw": 0.0848103504302924,
+      "holdout_r": 0.2806586715957907,
+      "holdout_r_log": 0.3609015053966589,
+      "holdout_spearman": 0.3484753901560623
+    },
+    "embeddings_only": {
+      "features": [
+        "embed"
+      ],
+      "n_features": 64,
+      "lambda": 177.82794100389228,
+      "train_loo_r_log": 0.3529185599191622,
+      "train_loo_r_raw": 0.33920068496042705,
+      "holdout_r": 0.4069845192645055,
+      "holdout_r_log": 0.48867170490092293,
+      "holdout_spearman": 0.375078031212485
+    },
+    "topic_only": {
+      "features": [
+        "topic"
+      ],
+      "n_features": 12,
+      "lambda": 10000.0,
+      "train_loo_r_log": -0.8420021923005473,
+      "train_loo_r_raw": -0.8116019800000294,
+      "holdout_r": 0.017167961709196565,
+      "holdout_r_log": -0.019349251335857954,
+      "holdout_spearman": -0.0114765906362545
+    }
+  },
+  "per_stratum": {
+    "far": {
+      "n": 18,
+      "median_cosine": 0.8607346557641417,
+      "mean_cosine": 0.7730383872781105,
+      "frac_ge_0.7": 0.7777777777777778,
+      "discrimination_r": 0.5967769174436128
+    },
+    "near": {
+      "n": 13,
+      "median_cosine": 0.822178688242594,
+      "mean_cosine": 0.809517791093086,
+      "frac_ge_0.7": 0.6923076923076923,
+      "discrimination_r": 0.5618529202720308
+    },
+    "same-domain": {
+      "n": 19,
+      "median_cosine": 0.8699227834517044,
+      "mean_cosine": 0.7677037040724646,
+      "frac_ge_0.7": 0.8421052631578947,
+      "discrimination_r": 0.4366790683607058
+    }
+  },
+  "per_item_kind": {
+    "binary": {
+      "n": 15,
+      "median_cosine": 0.8778119528456625,
+      "discrimination_r": 0.3869794816759353
+    },
+    "likert5": {
+      "n": 35,
+      "median_cosine": 0.8539588200756834,
+      "discrimination_r": 0.5161813931531971
+    }
+  },
+  "per_item": [
+    {
+      "item_id": "q242",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": -0.26871771895064156,
+      "fitted_norm": 0.3370481213798108,
+      "predicted_norm": 1.1019683156726958,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 1,
+      "top_fitted_component": 4
+    },
+    {
+      "item_id": "q245",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": -0.12169500437744751,
+      "fitted_norm": 0.2748756777387212,
+      "predicted_norm": 1.1047415432666137,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 2,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q247",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.22785211187712007,
+      "fitted_norm": 0.2865879582534074,
+      "predicted_norm": 1.6483116525257475,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 3,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q150",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.5024160264035964,
+      "fitted_norm": 2.313716235580937,
+      "predicted_norm": 1.9753027910148275,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 6,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q241",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.567330401293513,
+      "fitted_norm": 0.8102706676568924,
+      "predicted_norm": 0.9947113254473682,
+      "top_judged_pole": "TRD",
+      "top_predicted_component": 3,
+      "top_fitted_component": 7
+    },
+    {
+      "item_id": "q029",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.6291157187792928,
+      "fitted_norm": 1.3762910234214236,
+      "predicted_norm": 1.3610490214456143,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 4,
+      "top_fitted_component": 5
+    },
+    {
+      "item_id": "q251",
+      "stratum": "far",
+      "kind": "binary",
+      "cosine": 0.6729093331360912,
+      "fitted_norm": 0.7483013434943317,
+      "predicted_norm": 1.4058850817242836,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 2,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q102",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.6752221967044691,
+      "fitted_norm": 0.7094583169875994,
+      "predicted_norm": 1.6419729474218505,
+      "top_judged_pole": "TRD",
+      "top_predicted_component": 2,
+      "top_fitted_component": 5
+    },
+    {
+      "item_id": "q228",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.6828269716784191,
+      "fitted_norm": 0.3902692311718245,
+      "predicted_norm": 1.287283758331171,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 3,
+      "top_fitted_component": 7
+    },
+    {
+      "item_id": "q030",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.6917142195864785,
+      "fitted_norm": 1.1433073701530896,
+      "predicted_norm": 1.5876981481161903,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 5,
+      "top_fitted_component": 5
+    },
+    {
+      "item_id": "q185",
+      "stratum": "near",
+      "kind": "binary",
+      "cosine": 0.6927337134004317,
+      "fitted_norm": 2.4798249687726552,
+      "predicted_norm": 2.707545510884213,
+      "top_judged_pole": "LOC",
+      "top_predicted_component": 0,
+      "top_fitted_component": 3
+    },
+    {
+      "item_id": "q031",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.7178743845579927,
+      "fitted_norm": 0.9168734172048375,
+      "predicted_norm": 1.5203992682187208,
+      "top_judged_pole": "RSK",
+      "top_predicted_component": 5,
+      "top_fitted_component": 4
+    },
+    {
+      "item_id": "q110",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.7296920861267651,
+      "fitted_norm": 1.5864778762110259,
+      "predicted_norm": 1.774173248260558,
+      "top_judged_pole": "LOC",
+      "top_predicted_component": 7,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q210",
+      "stratum": "same-domain",
+      "kind": "binary",
+      "cosine": 0.7505371504353842,
+      "fitted_norm": 2.397001935557548,
+      "predicted_norm": 1.976754248991138,
+      "top_judged_pole": "ENV",
+      "top_predicted_component": 3,
+      "top_fitted_component": 3
+    },
+    {
+      "item_id": "q080",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.7544504930674639,
+      "fitted_norm": 1.3851164611919726,
+      "predicted_norm": 1.7958824076219024,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 6,
+      "top_fitted_component": 4
+    },
+    {
+      "item_id": "q126",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.755515746498489,
+      "fitted_norm": 1.8812647974300885,
+      "predicted_norm": 1.8531272950025486,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 3,
+      "top_fitted_component": 3
+    },
+    {
+      "item_id": "q100",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.7678773556197926,
+      "fitted_norm": 2.056991103354347,
+      "predicted_norm": 1.925771975603138,
+      "top_judged_pole": "TRD",
+      "top_predicted_component": 7,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q020",
+      "stratum": "far",
+      "kind": "binary",
+      "cosine": 0.7764317509583617,
+      "fitted_norm": 2.244945147979212,
+      "predicted_norm": 1.376628256448199,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 7,
+      "top_fitted_component": 7
+    },
+    {
+      "item_id": "q077",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.7829612915606912,
+      "fitted_norm": 0.8195075740624257,
+      "predicted_norm": 1.949637574009954,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 4,
+      "top_fitted_component": 6
+    },
+    {
+      "item_id": "q188",
+      "stratum": "same-domain",
+      "kind": "binary",
+      "cosine": 0.7892658180902079,
+      "fitted_norm": 2.7413756700197855,
+      "predicted_norm": 2.378176109478754,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 0,
+      "top_fitted_component": 7
+    },
+    {
+      "item_id": "q139",
+      "stratum": "far",
+      "kind": "binary",
+      "cosine": 0.8208992532157531,
+      "fitted_norm": 1.1798261552455036,
+      "predicted_norm": 1.7669157658429016,
+      "top_judged_pole": "TRD",
+      "top_predicted_component": 2,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q062",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.822178688242594,
+      "fitted_norm": 1.087335704993904,
+      "predicted_norm": 1.889359988747054,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 6,
+      "top_fitted_component": 6
+    },
+    {
+      "item_id": "q028",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.848510571501694,
+      "fitted_norm": 1.7819489628110454,
+      "predicted_norm": 1.634734144797012,
+      "top_judged_pole": "RSK",
+      "top_predicted_component": 0,
+      "top_fitted_component": 0
+    },
+    {
+      "item_id": "q218",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.8539588200756834,
+      "fitted_norm": 1.6967377275068989,
+      "predicted_norm": 2.4599012116213066,
+      "top_judged_pole": "LOC",
+      "top_predicted_component": 3,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q167",
+      "stratum": "far",
+      "kind": "binary",
+      "cosine": 0.8560092198200904,
+      "fitted_norm": 2.2763812135995116,
+      "predicted_norm": 1.7733018547570487,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 1,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q129",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.8654600917081929,
+      "fitted_norm": 1.3981517203634592,
+      "predicted_norm": 2.0436937132493744,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 2,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q136",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.8699227834517044,
+      "fitted_norm": 2.2820043268672627,
+      "predicted_norm": 1.9731203272912883,
+      "top_judged_pole": "RSK",
+      "top_predicted_component": 0,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q066",
+      "stratum": "same-domain",
+      "kind": "binary",
+      "cosine": 0.8778119528456625,
+      "fitted_norm": 2.948104586229154,
+      "predicted_norm": 1.7501684407832405,
+      "top_judged_pole": "ENV",
+      "top_predicted_component": 6,
+      "top_fitted_component": 6
+    },
+    {
+      "item_id": "q122",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.8813860594416643,
+      "fitted_norm": 2.0197484219885204,
+      "predicted_norm": 2.3385459867151193,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 1,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q148",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.8815383174778452,
+      "fitted_norm": 1.4898044768936418,
+      "predicted_norm": 2.2855484955902865,
+      "top_judged_pole": "TEC",
+      "top_predicted_component": 5,
+      "top_fitted_component": 5
+    },
+    {
+      "item_id": "q008",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.8908882531263671,
+      "fitted_norm": 2.339258714167931,
+      "predicted_norm": 1.9773491737882356,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 1,
+      "top_fitted_component": 4
+    },
+    {
+      "item_id": "q072",
+      "stratum": "same-domain",
+      "kind": "binary",
+      "cosine": 0.8948795509468603,
+      "fitted_norm": 1.4067203259252126,
+      "predicted_norm": 1.749667216488663,
+      "top_judged_pole": "ENV",
+      "top_predicted_component": 6,
+      "top_fitted_component": 6
+    },
+    {
+      "item_id": "q189",
+      "stratum": "far",
+      "kind": "binary",
+      "cosine": 0.895010216445628,
+      "fitted_norm": 2.7202381233841217,
+      "predicted_norm": 1.9819720391107798,
+      "top_judged_pole": "LOC",
+      "top_predicted_component": 0,
+      "top_fitted_component": 7
+    },
+    {
+      "item_id": "q221",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.898044192397816,
+      "fitted_norm": 0.9769291050576441,
+      "predicted_norm": 1.7459108807794645,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 0,
+      "top_fitted_component": 0
+    },
+    {
+      "item_id": "q217",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.9021744489787561,
+      "fitted_norm": 1.5435572906742754,
+      "predicted_norm": 1.7293398342675028,
+      "top_judged_pole": "TRD",
+      "top_predicted_component": 2,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q195",
+      "stratum": "near",
+      "kind": "binary",
+      "cosine": 0.9191626466628269,
+      "fitted_norm": 2.2059950133391397,
+      "predicted_norm": 2.132062506090948,
+      "top_judged_pole": "ENV",
+      "top_predicted_component": 6,
+      "top_fitted_component": 0
+    },
+    {
+      "item_id": "q098",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.9197991785387568,
+      "fitted_norm": 1.6253166033982729,
+      "predicted_norm": 1.8127292637105585,
+      "top_judged_pole": "TRD",
+      "top_predicted_component": 2,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q085",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.9213744281272922,
+      "fitted_norm": 1.4818952148004896,
+      "predicted_norm": 1.9576828417975427,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 4,
+      "top_fitted_component": 6
+    },
+    {
+      "item_id": "q007",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.9239131588813769,
+      "fitted_norm": 1.9725063194286574,
+      "predicted_norm": 1.4724131418359943,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 4,
+      "top_fitted_component": 0
+    },
+    {
+      "item_id": "q015",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.929487416176033,
+      "fitted_norm": 2.209790676106468,
+      "predicted_norm": 1.6661962652733227,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 4,
+      "top_fitted_component": 7
+    },
+    {
+      "item_id": "q164",
+      "stratum": "same-domain",
+      "kind": "binary",
+      "cosine": 0.9305481864996482,
+      "fitted_norm": 1.1943015181272982,
+      "predicted_norm": 1.7228411941145272,
+      "top_judged_pole": "TEC",
+      "top_predicted_component": 6,
+      "top_fitted_component": 6
+    },
+    {
+      "item_id": "q165",
+      "stratum": "same-domain",
+      "kind": "binary",
+      "cosine": 0.9442094446181339,
+      "fitted_norm": 2.873524368745048,
+      "predicted_norm": 1.4189823565842759,
+      "top_judged_pole": "TEC",
+      "top_predicted_component": 2,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q133",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.9462055108887987,
+      "fitted_norm": 3.063782163804814,
+      "predicted_norm": 1.8234240194410867,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 1,
+      "top_fitted_component": 3
+    },
+    {
+      "item_id": "q154",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.9524584565239442,
+      "fitted_norm": 1.6900366786653567,
+      "predicted_norm": 1.7638412281345448,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 4,
+      "top_fitted_component": 4
+    },
+    {
+      "item_id": "q056",
+      "stratum": "far",
+      "kind": "likert5",
+      "cosine": 0.9535165203785552,
+      "fitted_norm": 1.0918067064042147,
+      "predicted_norm": 1.6418144136547266,
+      "top_judged_pole": "ENV",
+      "top_predicted_component": 6,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q132",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.9618556948753609,
+      "fitted_norm": 1.5865666027780543,
+      "predicted_norm": 1.6366920948071806,
+      "top_judged_pole": "SOC",
+      "top_predicted_component": 1,
+      "top_fitted_component": 1
+    },
+    {
+      "item_id": "q079",
+      "stratum": "near",
+      "kind": "likert5",
+      "cosine": 0.9664264304317314,
+      "fitted_norm": 1.8412926827902898,
+      "predicted_norm": 1.7878817228979187,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 4,
+      "top_fitted_component": 6
+    },
+    {
+      "item_id": "q223",
+      "stratum": "same-domain",
+      "kind": "likert5",
+      "cosine": 0.9720133434565543,
+      "fitted_norm": 1.8254279546498962,
+      "predicted_norm": 1.4151912989791484,
+      "top_judged_pole": "TRU",
+      "top_predicted_component": 0,
+      "top_fitted_component": 0
+    },
+    {
+      "item_id": "q162",
+      "stratum": "near",
+      "kind": "binary",
+      "cosine": 0.9723294113253591,
+      "fitted_norm": 1.7654881388306873,
+      "predicted_norm": 1.8144006967188602,
+      "top_judged_pole": "TEC",
+      "top_predicted_component": 2,
+      "top_fitted_component": 2
+    },
+    {
+      "item_id": "q089",
+      "stratum": "same-domain",
+      "kind": "binary",
+      "cosine": 0.9765063390857782,
+      "fitted_norm": 2.7270031035287996,
+      "predicted_norm": 2.205892055459351,
+      "top_judged_pole": "PRC",
+      "top_predicted_component": 4,
+      "top_fitted_component": 4
+    }
+  ],
+  "diagnostics": {
+    "parse": {
+      "records": 23340,
+      "clean": 23340,
+      "parsed": 23340,
+      "unparsed": 0,
+      "clean_rate": 1.0,
+      "parse_rate": 1.0
+    },
+    "judgment_spread_mean": 0.24863405198033803,
+    "judgment_spread_holdout_mean": 0.24632373143462213,
+    "judged_pole_index_equals_predicted_component_index": {
+      "value": 0.08,
+      "note": "expected to sit near the 1/8 chance level, and does. The fitted basis is an arbitrary rotation of the pole basis, so a head that had learned the rotation properly should NOT line the indices up. A high number here would mean the head was passing judgments through rather than rotating them."
+    },
+    "fitted_norm_holdout": {
+      "median": 1.6576766410318147,
+      "min": 0.2748756777387212,
+      "max": 3.063782163804814
+    },
+    "predicted_norm_holdout": {
+      "median": 1.7701088102999751,
+      "min": 0.9947113254473682,
+      "max": 2.707545510884213
+    },
+    "weakest_fitted_quintile": {
+      "n": 10,
+      "mean_fitted_norm": 0.6270121413007494,
+      "mean_predicted_norm": 1.440082234739787,
+      "median_cosine": 0.6740657649202801,
+      "note": "system-side proxy for the standing distractor watch: designed classes are truth-side, so the weakest FITTED items stand in. Predicted norms far above fitted here would be the trigger."
+    },
+    "cosine_vs_fitted_norm_r": 0.5411632820967428,
+    "exploratory_excluding_weakest_quintile": {
+      "n": 40,
+      "median_cosine": 0.8814621884597547,
+      "discrimination_r": 0.2312893606531432,
+      "note": "EXPLORATORY, not the bar. A near-zero fitted loading vector has no stable direction, so its cosine is mostly noise -- this shows how much of the spread in the confirmatory number comes from items the fit itself barely resolved. The bar stays the median over all 50 held-out items."
+    },
+    "embedding_source": "vllm:pooling-embed-last-token",
+    "embed_components": 64,
+    "embed_component_selection": [
+      {
+        "k": 4,
+        "lambda": 10000.0,
+        "loo_mse": 0.2292397213170709,
+        "loo_r": -0.9260296041435383
+      },
+      {
+        "k": 8,
+        "lambda": 1000.0,
+        "loo_mse": 0.2289301298445605,
+        "loo_r": -0.11093173274998683
+      },
+      {
+        "k": 16,
+        "lambda": 177.82794100389228,
+        "loo_mse": 0.21898733783449445,
+        "loo_r": 0.1876840607405068
+      },
+      {
+        "k": 32,
+        "lambda": 177.82794100389228,
+        "loo_mse": 0.20931616757911484,
+        "loo_r": 0.27834732493260783
+      },
+      {
+        "k": 64,
+        "lambda": 177.82794100389228,
+        "loo_mse": 0.19872879980591127,
+        "loo_r": 0.3529185599191622
+      },
+      {
+        "k": 128,
+        "lambda": 177.82794100389228,
+        "loo_mse": 0.20460935164937658,
+        "loo_r": 0.31403400174962764
+      }
+    ]
+  }
+}
