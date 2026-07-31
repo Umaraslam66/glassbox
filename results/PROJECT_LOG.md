@@ -237,3 +237,55 @@ evidence of latent richness — the raw 13.0 is the structural number.
 
 Stage-1 compute total: 43.4 core-hours across six jobs (incl. 5.69 lost to a
 GPU-memory leak on one failed attempt, since fixed in the sbatch pattern).
+
+## 2026-07-31 — Stage 2 run: Gate 2 FAILS 2 of 4 bars; cause traced to the population
+
+Splits frozen first (seed 2026, experiments/splits_v1.json): 100/500 personas
+and 50/252 items held out; scripted interview set (15 closed + 3 open) frozen
+at split time; probe strata near 13 / same-domain 19 / far 18 under the
+whole-interview distance rule. Wall extended before fitting per owner order:
+distributions moved behind the truth store (local + Leonardo), system side
+statically logprob-free, consistency rule written into the interview engine.
+Mid-stage Wall fix: answers_noised.jsonl carried a "raw" pre-noise answer
+field on the system side — stripped, layer patched, field-level wall test
+added.
+
+MIRT fit (pure numpy, local CPU, 59 s; 3 restarts agree to r 0.9996): Gate 2
+verdict — trait recovery FAIL (5/8 dims ≥ 0.80; SOC 0.781, RSK 0.787, LOC
+0.797), item recovery PASS (median per-item r 0.925), blur honesty FAIL
+(coverage 0.339 vs 60–75%), weak-item ordering PASS (0.837 rank prob).
+
+Diagnosis (verified, not assumed): the fit is at the ceiling of the answers.
+Model-free obedience on the same cells is ~0.76–0.85 per dimension; the fit
+matches or exceeds it everywhere; split-half reliability of θ̂ is 0.93. The
+bottleneck is upstream: the persona cards transmit only ~0.85 of planted θ,
+and the noise layer (needed for the frozen retest band) spends a little more.
+Blur fails for the same reason — the posterior is honest about answer noise
+but cannot see the card-rendering distortion, so it is overconfident about
+planted θ (5.46× predicted error variance; only 5.7% removable by rescaling).
+Scale identification (link_scale: pin latent variance to the N(0,1) prior,
+truth-free, correlations bit-identical) approved by orchestrator — without it
+MAP scale indeterminacy makes coverage meaningless (0.095).
+
+LEAKAGE HUNTS (per §3.5, both documented):
+1. TRU–RSK planted at 0.00, recovered −0.28 (held-out); model-free answer-
+   score correlation −0.437 — the entanglement exists in the ANSWERS, before
+   any fitting. The bank was scrubbed for this pair; the confound therefore
+   entered at card generation: Gemma renders institution-trusters as
+   financially cautious people (bank accounts, insurance) — a card-writer
+   confound, not system-side leakage. No Wall breach.
+2. Distractors: 5 of 15 fit materially nonzero discrimination (q249 ‖a‖=1.89
+   loading on TEC — stairs-vs-lift reads as tech avoidance; q250 SOC/LOC).
+   No planted value reached the system side (verified); the personas' card-
+   driven coherence colours even "neutral" preferences. Distractor median
+   discrimination 0.574 vs strong 1.957. Recorded as instrument behaviour,
+   not leakage.
+
+Also confirmed: q229/q234 fitted signs flip exactly as the bank verifier
+predicted pre-fit (their designed +0.25 labels read wrong); the weak class is
+"labeled weak, not written weak" (q235 fits 3.53); q044 is near-dead (465/500
+answer "no"); dimensionality split-half curve peaks at d = 6–8 (planted 8
+recoverable; data alone would choose 6–8). Recovered correlation matrix ≈
+0.71 × planted (r = 0.77), heatmap in results/.
+
+Gate 2 is a hard stop: decision goes to the owner (report delivered in chat).
