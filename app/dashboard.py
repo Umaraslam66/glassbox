@@ -35,9 +35,17 @@ RESULTS_DIR = REPO_ROOT / "results"
 PUBLIC_DIR = REPO_ROOT / "data" / "public"
 SUMMARY_PATH = RESULTS_DIR / "population_summary.json"
 COSTS_PATH = RESULTS_DIR / "COSTS.md"
-RECOVERY_PATH = RESULTS_DIR / "stage2_recovery.json"
-SCATTER_PATH = RESULTS_DIR / "stage2_scatter.png"
-HEATMAP_PATH = RESULTS_DIR / "stage2_heatmap.png"
+
+#: Gate 2 was attempted twice. The page shows the second attempt as the current
+#: state and keeps the first beside it for comparison; both sets of files stay
+#: in results/, so nothing here overwrites the record of what happened first.
+RECOVERY_PATH = RESULTS_DIR / "stage2_v2_recovery.json"
+SCATTER_PATH = RESULTS_DIR / "stage2_v2_scatter.png"
+HEATMAP_PATH = RESULTS_DIR / "stage2_v2_heatmap.png"
+PREVIOUS_RECOVERY_PATH = RESULTS_DIR / "stage2_recovery.json"
+
+CURRENT_ATTEMPT = "attempt 2"
+PREVIOUS_ATTEMPT = "attempt 1"
 
 #: Results files that count as "an experiment run" and can be picked below.
 QA_PATTERN = "*_qa.json"
@@ -574,10 +582,11 @@ RECOVERY_HINT = (
     "No Stage 2 recovery report in results/ yet. Produce it with:\n\n"
     "```\n"
     "python -m src.eval.recovery \\\n"
-    "    --fit results/stage2_fit.npz \\\n"
-    "    --diagnostics results/stage2_fit_diagnostics.json \\\n"
+    "    --fit results/stage2_v2_fit.npz \\\n"
+    "    --diagnostics results/stage2_v2_fit_diagnostics.json \\\n"
     "    --truth <planted dir> --splits experiments/splits_v1.json \\\n"
-    "    --answers <noised answers.jsonl> --out results\n"
+    "    --answers <noised answers.jsonl> \\\n"
+    "    --out results --out-prefix stage2_v2\n"
     "```"
 )
 
@@ -633,6 +642,64 @@ def gate2_verdict_panel(verdict: dict[str, Any] | None) -> None:
         st.caption(caveat)
 
 
+def attempt_comparison_panel(
+    current: dict[str, Any] | None, previous: dict[str, Any] | None
+) -> None:
+    """The four frozen bars, attempt 1 next to attempt 2.
+
+    Both columns are read out of the two reports' own verdict blocks, so this
+    table cannot disagree with either run.
+    """
+    st.subheader(f"{PREVIOUS_ATTEMPT.capitalize()} vs {CURRENT_ATTEMPT}")
+    now = ((current or {}).get("verdict") or {}).get("bars") or {}
+    before = ((previous or {}).get("verdict") or {}).get("bars") or {}
+
+    if not now:
+        st.info("This report has no verdict block to compare.")
+        return
+    if previous is None:
+        st.info(
+            f"{PREVIOUS_RECOVERY_PATH.name} is not in results/, so there is nothing to "
+            f"compare {CURRENT_ATTEMPT} against. The numbers below are {CURRENT_ATTEMPT} alone."
+        )
+        return
+
+    def mark(entry: dict[str, Any]) -> str:
+        if entry.get("pass") is True:
+            return "PASS"
+        return "FAIL" if entry.get("pass") is False else "--"
+
+    rows = []
+    for key, entry in now.items():
+        old = before.get(key) or {}
+        old_value = old.get("value")
+        new_value = entry.get("value")
+        if isinstance(old_value, (int, float)) and isinstance(new_value, (int, float)):
+            move = f"{float(new_value) - float(old_value):+.3f}"
+        else:
+            move = "--"
+        rows.append(
+            {
+                "bar": key.replace("_", " "),
+                "must be": bar_threshold(entry.get("bar")),
+                f"{PREVIOUS_ATTEMPT} value": fmt(old_value),
+                f"{PREVIOUS_ATTEMPT} verdict": mark(old) if old else "not run",
+                f"{CURRENT_ATTEMPT} value": fmt(new_value),
+                f"{CURRENT_ATTEMPT} verdict": mark(entry),
+                "move": move,
+            }
+        )
+    table(rows)
+
+    passed_now = sum(1 for entry in now.values() if entry.get("pass") is True)
+    passed_before = sum(1 for entry in before.values() if entry.get("pass") is True)
+    st.caption(
+        f"{PREVIOUS_ATTEMPT.capitalize()} passed {passed_before} of {len(before) or len(now)} bars; "
+        f"{CURRENT_ATTEMPT} passes {passed_now} of {len(now)}. Attempt 1 is still on disk as "
+        f"{PREVIOUS_RECOVERY_PATH.name} -- it is not overwritten."
+    )
+
+
 def picture_panel(correlations: dict[str, Any] | None) -> None:
     st.subheader("Pictures")
     left, right = st.columns(2)
@@ -662,11 +729,16 @@ def picture_panel(correlations: dict[str, Any] | None) -> None:
             )
 
 
-def trait_recovery_panel(holdout: dict[str, Any], train: dict[str, Any]) -> None:
+def trait_recovery_panel(
+    holdout: dict[str, Any],
+    train: dict[str, Any],
+    previous_holdout: dict[str, Any] | None = None,
+) -> None:
+    """Per-dimension recovery, with attempt 1 beside attempt 2 when it is there."""
     st.subheader("Trait recovery per dimension")
     per_dimension = holdout.get("per_dimension_r") or {}
     rows = [
-        {"dimension": dimension, "r": float(value)}
+        {"dimension": dimension, "attempt": CURRENT_ATTEMPT, "r": float(value)}
         for dimension, value in per_dimension.items()
         if value is not None
     ]
@@ -674,33 +746,56 @@ def trait_recovery_panel(holdout: dict[str, Any], train: dict[str, Any]) -> None
         st.info("This report has no per-dimension trait recovery.")
         return
 
-    frame = pd.DataFrame(rows)
     order = [row["dimension"] for row in rows]
-    bars = (
-        alt.Chart(frame)
-        .mark_bar()
-        .encode(
-            x=alt.X("dimension:N", title=None, sort=order),
-            y=alt.Y("r:Q", title="r(estimated, planted)"),
-            color=alt.condition(
-                alt.datum.r < TRAIT_RECOVERY_BAR, alt.value(MARK), alt.value(INK)
-            ),
-            tooltip=[alt.Tooltip("dimension:N"), alt.Tooltip("r:Q", format=".3f")],
-        )
+    before = (previous_holdout or {}).get("per_dimension_r") or {}
+    rows += [
+        {"dimension": dimension, "attempt": PREVIOUS_ATTEMPT, "r": float(before[dimension])}
+        for dimension in order
+        if before.get(dimension) is not None
+    ]
+    paired = any(row["attempt"] == PREVIOUS_ATTEMPT for row in rows)
+
+    frame = pd.DataFrame(rows)
+    encoding: dict[str, Any] = dict(
+        x=alt.X("dimension:N", title=None, sort=order),
+        y=alt.Y("r:Q", title="r(estimated, planted)"),
+        color=alt.condition(alt.datum.r < TRAIT_RECOVERY_BAR, alt.value(MARK), alt.value(INK)),
+        tooltip=[
+            alt.Tooltip("dimension:N"),
+            alt.Tooltip("attempt:N"),
+            alt.Tooltip("r:Q", format=".3f"),
+        ],
     )
+    if paired:
+        encoding["xOffset"] = alt.XOffset(
+            "attempt:N", sort=[PREVIOUS_ATTEMPT, CURRENT_ATTEMPT]
+        )
+        encoding["opacity"] = alt.condition(
+            f"datum.attempt == '{PREVIOUS_ATTEMPT}'", alt.value(0.4), alt.value(1.0)
+        )
+    bars = alt.Chart(frame).mark_bar().encode(**encoding)
     rule = (
         alt.Chart(pd.DataFrame({"v": [TRAIT_RECOVERY_BAR]}))
         .mark_rule(color=MARK, strokeDash=[5, 4], size=2)
         .encode(y=alt.Y("v:Q"))
     )
 
-    st.caption(
-        f"Held-out personas ({holdout.get('n_personas', 0)}). Mean **{fmt(holdout.get('mean_r'))}**, "
-        f"worst **{fmt(holdout.get('min_r'))}** on {holdout.get('min_r_dimension', '?')}. The bar is "
-        f"{TRAIT_RECOVERY_BAR} on every dimension (dashed); red bars miss it. Training personas "
+    caption = (
+        f"Held-out personas ({holdout.get('n_personas', 0)}). {CURRENT_ATTEMPT.capitalize()}: "
+        f"mean **{fmt(holdout.get('mean_r'))}**, worst **{fmt(holdout.get('min_r'))}** on "
+        f"{holdout.get('min_r_dimension', '?')}. The bar is {TRAIT_RECOVERY_BAR} on every "
+        f"dimension (dashed); red bars miss it. Training personas "
         f"({train.get('n_personas', 0)}) sit at mean {fmt(train.get('mean_r'))}, worst "
         f"{fmt(train.get('min_r'))} on {train.get('min_r_dimension', '?')}."
     )
+    if paired:
+        caption += (
+            f" The pale bar in each pair is {PREVIOUS_ATTEMPT} (mean "
+            f"{fmt((previous_holdout or {}).get('mean_r'))}, worst "
+            f"{fmt((previous_holdout or {}).get('min_r'))} on "
+            f"{(previous_holdout or {}).get('min_r_dimension', '?')})."
+        )
+    st.caption(caption)
     show(alt.layer(bars, rule).properties(height=260))
 
 
@@ -905,6 +1000,7 @@ def watch_list_panel(watch: dict[str, Any]) -> None:
 def recovery_page() -> None:
     st.header("Recovery")
     report = load_json(RECOVERY_PATH)
+    previous = load_json(PREVIOUS_RECOVERY_PATH)
 
     if report is None:
         st.info(RECOVERY_HINT)
@@ -913,19 +1009,25 @@ def recovery_page() -> None:
 
     counts = report.get("counts") or {}
     st.caption(
-        f"Fitted on {counts.get('train_personas', '?')} personas x "
+        f"Gate 2, {CURRENT_ATTEMPT} -- the current state. Fitted on "
+        f"{counts.get('train_personas', '?')} personas x "
         f"{counts.get('train_items', '?')} items, graded on "
         f"{counts.get('holdout_personas', '?')} held-out personas and "
         f"{counts.get('holdout_items', '?')} held-out items. Every number below is read "
-        f"straight out of {RECOVERY_PATH.name}."
+        f"straight out of {RECOVERY_PATH.name}, with {PREVIOUS_ATTEMPT} read out of "
+        f"{PREVIOUS_RECOVERY_PATH.name} where the two are shown together."
     )
 
     gate2_verdict_panel(report.get("verdict"))
     st.divider()
+    attempt_comparison_panel(report, previous)
+    st.divider()
     picture_panel(report.get("correlations"))
     st.divider()
     trait_recovery_panel(
-        report.get("trait_recovery_holdout") or {}, report.get("trait_recovery_train") or {}
+        report.get("trait_recovery_holdout") or {},
+        report.get("trait_recovery_train") or {},
+        (previous or {}).get("trait_recovery_holdout") or {},
     )
     st.divider()
     diagnostics = report.get("fit_diagnostics") or {}
