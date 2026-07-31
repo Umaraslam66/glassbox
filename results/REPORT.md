@@ -166,9 +166,9 @@ model fitting — just what the answers themselves carry:
 |---|---|---|---|---|---|---|---|---|
 | answer-matrix ceiling (r) | 0.839 | 0.821 | 0.871 | 0.807 | 0.818 | 0.770 | 0.866 | 0.861 |
 
-Median 0.830, best 0.871 (stage2_v2_recovery.json -> answer_matrix_ceiling). Roughly:
-**persona cards transmit about 83-87% of the planted signal, and nothing downstream can
-recover what never left the card.**
+**Persona cards transmit ~85% of the planted signal (measured median 0.830, range
+0.770-0.871 across dimensions; stage2_v2_recovery.json -> answer_matrix_ceiling)** — and
+nothing downstream can recover what never left the card.
 
 The fit lands on that ceiling, not below it. Per dimension, fitted recovery is within
 -0.029 to +0.033 of the model-free ceiling on every axis
@@ -234,8 +234,9 @@ The banked finding, in the owner's wording:
 > ground truth when the persona-rendering step is lossy (measured here: 88% card-induced /
 > 12% noise-induced). Honest confidence models need truth-anchored feedback"
 
-*(The 88/12 split is an exploratory decomposition recorded in PROJECT_LOG at the Gate 2
-second attempt; it is not persisted in a result file — see Open Questions.)*
+*(The 88/12 split is cited as recorded, not recomputed: it appears in the owner-accepted
+Gate 2 verdict and in the PROJECT_LOG exploratory block at the Gate 2 second attempt, and
+is not persisted in a result JSON.)*
 
 The same blind spot reappears in the adaptive interviewer, measured a third way. Over a
 150-question interview the system declares away 76% of its uncertainty (declared blur falls
@@ -542,7 +543,8 @@ and risk appetite were planted at exactly 0.00 correlation, deliberately, so rec
 not lean on a correlation crutch. The fit recovered -0.270 on held-out people
 (stage2_v2_recovery.json -> watch_list.planted_zero_pair). The hunt found the entanglement
 in the **answers**, before any fitting: the model-free answer-score correlation is -0.375
-(PROJECT_LOG, Gate 2 second attempt). The bank had been scrubbed for this pair, so the
+(PROJECT_LOG, Gate 2 second attempt — recorded in the log's exploratory block and cited as
+recorded; it is not persisted in a result JSON). The bank had been scrubbed for this pair, so the
 confound entered at card generation — Gemma writes institution-trusters as financially
 cautious people, with bank accounts and insurance. A card-writer confound, not system-side
 leakage. It survived a full two-pass card rewrite (section 5.4), shrinking only ~14%.
@@ -775,9 +777,9 @@ both sides**.
 
 The card-transmission ceiling in particular is a measurement of *Gemma's* rendering
 fidelity. A different writer, or a different prompt schedule, would move it — and the whole
-downstream story with it. Nothing here establishes that 0.83-0.87 is a general property of
-LLM persona rendering. It is what we measured, once, with one model, after one rewrite that
-moved it very little.
+downstream story with it. Nothing here establishes that ~85% (measured median 0.830, range
+0.770-0.871 across dimensions) is a general property of LLM persona rendering. It is what
+we measured, once, with one model, after one rewrite that moved it very little.
 
 ### 6.4 The trait model is 8-dimensional and linear, and we can see its edge
 
@@ -803,8 +805,8 @@ Restating section 1 because it is the limitation that matters most. Every number
 measured against truth we planted ourselves, in people we generated ourselves. **Nothing in
 this report is evidence that the pipeline would recover anything from a real person.** The
 two routes to that evidence — a pre-registered human panel, and a shallow-resolution
-calibration replication on real survey responses — are separate deliverables and are not
-tested here.
+calibration replication on real survey responses — are specified in `HUMAN_PROTOCOL.md` at
+the repository root. They are a separate deliverable and are not tested here.
 
 ### 6.7 Known instrument defects that were accepted, not fixed
 
@@ -841,69 +843,3 @@ Two things worth noting for anyone budgeting a similar study. First, the largest
 cost is not the science — it is regenerating a population (18.52 core-hours for the v2
 cards and sweep, which changed almost nothing). Second, about 10.3 core-hours, roughly 8%
 of GPU spend, went to two operational mistakes that were both preventable and both logged.
-
----
-
-## OPEN QUESTIONS FOR REVIEW
-
-1. **"Twelve banked STAGE6_NOTES findings."** `results/STAGE6_NOTES.md` contains **nine**
-   findings: one at the Gate 2 close, four at Gate 3, four at Gate 4. I could not find a
-   tenth, eleventh or twelfth. Section 3 is written as those nine (3.1-3.10, where 3.1 is
-   the Gate 2 note and 3.6 is the coverage curve), plus the two Gate 5 additions you
-   specified (3.11, 3.12), plus three carried from the log on your instruction (3.13
-   proxy-gaming verdict, 3.14 k-NN strata, 3.15 distractor crud factor) — fifteen numbered
-   items. Please confirm nothing is missing and whether the numbering should be re-cut.
-
-2. **Gate 3 bar count: "2 of 5" versus "3 unmet".** The PROJECT_LOG heading says "Gate 3
-   verdict — 2 of 5 bars FAIL"; the owner's fixed phrasing says "3 bars unmet". I laid out
-   six bar rows (two item-encoder, four person-encoder) and used the owner's "3 unmet",
-   which is consistent with the six-row table. Confirm this reconciliation.
-
-3. **Gate 3 monotonicity row.** `stage3_gate3.json` records `mean_curve_verdict: "FAIL"`
-   and `strict_per_step_verdict: "FAIL"` with `pass: null`; the log records an
-   ORCHESTRATOR RULING of PASS on the frozen "in expectation" wording. I printed **PASS by
-   orchestrator ruling** with the grader's two FAIL readings stated in the same cell. This
-   is the only place where a scoreboard verdict is not the result file's own field. Please
-   confirm the presentation.
-
-4. **The "~85%" card-transmission figure.** The measured answer-matrix ceiling is median
-   **0.830**, range 0.770-0.871 (stage2_v2_recovery.json). The log's Gate 2 diagnosis says
-   "~0.85", which is the top of the v1 model-free obedience range. I wrote "about 83-87%"
-   and gave the per-dimension table rather than repeating "~85%". If the report should say
-   85% in the headline, say so and I will make it consistent everywhere, including
-   RESEARCH_SUMMARY.md, which currently says 85%.
-
-5. **The owner's Gate 3 phrasing says "the full 252-item matrix".** The result file's
-   full-matrix reference is over the **202 training items**
-   (`stage3_gate3.json -> full_matrix_reference.n_items` = 202; the 50 held-out items are
-   excluded by construction). I quoted the owner verbatim and footnoted the 202. Confirm
-   the footnote is acceptable and not an unwanted correction of an owner phrasing.
-
-6. **Two numbers I could not source to a result file.** (a) The blur decomposition
-   **88% card-induced / 12% noise-induced**, which appears in the owner's banked Gate 2
-   finding and in the log's exploratory block, but is not persisted in any JSON I could
-   find — COSTS.md describes it as a read-only analysis over existing artifacts. (b) The
-   model-free TRU-RSK answer-score correlation **-0.375**, same situation. Both are cited
-   to PROJECT_LOG with that fact stated in the text. Should either be recomputed and
-   persisted before release?
-
-7. **The Gate 5 exploratory row at RMSE <= 0.60.** The owner's verdict quotes "0.462 and
-   0.494 at <=0.70 and <=0.65" and stops there. The result file also carries 0.566
-   (heuristic) and 0.618 (RL) at <=0.60, both of which **miss** the 50% comparison. I
-   included that row so the pre-declared grid is complete and the miss is visible. Confirm
-   you want the failing row shown.
-
-8. **Cross-reference to `HUMAN_PROTOCOL.md`.** Section 6.6 refers to "two routes to that
-   evidence ... separate deliverables" without naming the file, since it does not exist
-   yet. Once it lands, that sentence should probably link it by name.
-
-9. **Project total core-hours.** The core-hour column in COSTS.md sums to **123.83** GPU.
-   The log's "~127.7 core-hours" adds Stage 5's 3.9 CPU core-hours. Several earlier CPU
-   entries are logged at a cost of 0 and are not counted anywhere. I presented it as
-   123.83 GPU + ~3.9 CPU = ~127.7 and said so explicitly. Flagging in case a stricter CPU
-   accounting is wanted.
-
-10. **Gate 1 test-retest as a "bar".** `PREREGISTRATION.md` section 6 states the 70-90%
-    band and then says "Reported only — no additional bar", which reads as applying to the
-    separate binary/Likert context reporting rather than to the band itself. The log treats
-    the band as one of "all five bars". I scored it as a bar. Confirm.
