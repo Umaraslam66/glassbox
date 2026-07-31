@@ -1,12 +1,15 @@
 """Tests for M0, the persona factory.
 
-Four things are checked here, in order of how badly they would hurt if wrong:
+Six things are checked here, in order of how badly they would hurt if wrong:
 
   1. The planted population matches the frozen pre-registration -- the exact
      correlation matrix, and a large sample that actually comes out with it.
   2. The batch is reproducible from its seed, bit for bit.
   3. Nothing about the planted truth reaches a public file.
   4. Card completions come back in cleanly, and a leaking card is refused.
+  5. Both card-writing passes hand the model no label it could echo back.
+  6. Rewriting the card prompts cannot touch the planted truth, and refuses to
+     run at all when the sampled population no longer matches what is on disk.
 """
 
 from __future__ import annotations
@@ -19,7 +22,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.personas import card_prompts, factory, ingest, sampler
+from src.personas import build_selfcheck_batch, card_prompts, factory, ingest, sampler
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -546,3 +549,412 @@ def test_ingest_cli_runs(hidden_batch, tmp_path, capsys) -> None:
     )
     assert ingest.main(["--completions", str(path), "--out-truth", str(hidden_batch)]) == 0
     assert "kept 1 cards" in capsys.readouterr().out
+
+
+# --------------------------------------------------------------------------
+# 7. the two-pass card prompts (PRD section 10 fallback)
+# --------------------------------------------------------------------------
+
+SYNTHETIC_CARD = {
+    "pid": "p0001",
+    "biography": GOOD_BIOGRAPHY,
+    "quirks": ["counts change twice", "keeps a paper diary"],
+    "speech_style": "slow, concrete, circles back to the same three stories",
+    "age": 43,
+    "occupation": "school administrator",
+    "city_size": "mid-size city",
+    "household": "with partner and kids",
+    "region_type": "suburban",
+}
+
+
+def assert_no_label_the_model_could_echo(prompt: dict, where: str) -> None:
+    """Neither turn of a prompt may carry a dimension code, name or trait phrase.
+
+    Models reuse the words they are given, so a banned phrase written into the
+    prompt -- even inside its own ban -- is a phrase the card can come back
+    with, and ingest would then reject that card as a leak.
+    """
+    for turn in ("system", "user"):
+        text = prompt[turn]
+        assert ingest.leak_reasons(text) == [], f"{where}/{turn}: {ingest.leak_reasons(text)}"
+
+        lowered = text.lower()
+        for code, name in sampler.DIMENSION_NAMES.items():
+            assert not re.search(rf"\b{code}\b", text), f"{where}/{turn} names the code {code}"
+            assert name not in lowered, f"{where}/{turn} names {name!r}"
+        for phrase in ingest._EXTRA_TRAIT_PHRASES:
+            assert phrase not in lowered, f"{where}/{turn} uses trait wording {phrase!r}"
+
+
+def test_card_prompt_tells_the_writer_the_sides_are_independent() -> None:
+    person = sampler.sample_population(1, 42)[0]
+    user = card_prompts.build_card_prompt(person)["user"]
+
+    assert card_prompts.INDEPENDENCE_BLOCK in user
+    # The block sits after the eight numbered lines and before the rules.
+    assert user.index("\n8. ") < user.index(card_prompts.INDEPENDENCE_BLOCK) < user.index("\nRULES")
+
+
+def test_the_independence_block_de_entangles_the_pair_stage_2_caught() -> None:
+    """The two examples that split dealing-with-officials from money habits.
+
+    Both directions are shown on purpose: one example each way, so neither
+    combination can be read as the normal one.
+    """
+    block = card_prompts.INDEPENDENCE_BLOCK.lower()
+
+    trusting_and_reckless = block.index("without a second thought")
+    assert "savings into a cousin" in block[trusting_and_reckless:]
+
+    suspicious_and_careful = block.index("are lying to them")
+    assert "insured account" in block[suspicious_and_careful:]
+
+    # And at least one example about a different pair entirely.
+    assert "same street since birth" in block and "folding phone" in block
+
+
+def test_the_independence_block_shows_behaviour_only() -> None:
+    """No label and no number, or the writer has something to copy."""
+    assert ingest.leak_reasons(card_prompts.INDEPENDENCE_BLOCK) == []
+    for word in ("trait", "dimension", "score", "scale"):
+        assert word not in card_prompts.INDEPENDENCE_BLOCK.lower()
+
+
+def test_card_prompt_bans_trait_vocabulary() -> None:
+    person = sampler.sample_population(1, 42)[0]
+    user = card_prompts.build_card_prompt(person)["user"]
+
+    assert "character-labelling vocabulary" in user
+    assert "a cautious nature" in user
+    assert user.index("character-labelling vocabulary") > user.index("\nRULES")
+
+
+def test_selfcheck_prompt_carries_the_guidance_the_draft_and_the_fixed_facts() -> None:
+    person = sampler.sample_population(1, 42)[0]
+    lines = card_prompts.trait_guidance(person.theta)
+    prompt = card_prompts.build_selfcheck_prompt(lines, SYNTHETIC_CARD)
+
+    assert set(prompt) == {"system", "user"}
+    user = prompt["user"]
+
+    for index, line in enumerate(lines, start=1):
+        assert f"{index}. {line}" in user, f"guidance line {index} missing"
+
+    assert SYNTHETIC_CARD["biography"] in user
+    assert SYNTHETIC_CARD["speech_style"] in user
+    for quirk in SYNTHETIC_CARD["quirks"]:
+        assert quirk in user
+
+    for field in card_prompts.FIXED_FACT_FIELDS:
+        assert str(SYNTHETIC_CARD[field]) in user, f"fixed fact {field} missing"
+
+
+def test_selfcheck_prompt_asks_for_the_checks_and_the_whole_card() -> None:
+    lines = card_prompts.trait_guidance(sampler.sample_population(1, 42)[0].theta)
+    user = card_prompts.build_selfcheck_prompt(lines, SYNTHETIC_CARD)["user"]
+    # The instructions are hard-wrapped, so phrases are matched on the text
+    # with its line breaks collapsed.
+    flat = " ".join(user.split())
+
+    # The checking itself never reaches the output.
+    assert "none of it appears in" in flat
+    # (a) per-side strength and direction, through details of that side alone.
+    assert "in the direction the line states" in flat
+    assert "as strongly as the line states" in flat
+    assert "belong to that side alone" in flat
+    # (b) cross-bleed, named behaviourally rather than by dimension.
+    assert "bleed between sides" in flat
+    assert "savings account and insure everything" in flat
+    assert "only from its own numbered line" in flat
+    # (c) rewrite, keeping the fixed facts and every original rule.
+    assert "Keep the fixed facts word for word" in flat
+    assert "200 to 300 words, third person" in flat
+    assert "never name a personality trait" in flat
+    assert "character-labelling vocabulary" in flat
+    assert "no real brands, no real public figures" in flat
+    # (d) the same JSON schema as pass 1, always complete, no commentary.
+    assert '{"biography"' in user and '"quirks"' in user and '"speech_style"' in user
+    assert "every time, even if you changed nothing" in flat
+    assert "No notes, no explanation" in flat
+
+
+def test_selfcheck_prompt_refuses_a_card_it_cannot_preserve() -> None:
+    lines = card_prompts.trait_guidance(sampler.sample_population(1, 42)[0].theta)
+
+    with pytest.raises(ValueError, match="no biography"):
+        card_prompts.build_selfcheck_prompt(lines, {**SYNTHETIC_CARD, "biography": "  "})
+
+    with pytest.raises(ValueError, match="missing fixed facts"):
+        card_prompts.build_selfcheck_prompt(
+            lines, {k: v for k, v in SYNTHETIC_CARD.items() if k != "occupation"}
+        )
+
+
+def test_neither_pass_hands_the_model_a_label_to_echo() -> None:
+    """The one rule both prompts live under, checked on a spread of personas."""
+    for person in sampler.sample_population(30, 99):
+        assert_no_label_the_model_could_echo(card_prompts.build_card_prompt(person), "pass1")
+
+        lines = card_prompts.trait_guidance(person.theta)
+        card = {**SYNTHETIC_CARD, "pid": person.pid}
+        assert_no_label_the_model_could_echo(
+            card_prompts.build_selfcheck_prompt(lines, card), "pass2"
+        )
+
+
+# --------------------------------------------------------------------------
+# 8. rewriting the card prompts without reminting the people
+# --------------------------------------------------------------------------
+
+SENTINEL = "THIS FILE MUST NOT SURVIVE A SUCCESSFUL REGEN\n"
+
+
+def _snapshot(root: Path) -> dict[str, bytes]:
+    """Every file under a tree, by relative path, as raw bytes."""
+    return {
+        str(path.relative_to(root)): path.read_bytes()
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+    }
+
+
+def _stale_the_prompts(hidden: Path) -> None:
+    """Overwrite the prompt files, so "was it rewritten?" has a real answer."""
+    (hidden / "card_prompts.jsonl").write_text(SENTINEL, encoding="utf-8")
+    (hidden / "card_prompts" / "p0001.json").write_text(SENTINEL, encoding="utf-8")
+
+
+@pytest.fixture()
+def minted(tmp_path):
+    """A small batch on disk, minted the ordinary way."""
+    hidden = tmp_path / "hidden"
+    public = tmp_path / "public"
+    assert (
+        factory.main(
+            ["--n", "6", "--seed", "42", "--out-truth", str(hidden), "--out-public", str(public)]
+        )
+        == 0
+    )
+    return hidden, public
+
+
+def _regen(hidden: Path, public: Path, seed: str = "42") -> int:
+    return factory.main(
+        [
+            "--regen-cards-only",
+            "--n", "6",
+            "--seed", seed,
+            "--out-truth", str(hidden),
+            "--out-public", str(public),
+        ]
+    )
+
+
+def test_regen_rewrites_the_prompts_and_nothing_else(minted) -> None:
+    hidden, public = minted
+    before_hidden, before_public = _snapshot(hidden), _snapshot(public)
+
+    _stale_the_prompts(hidden)
+    assert _regen(hidden, public) == 0
+
+    # The prompts came back, byte for byte -- the same seed writes the same
+    # text -- and every other file is untouched.
+    assert _snapshot(hidden) == before_hidden
+    assert _snapshot(public) == before_public
+
+    lines = (hidden / "card_prompts.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 6
+    first = json.loads(lines[0])
+    assert set(first) == {"pid", "system", "user"}
+    assert card_prompts.INDEPENDENCE_BLOCK in first["user"]
+
+    record = json.loads((hidden / "card_prompts" / "p0001.json").read_text(encoding="utf-8"))
+    assert record["prompt_version"] == card_prompts.CARD_PROMPT_VERSION
+    assert record["profile"]["pid"] == "p0001"
+
+
+def _perturb_theta(hidden: Path, public: Path) -> None:
+    path = hidden / "theta" / "p0003.json"
+    record = json.loads(path.read_text(encoding="utf-8"))
+    record["theta"]["TRU"] = round(record["theta"]["TRU"] + 0.5, 4)
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+
+def _perturb_wobble(hidden: Path, public: Path) -> None:
+    path = hidden / "noise" / "p0002.json"
+    record = json.loads(path.read_text(encoding="utf-8"))
+    record["wobble"] = round(record["wobble"] + 0.05, 2)
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+
+def _perturb_profile(hidden: Path, public: Path) -> None:
+    path = public / "profiles" / "p0004.json"
+    record = json.loads(path.read_text(encoding="utf-8"))
+    record["age"] = int(record["age"]) + 1
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    "perturb,expected",
+    [
+        (_perturb_theta, "p0003: sampled theta differs from disk on TRU"),
+        (_perturb_wobble, "p0002: sampled wobble"),
+        (_perturb_profile, "p0004: sampled public profile differs"),
+    ],
+)
+def test_regen_writes_nothing_when_the_batch_on_disk_has_moved(
+    minted, capsys, perturb, expected
+) -> None:
+    """One mismatch anywhere and the whole run aborts, having written nothing."""
+    hidden, public = minted
+    _stale_the_prompts(hidden)
+    perturb(hidden, public)
+    before_hidden, before_public = _snapshot(hidden), _snapshot(public)
+
+    assert _regen(hidden, public) == 1
+
+    output = capsys.readouterr().out
+    assert "REFUSING" in output and expected in output
+    assert _snapshot(hidden) == before_hidden, "regen wrote something after refusing"
+    assert _snapshot(public) == before_public
+    assert (hidden / "card_prompts.jsonl").read_text(encoding="utf-8") == SENTINEL
+
+
+def test_regen_refuses_a_seed_that_mints_different_people(minted, capsys) -> None:
+    hidden, public = minted
+    _stale_the_prompts(hidden)
+    before = _snapshot(hidden)
+
+    assert _regen(hidden, public, seed="43") == 1
+    assert "REFUSING" in capsys.readouterr().out
+    assert _snapshot(hidden) == before
+
+
+def test_regen_reports_every_mismatch_it_found(minted, capsys) -> None:
+    hidden, public = minted
+    for pid in ("p0001", "p0002", "p0003", "p0004", "p0005", "p0006"):
+        path = hidden / "theta" / f"{pid}.json"
+        record = json.loads(path.read_text(encoding="utf-8"))
+        record["theta"]["ENV"] = 1.9999
+        path.write_text(json.dumps(record), encoding="utf-8")
+
+    assert _regen(hidden, public) == 1
+    assert "6 mismatch(es)" in capsys.readouterr().out
+
+
+def test_verify_reports_a_missing_file_rather_than_crashing(minted) -> None:
+    hidden, public = minted
+    (hidden / "theta" / "p0002.json").unlink()
+    people = sampler.sample_population(6, 42)
+
+    problems = factory.verify_batch_on_disk(people, hidden, public)
+    assert problems == ["p0002: no readable theta file on disk"]
+
+
+# --------------------------------------------------------------------------
+# 9. building the pass-2 self-check batch
+# --------------------------------------------------------------------------
+
+
+def _empty_card_json() -> str:
+    return json.dumps({"biography": "   ", "quirks": [], "speech_style": ""})
+
+
+@pytest.fixture()
+def pass1(minted, tmp_path):
+    """A pass-1 completions file with one of every outcome."""
+    hidden, _ = minted
+    path = _completions_file(
+        tmp_path / "pass1.jsonl",
+        [
+            {"pid": "p0001", "completion": _card_json(GOOD_BIOGRAPHY)},
+            {"pid": "p0002", "completion": "I cannot help with that request."},
+            {"pid": "p0003", "completion": _empty_card_json()},
+            {"pid": "p9999", "completion": _card_json(GOOD_BIOGRAPHY)},
+        ],
+    )
+    return hidden, path
+
+
+def test_selfcheck_batch_routes_good_lines_and_bad_lines_apart(pass1, tmp_path) -> None:
+    hidden, path = pass1
+    prompts, retries = build_selfcheck_batch.build_batch(path, hidden)
+
+    assert [record["pid"] for record in prompts] == ["p0001"]
+    record = prompts[0]
+    assert set(record) == {"pid", "round", "system", "user"}
+    assert record["round"] == "selfcheck"
+
+    reasons = {row["pid"]: row["reason"] for row in retries}
+    assert set(reasons) == {"p0002", "p0003", "p9999"}
+    assert "no JSON object" in reasons["p0002"]
+    assert "no biography" in reasons["p0003"]
+    assert "no prompt record" in reasons["p9999"]
+
+
+def test_selfcheck_batch_builds_the_prompt_from_the_planted_theta(pass1) -> None:
+    hidden, path = pass1
+    prompts, _ = build_selfcheck_batch.build_batch(path, hidden)
+    user = prompts[0]["user"]
+
+    theta = json.loads((hidden / "theta" / "p0001.json").read_text(encoding="utf-8"))["theta"]
+    for index, line in enumerate(card_prompts.trait_guidance(theta), start=1):
+        assert f"{index}. {line}" in user
+
+    assert GOOD_BIOGRAPHY in user
+    assert_no_label_the_model_could_echo(prompts[0], "batch")
+
+
+def test_selfcheck_batch_skips_a_repeated_pid(minted, tmp_path) -> None:
+    hidden, _ = minted
+    path = _completions_file(
+        tmp_path / "pass1.jsonl",
+        [
+            {"pid": "p0001", "completion": _card_json(GOOD_BIOGRAPHY)},
+            {"pid": "p0001", "completion": _card_json(GOOD_BIOGRAPHY)},
+        ],
+    )
+    prompts, retries = build_selfcheck_batch.build_batch(path, hidden)
+    assert len(prompts) == 1 and retries == []
+
+
+def test_selfcheck_batch_survives_a_broken_line(minted, tmp_path) -> None:
+    hidden, _ = minted
+    path = tmp_path / "pass1.jsonl"
+    path.write_text(
+        "{not json at all\n"
+        + json.dumps({"completion": _card_json(GOOD_BIOGRAPHY)})
+        + "\n\n"
+        + json.dumps({"pid": "p0001", "completion": _card_json(GOOD_BIOGRAPHY)})
+        + "\n",
+        encoding="utf-8",
+    )
+    prompts, retries = build_selfcheck_batch.build_batch(path, hidden)
+
+    assert [record["pid"] for record in prompts] == ["p0001"]
+    assert [row["pid"] for row in retries] == [None, None]
+    assert "not JSON" in retries[0]["reason"] and "no pid" in retries[1]["reason"]
+
+
+def test_selfcheck_batch_cli_writes_both_files(pass1, tmp_path, capsys) -> None:
+    hidden, path = pass1
+    out = tmp_path / "selfcheck_prompts.jsonl"
+    retry = tmp_path / "selfcheck_retry.jsonl"
+
+    assert (
+        build_selfcheck_batch.main(
+            [
+                "--pass1", str(path),
+                "--truth-dir", str(hidden),
+                "--out", str(out),
+                "--retry-out", str(retry),
+            ]
+        )
+        == 0
+    )
+
+    written = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert len(written) == 1 and written[0]["round"] == "selfcheck"
+    assert len(retry.read_text(encoding="utf-8").strip().splitlines()) == 3
+    assert "built 1 self-check prompts" in capsys.readouterr().out
