@@ -1,6 +1,6 @@
 {
   "module": "src.eval.gate4",
-  "generated": "2026-07-31T17:42:13+00:00",
+  "generated": "2026-07-31T18:00:17+00:00",
   "verdict": {
     "gate": "Gate 4 -- end-to-end prediction and calibration",
     "confirmatory_arm": "model",
@@ -29,11 +29,11 @@
       },
       "correlation": {
         "statement": "correlation between predicted probability and empirical 50-sample frequency >= 0.9 across all persona x item cells",
-        "value": 0.6843654025031514,
+        "value": 0.6843654025031518,
         "bar": 0.9,
         "pass": false,
-        "binary_only": 0.699997915305499,
-        "likert_only": 0.6154341512875057
+        "binary_only": 0.6999979153054989,
+        "likert_only": 0.6154341512875066
       }
     },
     "all_bars_pass": false,
@@ -78,7 +78,7 @@
       "brier": 0.06268640751347658,
       "brier_sd_over_cells": 0.08461541153191512,
       "log_loss": 1.064797974942184,
-      "correlation": 0.6843654025031514,
+      "correlation": 0.6843654025031518,
       "ece": 0.013679026756282795,
       "calibration": {
         "ece": 0.013679026756282795,
@@ -199,14 +199,14 @@
           "n_items": 13,
           "brier": 0.0662096680184797,
           "log_loss": 1.1455919297725856,
-          "correlation": 0.6330894939180808,
+          "correlation": 0.633089493918081,
           "ece": 0.01461285738134536
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.06298417803986749,
           "log_loss": 0.9818090955265428,
-          "correlation": 0.720713040702042,
+          "correlation": 0.7207130407020419,
           "ece": 0.01675735352299369
         }
       },
@@ -215,14 +215,14 @@
           "n_items": 15,
           "brier": 0.0866999469511945,
           "log_loss": 0.511915711507987,
-          "correlation": 0.699997915305499,
+          "correlation": 0.6999979153054989,
           "ece": 0.024452921336180926
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.05239489061159747,
           "log_loss": 1.3017475164139825,
-          "correlation": 0.6154341512875057,
+          "correlation": 0.6154341512875066,
           "ece": 0.014109956936345439
         }
       }
@@ -232,7 +232,7 @@
       "brier": 0.0860061349581581,
       "brier_sd_over_cells": 0.0829406778767129,
       "log_loss": 1.1634957017737113,
-      "correlation": 0.5538596426903449,
+      "correlation": 0.5538596426903448,
       "ece": 0.010971436399155148,
       "calibration": {
         "ece": 0.010971436399155148,
@@ -353,14 +353,14 @@
           "n_items": 13,
           "brier": 0.08555767851827248,
           "log_loss": 1.2232004853388292,
-          "correlation": 0.5173636501422147,
+          "correlation": 0.5173636501422153,
           "ece": 0.007878975144215778
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.08907424583997403,
           "log_loss": 1.0801427564374584,
-          "correlation": 0.5986842655720336,
+          "correlation": 0.5986842655720345,
           "ece": 0.016836220846239276
         }
       },
@@ -369,14 +369,14 @@
           "n_items": 15,
           "brier": 0.137794822886259,
           "log_loss": 0.6251361665534372,
-          "correlation": 0.434933558570364,
+          "correlation": 0.4349335585703637,
           "ece": 0.010544472152950918
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.06381098298897199,
           "log_loss": 1.3942212168681145,
-          "correlation": 0.4890598675872765,
+          "correlation": 0.4890598675872757,
           "ece": 0.012493984028393955
         }
       }
@@ -386,7 +386,7 @@
       "brier": 0.08589787008127257,
       "brier_sd_over_cells": 0.0829848802145351,
       "log_loss": 1.1630892674911826,
-      "correlation": 0.5545262216569385,
+      "correlation": 0.5545262216569381,
       "ece": 0.01126728214247625,
       "calibration": {
         "ece": 0.01126728214247625,
@@ -500,21 +500,21 @@
           "n_items": 18,
           "brier": 0.08291172028165462,
           "log_loss": 1.2078363497890756,
-          "correlation": 0.5269807964393621,
+          "correlation": 0.5269807964393619,
           "ece": 0.014751014270126194
         },
         "near": {
           "n_items": 13,
           "brier": 0.08547759123939395,
           "log_loss": 1.222780494021134,
-          "correlation": 0.5179692832081572,
+          "correlation": 0.5179692832081575,
           "ece": 0.010269980399397962
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.0890144133095644,
           "log_loss": 1.0798559292674226,
-          "correlation": 0.5991199286530685,
+          "correlation": 0.599119928653068,
           "ece": 0.016939133763621998
         }
       },
@@ -523,14 +523,14 @@
           "n_items": 15,
           "brier": 0.13751165829110126,
           "log_loss": 0.624531987057031,
-          "correlation": 0.4368400142432788,
+          "correlation": 0.43684001424327895,
           "ece": 0.01099840360471502
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.06377767513420314,
           "log_loss": 1.3938995305343906,
-          "correlation": 0.48969926111086337,
+          "correlation": 0.48969926111086326,
           "ece": 0.012997567455135282
         }
       }
@@ -540,7 +540,7 @@
       "brier": 0.06505567211064431,
       "brier_sd_over_cells": 0.07831404582925419,
       "log_loss": 1.091066061169784,
-      "correlation": 0.6615503396338418,
+      "correlation": 0.6615503396338424,
       "ece": 0.01394603772264407,
       "calibration": {
         "ece": 0.01394603772264407,
@@ -654,7 +654,7 @@
           "n_items": 18,
           "brier": 0.0652261041319165,
           "log_loss": 1.131497883296867,
-          "correlation": 0.6396148995182485,
+          "correlation": 0.6396148995182481,
           "ece": 0.014933425155428018
         },
         "near": {
@@ -668,7 +668,7 @@
           "n_items": 19,
           "brier": 0.0654157741865847,
           "log_loss": 1.013666265700925,
-          "correlation": 0.6963237171877767,
+          "correlation": 0.6963237171877769,
           "ece": 0.014867695529101556
         }
       },
@@ -677,15 +677,169 @@
           "n_items": 15,
           "brier": 0.0858254389847313,
           "log_loss": 0.5061541774107143,
-          "correlation": 0.7051559815874401,
+          "correlation": 0.70515598158744,
           "ece": 0.030423414634146294
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.056154343450321303,
           "log_loss": 1.3417425827808136,
-          "correlation": 0.5743979755547612,
+          "correlation": 0.5743979755547619,
           "ece": 0.01153855462184876
+        }
+      }
+    },
+    "qwen_no_interview": {
+      "label": "baseline 4 -- LLM given the public profile, no interview",
+      "brier": 0.11593549078222222,
+      "brier_sd_over_cells": 0.12402691697399804,
+      "log_loss": 1.4287850803973445,
+      "correlation": 0.33630565296747766,
+      "ece": 0.0703547967479675,
+      "calibration": {
+        "ece": 0.0703547967479675,
+        "n_pairs": 20500,
+        "n_bins": 10,
+        "bins": [
+          {
+            "bin": [
+              0.0,
+              0.1
+            ],
+            "n": 3917,
+            "mean_predicted": 0.056271381159050296,
+            "mean_observed": 0.17119223895838653,
+            "gap": -0.11492085779933624
+          },
+          {
+            "bin": [
+              0.1,
+              0.2
+            ],
+            "n": 6102,
+            "mean_predicted": 0.15031273899268,
+            "mean_observed": 0.19472304162569654,
+            "gap": -0.04441030263301654
+          },
+          {
+            "bin": [
+              0.2,
+              0.30000000000000004
+            ],
+            "n": 5549,
+            "mean_predicted": 0.24631825554153905,
+            "mean_observed": 0.2167165255000901,
+            "gap": 0.029601730041448948
+          },
+          {
+            "bin": [
+              0.30000000000000004,
+              0.4
+            ],
+            "n": 2230,
+            "mean_predicted": 0.34503139013452916,
+            "mean_observed": 0.24764125560538117,
+            "gap": 0.09739013452914799
+          },
+          {
+            "bin": [
+              0.4,
+              0.5
+            ],
+            "n": 635,
+            "mean_predicted": 0.43998425196850394,
+            "mean_observed": 0.3894488188976378,
+            "gap": 0.05053543307086611
+          },
+          {
+            "bin": [
+              0.5,
+              0.6000000000000001
+            ],
+            "n": 661,
+            "mean_predicted": 0.5392233988905698,
+            "mean_observed": 0.46695915279878975,
+            "gap": 0.07226424609178006
+          },
+          {
+            "bin": [
+              0.6000000000000001,
+              0.7000000000000001
+            ],
+            "n": 366,
+            "mean_predicted": 0.6522677595628417,
+            "mean_observed": 0.5087978142076502,
+            "gap": 0.14346994535519142
+          },
+          {
+            "bin": [
+              0.7000000000000001,
+              0.8
+            ],
+            "n": 466,
+            "mean_predicted": 0.7460586552217455,
+            "mean_observed": 0.5567811158798284,
+            "gap": 0.18927753934191716
+          },
+          {
+            "bin": [
+              0.8,
+              0.9
+            ],
+            "n": 322,
+            "mean_predicted": 0.8329917184265009,
+            "mean_observed": 0.5612422360248447,
+            "gap": 0.2717494824016562
+          },
+          {
+            "bin": [
+              0.9,
+              1.0
+            ],
+            "n": 252,
+            "mean_predicted": 0.9353306878306878,
+            "mean_observed": 0.8098412698412699,
+            "gap": 0.12548941798941793
+          }
+        ]
+      },
+      "per_stratum": {
+        "far": {
+          "n_items": 18,
+          "brier": 0.11143866481481482,
+          "log_loss": 1.443617330882606,
+          "correlation": 0.29665372621865765,
+          "ece": 0.06394844444444446
+        },
+        "near": {
+          "n_items": 13,
+          "brier": 0.11627177223931624,
+          "log_loss": 1.513691961096484,
+          "correlation": 0.28841268984198176,
+          "ece": 0.0774011904761905
+        },
+        "same-domain": {
+          "n_items": 19,
+          "brier": 0.11996555438596491,
+          "log_loss": 1.3566392931434754,
+          "correlation": 0.3935549965371009,
+          "ece": 0.0715153153153153
+        }
+      },
+      "per_item_type": {
+        "binary": {
+          "n_items": 15,
+          "brier": 0.18196618518518518,
+          "log_loss": 0.7335978492426954,
+          "correlation": 0.25933420386511025,
+          "ece": 0.1583222222222222
+        },
+        "likert5": {
+          "n_items": 35,
+          "brier": 0.08763662175238096,
+          "log_loss": 1.7267224651779085,
+          "correlation": 0.1702676544920711,
+          "ece": 0.07263657142857143
         }
       }
     },
@@ -694,7 +848,7 @@
       "brier": 0.0636483095215573,
       "brier_sd_over_cells": 0.0933798317850725,
       "log_loss": 1.0835882861083903,
-      "correlation": 0.6826735925119616,
+      "correlation": 0.6826735925119629,
       "ece": 0.025525885160748024,
       "calibration": {
         "ece": 0.025525885160748024,
@@ -808,21 +962,21 @@
           "n_items": 18,
           "brier": 0.060490763879205156,
           "log_loss": 1.1119265280428354,
-          "correlation": 0.6764203508657597,
+          "correlation": 0.67642035086576,
           "ece": 0.02552300952332315
         },
         "near": {
           "n_items": 13,
           "brier": 0.06791350599366537,
           "log_loss": 1.1700606927777149,
-          "correlation": 0.6285589134474869,
+          "correlation": 0.6285589134474875,
           "ece": 0.02852467607075063
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.06372137622813279,
           "log_loss": 0.9975761997125361,
-          "correlation": 0.7209416895099479,
+          "correlation": 0.7209416895099475,
           "ece": 0.024664661373244183
         }
       },
@@ -831,14 +985,14 @@
           "n_items": 15,
           "brier": 0.08777053413965966,
           "log_loss": 0.5210227195673022,
-          "correlation": 0.7001776790332604,
+          "correlation": 0.70017767903326,
           "ece": 0.03493119924935984
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.0533102132566563,
           "log_loss": 1.3246878146259995,
-          "correlation": 0.6138068857608855,
+          "correlation": 0.6138068857608858,
           "ece": 0.025100592869330165
         }
       }
@@ -848,7 +1002,7 @@
       "brier": 0.0837014430220985,
       "brier_sd_over_cells": 0.09164216835772748,
       "log_loss": 1.2044333723070522,
-      "correlation": 0.5371390115454806,
+      "correlation": 0.5371390115454802,
       "ece": 0.01506588149657537,
       "calibration": {
         "ece": 0.01506588149657537,
@@ -962,21 +1116,21 @@
           "n_items": 18,
           "brier": 0.07808326839150191,
           "log_loss": 1.2093751805285822,
-          "correlation": 0.5472214004720832,
+          "correlation": 0.5472214004720827,
           "ece": 0.015386282278019725
         },
         "near": {
           "n_items": 13,
           "brier": 0.07825833722139927,
           "log_loss": 1.2709983200129795,
-          "correlation": 0.525619808594975,
+          "correlation": 0.5256198085949754,
           "ece": 0.021378923033807663
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.0927481545357737,
           "log_loss": 1.154207221351021,
-          "correlation": 0.5339842457430198,
+          "correlation": 0.5339842457430196,
           "ece": 0.024377477640529853
         }
       },
@@ -985,14 +1139,14 @@
           "n_items": 15,
           "brier": 0.11440299398643322,
           "log_loss": 0.5746689017047056,
-          "correlation": 0.5740551858553427,
+          "correlation": 0.574055185855342,
           "ece": 0.01738294156335592
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.07054363546595505,
           "log_loss": 1.4743324311366295,
-          "correlation": 0.40694277808341783,
+          "correlation": 0.4069427780834182,
           "ece": 0.01542064641924685
         }
       }
@@ -1002,7 +1156,7 @@
       "brier": 0.04157332337733721,
       "brier_sd_over_cells": 0.06120469962203059,
       "log_loss": 0.9512480740987881,
-      "correlation": 0.7859219566434894,
+      "correlation": 0.7859219566434895,
       "ece": 0.015576821121249026,
       "calibration": {
         "ece": 0.015576821121249026,
@@ -1116,21 +1270,21 @@
           "n_items": 18,
           "brier": 0.04306591874241337,
           "log_loss": 0.993449010818675,
-          "correlation": 0.768603980318736,
+          "correlation": 0.7686039803187357,
           "ece": 0.018422216889993077
         },
         "near": {
           "n_items": 13,
           "brier": 0.044838267942816035,
           "log_loss": 1.0196420895618894,
-          "correlation": 0.7524296295883761,
+          "correlation": 0.7524296295883762,
           "ece": 0.014617740791841121
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.03792537622351638,
           "log_loss": 0.8644723339946679,
-          "correlation": 0.8217236085268991,
+          "correlation": 0.8217236085268995,
           "ece": 0.014322738304061448
         }
       },
@@ -1139,14 +1293,14 @@
           "n_items": 15,
           "brier": 0.04345070186187891,
           "log_loss": 0.4059561645703424,
-          "correlation": 0.8628857248967053,
+          "correlation": 0.8628857248967058,
           "ece": 0.03255254157163512
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.04076873259824791,
           "log_loss": 1.184944606753836,
-          "correlation": 0.7165814610800317,
+          "correlation": 0.7165814610800321,
           "ece": 0.014764938094757547
         }
       }
@@ -1156,7 +1310,7 @@
       "brier": 0.0636483095215573,
       "brier_sd_over_cells": 0.0933798317850725,
       "log_loss": 1.0835882861083903,
-      "correlation": 0.6826735925119616,
+      "correlation": 0.6826735925119629,
       "ece": 0.025525885160748024,
       "calibration": {
         "ece": 0.025525885160748024,
@@ -1270,21 +1424,21 @@
           "n_items": 18,
           "brier": 0.060490763879205156,
           "log_loss": 1.1119265280428354,
-          "correlation": 0.6764203508657597,
+          "correlation": 0.67642035086576,
           "ece": 0.02552300952332315
         },
         "near": {
           "n_items": 13,
           "brier": 0.06791350599366537,
           "log_loss": 1.1700606927777149,
-          "correlation": 0.6285589134474869,
+          "correlation": 0.6285589134474875,
           "ece": 0.02852467607075063
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.06372137622813279,
           "log_loss": 0.9975761997125361,
-          "correlation": 0.7209416895099479,
+          "correlation": 0.7209416895099475,
           "ece": 0.024664661373244183
         }
       },
@@ -1293,14 +1447,14 @@
           "n_items": 15,
           "brier": 0.08777053413965966,
           "log_loss": 0.5210227195673022,
-          "correlation": 0.7001776790332604,
+          "correlation": 0.70017767903326,
           "ece": 0.03493119924935984
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.0533102132566563,
           "log_loss": 1.3246878146259995,
-          "correlation": 0.6138068857608855,
+          "correlation": 0.6138068857608858,
           "ece": 0.025100592869330165
         }
       }
@@ -1310,7 +1464,7 @@
       "brier": 0.0536640566416954,
       "brier_sd_over_cells": 0.08354165260600595,
       "log_loss": 1.019716988637525,
-      "correlation": 0.7304296941915853,
+      "correlation": 0.7304296941915862,
       "ece": 0.011701316615236919,
       "calibration": {
         "ece": 0.011701316615236919,
@@ -1424,21 +1578,21 @@
           "n_items": 18,
           "brier": 0.054571091682078944,
           "log_loss": 1.067704901818154,
-          "correlation": 0.7081950609691999,
+          "correlation": 0.7081950609692003,
           "ece": 0.01460320718465557
         },
         "near": {
           "n_items": 13,
           "brier": 0.054646057178339924,
           "log_loss": 1.0814568884252331,
-          "correlation": 0.7014559218902965,
+          "correlation": 0.7014559218902969,
           "ece": 0.011098855504681806
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.052132865183627884,
           "log_loss": 0.9320116657695503,
-          "correlation": 0.7673548388217333,
+          "correlation": 0.7673548388217334,
           "ece": 0.015268540104218723
         }
       },
@@ -1447,14 +1601,14 @@
           "n_items": 15,
           "brier": 0.06860239156550367,
           "log_loss": 0.4731642416122218,
-          "correlation": 0.7747495793721961,
+          "correlation": 0.7747495793721958,
           "ece": 0.03068769968613484
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.047261913102920425,
           "log_loss": 1.253953880219798,
-          "correlation": 0.661471891779468,
+          "correlation": 0.6614718917794674,
           "ece": 0.010151147194517707
         }
       }
@@ -1464,7 +1618,7 @@
       "brier": 0.0537909604527645,
       "brier_sd_over_cells": 0.07808353961220574,
       "log_loss": 1.034370138410136,
-      "correlation": 0.7236775338408026,
+      "correlation": 0.7236775338408027,
       "ece": 0.01854223721485685,
       "calibration": {
         "ece": 0.01854223721485685,
@@ -1585,14 +1739,14 @@
           "n_items": 13,
           "brier": 0.05795892831997237,
           "log_loss": 1.1270055084392054,
-          "correlation": 0.6699822438381758,
+          "correlation": 0.6699822438381765,
           "ece": 0.023420577310852963
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.052747219327596,
           "log_loss": 0.949029380092966,
-          "correlation": 0.759475927998808,
+          "correlation": 0.7594759279988076,
           "ece": 0.019232398878189474
         }
       },
@@ -1601,14 +1755,14 @@
           "n_items": 15,
           "brier": 0.06372651060675215,
           "log_loss": 0.45819522931638873,
-          "correlation": 0.7906355414962605,
+          "correlation": 0.790635541496261,
           "ece": 0.03832669354658179
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.049532867529626934,
           "log_loss": 1.2813022423074565,
-          "correlation": 0.645320151066807,
+          "correlation": 0.6453201510668066,
           "ece": 0.018952054259264346
         }
       }
@@ -1618,7 +1772,7 @@
       "brier": 0.04140976630935528,
       "brier_sd_over_cells": 0.061992590464744646,
       "log_loss": 0.9514609951222052,
-      "correlation": 0.7864945617849528,
+      "correlation": 0.7864945617849526,
       "ece": 0.015703499890977014,
       "calibration": {
         "ece": 0.015703499890977014,
@@ -1732,21 +1886,21 @@
           "n_items": 18,
           "brier": 0.042904313114859205,
           "log_loss": 0.9936087946738452,
-          "correlation": 0.7691915045899316,
+          "correlation": 0.7691915045899318,
           "ece": 0.017475228726708147
         },
         "near": {
           "n_items": 13,
           "brier": 0.04478109859854328,
           "log_loss": 1.0201072967127682,
-          "correlation": 0.7525870664857227,
+          "correlation": 0.7525870664857224,
           "ece": 0.015122284096177217
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.037687178822065036,
           "log_loss": 0.8645629786692136,
-          "correlation": 0.8225120037741454,
+          "correlation": 0.8225120037741452,
           "ece": 0.014855843684195343
         }
       },
@@ -1755,14 +1909,14 @@
           "n_items": 15,
           "brier": 0.04308293330704708,
           "log_loss": 0.4061562894641087,
-          "correlation": 0.8639910511717646,
+          "correlation": 0.8639910511717642,
           "ece": 0.031147326366478358
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.040692694738915944,
           "log_loss": 1.185163011832818,
-          "correlation": 0.717034162446204,
+          "correlation": 0.7170341624462033,
           "ece": 0.014776636890546709
         }
       }
@@ -1772,7 +1926,7 @@
       "brier": 0.0016092135665090566,
       "brier_sd_over_cells": 0.0020966248656210528,
       "log_loss": 0.6745742634904858,
-      "correlation": 0.9925264121906868,
+      "correlation": 0.9925264121906865,
       "ece": 0.0005063555804692822,
       "calibration": {
         "ece": 0.0005063555804692822,
@@ -1893,14 +2047,14 @@
           "n_items": 13,
           "brier": 0.0015798149630362453,
           "log_loss": 0.7140094359550097,
-          "correlation": 0.9920239669106059,
+          "correlation": 0.992023966910606,
           "ece": 0.0005743341136742807
         },
         "same-domain": {
           "n_items": 19,
           "brier": 0.0015103477915116444,
           "log_loss": 0.621945032971358,
-          "correlation": 0.9933921767437902,
+          "correlation": 0.9933921767437905,
           "ece": 0.0007779364144257167
         }
       },
@@ -1909,14 +2063,14 @@
           "n_items": 15,
           "brier": 0.0016425538490118044,
           "log_loss": 0.29390849826530097,
-          "correlation": 0.9951573562064705,
+          "correlation": 0.9951573562064704,
           "ece": 0.001232768939670512
         },
         "likert5": {
           "n_items": 35,
           "brier": 0.0015949248740078788,
           "log_loss": 0.8377167343012791,
-          "correlation": 0.9904283105652792,
+          "correlation": 0.9904283105652795,
           "ece": 0.000561673066708937
         }
       }
@@ -1955,16 +2109,19 @@
     }
   },
   "qwen_no_interview_baseline": {
-    "status": "pending",
-    "expected_at": "data/runs/stage4_qwen_baseline/predictions.jsonl",
-    "note": "the Qwen no-interview baseline runs on Leonardo; the grader accepts it as soon as the parsed file lands and grades without it until then"
+    "status": "graded",
+    "path": "data/runs/stage4_qwen_baseline/predictions.jsonl",
+    "cells_parsed": 5000,
+    "cells_expected": 5000,
+    "cells_malformed": 0,
+    "cells_filled_with_a_uniform_row": 0
   },
   "aggregate_check": {
     "what": "population marginal per probe item: predicted vs the 50-sample truth",
     "n_bootstrap": 1000,
     "bootstrap_seed": 2026,
     "resampling_unit": "the 100 held-out personas, both sides resampled together",
-    "correlation": 0.9826075232523251,
+    "correlation": 0.9826075232523254,
     "mean_abs_gap": 0.027987738007071807,
     "rmse": 0.03502683210139221,
     "mean_total_variation_per_item": 0.0573748629144972,
@@ -4057,7 +4214,7 @@
     "conditional_independence": "each persona's joint over two items is the product of their two per-cell distributions, on BOTH sides. Neither the predictor nor the 50 seeded sittings carry a within-person joint, so the assumption is shared and the comparison is fair -- but it is an assumption, and a real answer dependence beyond theta would not show up in either side of this plot",
     "n_pairs": 1225,
     "n_table_cells": 20545,
-    "correlation": 0.9671024194887051,
+    "correlation": 0.9671024194887041,
     "rmse": 0.01907268998706843,
     "mean_total_variation_per_pair": 0.10568921270319116,
     "worst_total_variation_per_pair": 0.252573123939126
@@ -4084,7 +4241,7 @@
       "what": "the analytic post-noise distribution of every cell, graded against its own 50-sample estimate. This is the best score any predictor could get, and the gap to it is the yardstick's own noise",
       "oracle_brier": 0.0016092135665090566,
       "oracle_log_loss": 0.6745742634904858,
-      "oracle_correlation": 0.9925264121906868,
+      "oracle_correlation": 0.9925264121906865,
       "oracle_ece": 0.0005063555804692822,
       "analytic_noise_floor_brier": 0.0015784432079874319,
       "analytic_noise_floor_definition": "mean over cells of sum_c p(1-p) / (categories * 50)",
@@ -4098,8 +4255,8 @@
       "plugin_brier": 0.0636483095215573,
       "posterior_ece": 0.013679026756282795,
       "plugin_ece": 0.025525885160748024,
-      "posterior_correlation": 0.6843654025031514,
-      "plugin_correlation": 0.6826735925119616,
+      "posterior_correlation": 0.6843654025031518,
+      "plugin_correlation": 0.6826735925119629,
       "brier_gain_from_integrating": 0.0009619020080807172
     }
   },
@@ -4137,5 +4294,5 @@
     "stratum_lift": "results/stage4_stratum_lift.png",
     "aggregate": "results/stage4_aggregate.png"
   },
-  "runtime_seconds": 0.805757999420166
+  "runtime_seconds": 1.256014108657837
 }
