@@ -946,3 +946,50 @@ earlier ~3.9 figure), so the project total is 123.83 GPU + 5.35 CPU
 RMSE ≤ 0.60 is exactly 0.566 (the random median is uncensored), not
 "≤ 0.566". The owner's fixed gate verdicts are untouched by all four
 corrections — none of these numbers appear in them.
+
+## 2026-08-01 — Stage 6 complete: deliverables written, verified, release-audited
+
+Deliverables (all committed): results/REPORT.md — full findings, honest
+scoreboard first, owner verdicts verbatim, the measured-ceiling spine,
+fifteen numbered findings, four leakage hunts, ten failed rounds each
+with its log pointer, seven limitations, costs. RESEARCH_SUMMARY.md —
+two pages, plain language, five headline numbers plus the adaptive
+sixth, three deep findings, fails stated first. HUMAN_PROTOCOL.md —
+N=1,500 (primary test needs ~250 people; the rest buys item
+calibration — probe-item count, not panel size, is the binding
+constraint), the 27.1% lift correctly translated to the ~14.3%
+single-answer scale a real panel can measure, vehicle-map bank
+discipline, heuristic adaptive arm (RL only tied it), SocSci210
+section with the mandatory contamination check and camera-ready-only
+figures (26.3%/13.2%; a wrong 36%/15% web-summary variant is
+explicitly warned against in the doc). README polished; dashboard
+gained an Overview landing page with the six gate verdicts (2 PASS,
+3 FAIL, 1 UNDEFINED).
+
+Release audit: git history clean of secrets (248 blobs scanned; the
+two live .env values byte-searched — zero hits); personal docs never
+committed; data/ never committed; owner email and the cluster
+allocation id removed from the tree; results/*.npz gitignored as
+regenerable. FLAGGED FOR OWNER at Gate 6: (1) the old blobs in git
+history still carry the owner email, the allocation id and one
+cluster path — removing them needs a history rewrite before public
+release; (2) PRD.md/.claude/CLAUDE.md/PREREGISTRATION.md (frozen)
+still name the project-space id and the sibling project folder;
+(3) two Stage-4 result JSONs record local home paths in provenance
+fields; (4) STAGE6_NOTES.md is a fourth committed prose doc, now
+folded into REPORT.md — keep or drop at release; (5) HUMAN_PROTOCOL
+sign-off items: the 3% null floor, the placeholder panel rates, the
+calibration-driven N=1,500.
+
+Verification: an adversarial pass re-derived every pointered number in
+REPORT.md from its result file (54/54 resolve), checked frozen-bar
+wording against PREREGISTRATION §6 (verbatim), owner verdicts against
+the ACCEPTED AS FINAL entries (character-for-character), SocSci210
+figures against the camera-ready PDF, and the dashboard against the
+scoreboard. Sixteen discrepancies found, fifteen fixed, one kept by
+owner-endorsed convention (the ~85% headline over the measured 0.830
+median, always printed together); the three that touched earlier log
+entries are corrected in the note above. Suite 726 green including
+the Wall. Stage 6 compute: zero GPU, zero API. Project total: 123.83
+GPU + 5.35 CPU ≈ 129.2 core-hours, ≈ $0.02 API. Gate 6 is a hard
+stop: deliverables to the owner for review.
