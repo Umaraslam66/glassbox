@@ -888,3 +888,42 @@ the abandoned run, grading + instrumentation 2.6) — all episode
 simulation and RL training on CPU as ordered. Suite 716 green. Project
 total ~127.7 core-hours. Gate 5 is a hard stop: verdict delivered,
 decision with the owner.
+
+## 2026-08-01 — Gate 5 outcome ACCEPTED AS FINAL by the owner
+
+The documented result, in the owner's fixed phrasing, to be carried into
+every future report and the final REPORT.md: "Both frozen bars UNDEFINED
+at the frozen RMSE ≤ 0.5 target (full-bank floor 0.525, pre-declared in
+Ruling 1); on the pre-declared exploratory grid, adaptive interviewing
+reaches the same accuracy in ≤50% of random's questions at attainable
+thresholds (0.462 and 0.494 at ≤0.70 and ≤0.65); RL ties the info-gain
+heuristic; proxy-gaming watch fired and was attributed to the
+card-transmission blind spot, not reward hacking (heuristic shows a
+LARGER declared-vs-true gap than the trained policy; oracle-reward arm
+within 0.024 RMSE of the deployable blur reward)."
+
+## 2026-08-01 — Stage 6 opened (final deliverables)
+
+Build order set by the owner: (1) results/REPORT.md — full findings,
+honest scoreboard first, frozen-bar outcomes always before exploratory
+context, the measured-ceiling story as the spine, the coverage-decay
+exhibit as the confidence-model centerpiece, all twelve banked
+STAGE6_NOTES findings plus the two Gate 5 additions (near-static RL
+order — the value of adaptive interviewing here is question SELECTION,
+not per-person branching; deployable blur reward within 0.024 RMSE of
+the forbidden oracle reward), an honest-methods section listing every
+failed round with PROJECT_LOG pointers, limitations, and the cost
+table. (2) HUMAN_PROTOCOL.md — pre-registered real-human study with
+power calculation for the Gate-4 lift, vehicle-map item-bank
+discipline, test–retest plan, adaptive arm, predicted numbers with
+intervals, and the SocSci210 shallow-resolution calibration
+replication (unseen-participant split; mandatory pretraining-
+contamination check before any number is trusted; Socrates-Qwen-14B
+ACL camera-ready figures as the reference baseline; honest statement
+of what shallow per-person data cannot test). (3) RESEARCH_SUMMARY.md
+at repo root, two pages, plain language, no hype. (4) Repo release
+audit + README polish + minimal dashboard landing page with gates and
+verdicts. Hard stop at Gate 6 for owner review. Drafting delegated;
+orchestrator owns final editorial verification: every REPORT.md number
+against its result file (result file wins), every frozen-bar sentence
+against PREREGISTRATION.md.
