@@ -17,13 +17,20 @@ A file outside ``src/eval/`` **and** ``src/personas/`` also fails if it
       ``src/interview/``, ``src/model/``, ``src/rl/``, ``src/bank/`` and
       ``app/`` must not contain the word at all.
 
-And one check looks at the filesystem instead of the source:
+And two checks look at the filesystem instead of the source:
 
   (d) no run directory under ``data/runs/`` holds raw material -- responder
       completions, responder prompts (they carry the persona card) or the raw
       un-noised answers. Those live in a ``runs/<run_id>/`` folder inside the
       planted-truth directory, whose name this file deliberately never spells
       out. Skipped when there is no ``data/`` at all, as in a fresh clone.
+
+  (e) the files that *are* allowed under ``data/runs/`` carry only the fields
+      they are allowed to carry -- a field-level allowlist on noised answer
+      records and on assembled transcripts. A file with the right name can
+      still smuggle a field; (d) would not notice. This class of check exists
+      because of the 2026-07-31 breach written up in ``results/REPORT.md``
+      section 6.
 
 Nothing is executed: the files are parsed with ``ast`` and read as text, so this
 is safe to run on any commit and catches leaks that a runtime test would miss.
@@ -276,37 +283,64 @@ def test_run_directories_hold_no_raw_material() -> None:
     )
 
 
-def test_noised_answer_files_carry_no_pre_noise_fields() -> None:
-    """System-side answer records must not reveal the pre-noise answer.
+#: The only top-level keys a system-side noised answer record may have. This is
+#: an allowlist on purpose: the 2026-07-31 breach (REPORT.md section 6) was a
+#: field nobody had thought to forbid, so the rule is "these four and nothing
+#: else" rather than a list of known-bad names.
+NOISED_ANSWER_KEYS = {"pid", "item_id", "round", "answer"}
+
+#: Named separately only so the failure message can say what was found rather
+#: than just "unexpected key". Both checks run; the allowlist is the real rule.
+PRE_NOISE_FIELDS = {"raw", "logprobs", "logprob", "completion", "answer_raw", "pre_noise"}
+
+
+def noised_answer_files() -> list[Path]:
+    """Every system-side answer file the noise layer is responsible for."""
+    runs = REPO_ROOT.joinpath(*RUNS_DIR)
+    if not runs.is_dir():
+        return []
+    return sorted(
+        set(runs.rglob("answers_noised.jsonl")) | set(runs.rglob("answers_interview*.jsonl"))
+    )
+
+
+def test_noised_answer_files_carry_only_the_allowed_fields() -> None:
+    """Field-level allowlist on the noise layer's output, checked on the file.
 
     The noise layer's output is the official world. A ``raw`` field (or inline
     ``logprobs``) on a record in ``data/runs/`` would hand system-side code the
-    responder's un-noised answer, which is truth-side material.
+    responder's un-noised answer, which is truth-side material. Anything
+    outside :data:`NOISED_ANSWER_KEYS` fails, whether or not we have a name for
+    it yet -- that is what the original denylist version of this check would
+    have missed.
     """
     import json
 
-    runs = REPO_ROOT.joinpath(*RUNS_DIR)
-    if not runs.is_dir():
+    found = noised_answer_files()
+    if not found:
         pytest.skip("no run directory in this checkout -- nothing to check")
 
     offenders: list[str] = []
-    answer_files = sorted(
-        set(runs.rglob("answers_noised.jsonl")) | set(runs.rglob("answers_interview*.jsonl"))
-    )
-    for path in answer_files:
+    for path in found:
+        relative = path.relative_to(REPO_ROOT)
         with path.open(encoding="utf-8") as fh:
             for lineno, line in enumerate(fh, start=1):
+                if not line.strip():
+                    continue
                 record = json.loads(line)
-                bad = {"raw", "logprobs"} & set(record)
-                if bad:
-                    offenders.append(
-                        f"{path.relative_to(REPO_ROOT)}: line {lineno} has {sorted(bad)}"
-                    )
+                keys = set(record)
+                named = sorted(PRE_NOISE_FIELDS & keys)
+                extra = sorted(keys - NOISED_ANSWER_KEYS)
+                if named:
+                    offenders.append(f"{relative}: line {lineno} has pre-noise field(s) {named}")
+                elif extra:
+                    offenders.append(f"{relative}: line {lineno} has unexpected field(s) {extra}")
+                if named or extra:
                     break  # one finding per file is enough
 
     assert not offenders, (
-        "pre-noise fields found in system-side answer files:\n"
-        + "\n".join(f"  - {o}" for o in offenders)
+        "system-side answer files must carry only "
+        f"{sorted(NOISED_ANSWER_KEYS)}:\n" + "\n".join(f"  - {o}" for o in offenders)
     )
 
 
