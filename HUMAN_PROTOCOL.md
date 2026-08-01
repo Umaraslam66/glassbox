@@ -120,6 +120,30 @@ allowance. Field spend
 Compute is trivial next to the field spend either way: the whole GLASSBOX
 synthetic study used 127.7 GPU core-hours end to end.
 
+**Total-cost shape.** Unit counts below are real and follow from the design.
+**Every rate and every subtotal is a `[placeholder]`** — no panel rate has been
+obtained, and none should be invented. The table is here so the *shape* of the
+budget is visible and so nobody has to reconstruct the line items when the real
+rates arrive.
+
+| Line item | Unit count | Rate | Subtotal |
+|---|---|---|---|
+| Main visits (~25 min, incl. incentive) | 1,500 | `[placeholder]` per complete | `[placeholder]` |
+| Retest visits (~8 min, incl. incentive) | ~280 completes (400 invited) | `[placeholder]` per complete | `[placeholder]` |
+| Depth interviews (~35 min, 30-question arm) | 300 | `[placeholder]` per complete | `[placeholder]` |
+| Quota top-ups (hard-to-fill cells) | `[placeholder]` — depends on which cells run short; budget as a % of main visits | `[placeholder]` uplift per complete | `[placeholder]` |
+| Screen-outs (15% loss allowance) | ~265 (1,500 usable needs ~1,765 recruited) | `[placeholder]` per screen-out | `[placeholder]` |
+| Incentives admin / panel service fee | 1 study | `[placeholder]` (flat or % of incentive spend) | `[placeholder]` |
+| **Total field spend** | | | **`[placeholder]`** |
+
+Notes on the table: the depth subsample is drawn from the 1,500 main visits, so
+its cost is the *incremental* ~10 extra minutes, not a second full session —
+price it that way. Retest is a separate visit and is priced in full. Under the
+cheaper N ≈ 800 variant (§3.6a) the first three rows scale to 800 / ~150 / ~160
+and the screen-out row to ~140; the rates and the total stay `[placeholder]`
+either way. Compute stays out of this table because it is negligible against
+field spend.
+
 ---
 
 ## 3. Panel size and the power calculation
@@ -312,13 +336,17 @@ The middle term does not depend on N. That is the floor.
 - **Why 3% and not 0%:** a lift of one or two percent is statistically real and
   commercially worthless. A model that needs a 25-minute interview to beat the
   population average by 2% should not be shipped. The bar encodes that.
-- **Flagged for sign-off.** The 3% floor is a judgement call, not a measurement,
-  and it is the one number here most worth arguing about. The owner may lower it
-  to a nil null (`H₀: lift ≤ 0`) at pre-registration sign-off. The consequence is
-  already priced in §3.6: at the recommended design the minimum detectable lift
-  at 90% power moves from **8.3%** (against 3%) to **5.5%** (against nil). A nil
-  null buys sensitivity and gives up the claim that the detected effect is worth
-  anything commercially. Decide once, before fieldwork, and do not revisit.
+- **The 3% floor stays.** It is a judgement call, not a measurement, and it is
+  the one number here most worth arguing about — so it is stated plainly rather
+  than buried. **The consequence, in one line: at the recommended design the
+  minimum detectable lift at 90% power is 8.3% against the 3% floor, and would
+  be 5.5% against a nil null (`H₀: lift ≤ 0`).** Dropping the floor therefore
+  buys real sensitivity — roughly a third off the detectable effect — and that
+  is exactly why it is not being dropped: **testing against a nil null is how
+  weak effects get laundered into publishable ones.** Keeping the floor means
+  the study can only "win" by finding an effect big enough to be worth acting
+  on. The owner may still overrule this at pre-registration sign-off; if so,
+  decide once, before fieldwork, record it, and do not revisit.
 - **α = 0.025 one-sided** (equivalent to 0.05 two-sided). **Power target 0.90.**
 - **Variance:** crossed person × item, as above, inflated by **×1.15** as a
   standing conservatism allowance for real-panel heterogeneity that the
@@ -407,6 +435,50 @@ at once:
 item bank calibration, the second arm, the repeat visits and the subgroups.
 Say so out loud in the pre-registration — it is honest and it protects the study
 from being cut to 400 by someone who read only the power line.**
+
+### 3.6a The cheaper variant: N ≈ 800
+
+**N = 1,500 remains the primary design.** This subsection exists so that if the
+budget forces a cut, the cut is made with the trade-off written down in advance
+instead of argued about mid-field. It is the owner's reduced-bank sensitivity
+design — "bank" here meaning the bank of *answers* collected per item, not the
+120-item question pool, which does not shrink.
+
+**The variant.** N ≈ 800 completed first visits (400 per arm). Probe pool
+J = 120 and k = 40 probe items per participant are **unchanged**. Retest and
+depth subsamples scale down with the panel (~150 retest invited, ~160 depth).
+
+**What it preserves: the primary test.** 400 per arm is well above the 250 the
+primary endpoint needs. Reading off the panel-size table above, N = 400 sits
+between the 250 and 500 rows: SE(lift) ≈ 0.017, minimum detectable lift at 90%
+power ≈ 8.4–8.8%, power at the 9% design point ≈ 0.92–0.95. Endpoint E1 stays
+confirmatory and is still powered against the 3% floor. This is the whole point
+of §3.6's headline — panel size is not the binding constraint on this endpoint.
+
+**What it gives up: per-fold item calibration.** With 5-fold cross-fitting each
+calibration set holds ~640 participants instead of 1,200. At k = 40 from a
+120-item probe pool that is **~213 answers per probe item** (down from 400), and
+at 12 calibration items from a 40-item interview pool **~192 per interview-pool
+item** (down from 360). Both sit **below the ~300-answers floor** named in
+point 1 above, under which thresholds go unstable. That is not a cosmetic loss:
+unstable item parameters are the exact failure mode Gate 4 measured, where
+thresholds predicted from item text alone collapsed the lift to 2.7%
+(`results/stage4_gate4.json`, `model_text_thresholds` arm). The cheap design
+therefore risks funding a study whose item parameters are too noisy to deliver
+the effect it is powered to detect. **If this variant is chosen, pre-register a
+calibration-stability check** (split-half reliability of fitted thresholds per
+fold) and report it beside E1, so a null result can be attributed correctly.
+
+**What it also gives up.** Pre-registered subgroup analyses (age band,
+education, region) drop below usable precision; treat them as descriptive only.
+The retest subsample thins to ~150 completions, which widens the E1c
+retest-corrected interval.
+
+**Do not take the saving out of the item pool instead.** Cutting J is the one
+cut that hits the confirmatory claim directly: at J = 80 the minimum detectable
+lift rises to 9.3% and power at the 9% design point falls to 0.87; at J = 60,
+to 0.77 (probe-pool table above). Fewer people costs calibration; fewer distinct
+questions costs the primary test itself.
 
 ### 3.7 Assumptions, listed
 
