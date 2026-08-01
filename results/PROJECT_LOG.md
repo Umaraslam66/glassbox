@@ -996,3 +996,49 @@ entries are corrected in the note above. Suite 726 green including
 the Wall. Stage 6 compute: zero GPU, zero API. Project total: 123.83
 GPU + 5.35 CPU ≈ 129.2 core-hours, ≈ $0.02 API. Gate 6 is a hard
 stop: deliverables to the owner for review.
+
+## 2026-08-01 — Wall incident report (Gate 6 blocking item; full account in REPORT.md §6)
+
+The RESEARCH_SUMMARY mentioned a Wall breach that no gate report had
+surfaced. Owner ordered a dedicated accounting before any release step.
+Forensic findings (evidence in REPORT.md §6; result files and git
+hashes cited there):
+
+WHAT: the noise layer's system-side output carried the responder's
+pre-noise answer under a "raw" field — the noise was undoable
+cell-by-cell for anyone reading the file. Committed 2026-07-31
+03:37:58 (7a687e5), first confirmatory materialization 04:04:17
+(full_sweep), stripped on disk 14:29:45 and fixed in code 14:32:56
+(a9244ba). Window: 10 h 54 min. The damning detail, recorded as such:
+the leaking commit's own tests ASSERTED the field survived — the
+schema was written down, tested, and wrong.
+
+EXPOSURE vs CONSUMPTION: two files exposed (full_sweep 141,000
+records; pilot3 16,920). Every system-side reader in the window —
+population_qa, mirt.load_answers, recovery.obedience_ceiling — reads
+exactly {pid, item_id, round, answer}; none touches "raw" (loader
+lines quoted in §6.2; mirt's docstring explicitly names the hazard).
+
+CONFIRMATORY ARTIFACTS IN THE WINDOW: Gate 1 v1 QA and the Stage 2 v1
+fit/grading. Both superseded by v2 (16:24 / 16:44), and the final
+record rests exclusively on v2 + later artifacts, all created after
+the fix. RE-RUN EVIDENCE: Gate 1 v1 re-run on the stripped file is
+byte-identical on every leaf; the Stage 2 v1 fit re-run is
+bit-identical on all 31 arrays and all four frozen bars to full float
+precision (the only differing leaves trace to the later owner-ordered
+q229/q234 truth-side label amendment, not to answers). CONCLUSION,
+with evidence: the breach touched nothing confirmatory in the final
+record.
+
+GUARD: the field-level wall test added at the fix was a denylist; it
+is now an ALLOWLIST (keys ⊆ {pid, item_id, round, answer}) covering
+all noised-answer and interview-answer files, proven against probe
+files including a renamed variant the denylist would have passed. All
+four current answer files verified clean, every record.
+
+PROCESS RULE, recorded in .claude/CLAUDE.md on owner order: Wall
+incidents are surfaced in the gate report of the stage where they
+occur, never first in a summary. This incident is the rule's origin:
+the breach was fixed honestly mid-Stage-2 and logged, but no Gate 2
+report carried it as an incident, and it surfaced first in a
+release-facing summary.
