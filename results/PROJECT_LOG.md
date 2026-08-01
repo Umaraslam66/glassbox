@@ -33,8 +33,9 @@ trait dimensions agreed with the owner, `PREREGISTRATION.md` frozen.
 ## 2026-07-30 — Stage 0: Leonardo set up, smoke test passed, API paths verified
 
 Leonardo: created the project's own folder in the allocation workspace and copied the Gemma 4
-31B installation from [sibling-project] (weights, vLLM venv, CUDA compat tools, HF cache —
-69 GB, byte-verified; [sibling-project] itself untouched). Smoke test job 51068113 passed on
+31B installation from a sibling project on the same cluster (weights, vLLM venv,
+CUDA compat tools, HF cache — 69 GB, byte-verified; the sibling project itself
+untouched). Smoke test job 51068113 passed on
 the first submission: 4 GPUs visible, Gemma answered a role-play prompt in
 character. Log: `glassbox/logs/glassbox-smoke-gemma-51068113.out` on Leonardo.
 Cost: 5.74 core-hours (see COSTS.md).
@@ -44,7 +45,8 @@ default) and the OpenRouter fallback `qwen/qwen3.7-flash` (owner-provided;
 reasoning model — spends hidden thinking tokens even on trivial prompts).
 
 System-side model investigation (PRD amendment): Qwen3.6-27B — dense (verified in
-its config: no expert keys), non-Gemma family, already on Leonardo in [sibling-project],
+its config: no expert keys), non-Gemma family, already on the cluster in the
+sibling project,
 proven there with the same venv we now run. Proposed to the owner in the Gate 0
 report; not installed pending the decision.
 
@@ -63,7 +65,8 @@ One orchestrator addition flagged to the owner: the obedience definition gained
 without it the measure is ill-defined.
 
 Stage 1 work so far:
-- Qwen3.6-27B copied [sibling-project] → glassbox on Leonardo, byte- and content-verified,
+- Qwen3.6-27B copied from the sibling project into glassbox on Leonardo, byte-
+  and content-verified,
   zero billed compute. Note: the checkpoint is multimodal (vision configs
   present) — irrelevant for text serving, worth knowing at Stage 3 wiring.
 - Persona factory (M0) built and committed: seed-reproducible sampler matching
