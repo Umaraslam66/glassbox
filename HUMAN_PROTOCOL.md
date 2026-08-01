@@ -440,45 +440,90 @@ from being cut to 400 by someone who read only the power line.**
 
 **N = 1,500 remains the primary design.** This subsection exists so that if the
 budget forces a cut, the cut is made with the trade-off written down in advance
-instead of argued about mid-field. It is the owner's reduced-bank sensitivity
-design — "bank" here meaning the bank of *answers* collected per item, not the
-120-item question pool, which does not shrink.
+instead of argued about mid-field.
 
-**The variant.** N ≈ 800 completed first visits (400 per arm). Probe pool
-J = 120 and k = 40 probe items per participant are **unchanged**. Retest and
-depth subsamples scale down with the panel (~150 retest invited, ~160 depth).
+**The variant.** N ≈ 800 completed first visits (400 per arm). Retest and depth
+subsamples scale with the panel (~150 retest invited, ~160 depth). Cutting the
+panel to 800 shrinks each 5-fold calibration set from 1,200 participants to
+**640**, and that is what forces a choice: **answers per probe item = 640 × k / J**,
+so at the standard k = 40 and J = 120 it falls to **213**, well under the
+~300 floor of §3.6 point 1. Two knobs can be turned to respond — the probe pool
+**J** and the probe items per person **k** — and they trade against different
+things. Pick one deliberately.
 
-**What it preserves: the primary test.** 400 per arm is well above the 250 the
-primary endpoint needs. Reading off the panel-size table above, N = 400 sits
-between the 250 and 500 rows: SE(lift) ≈ 0.017, minimum detectable lift at 90%
-power ≈ 8.4–8.8%, power at the 9% design point ≈ 0.92–0.95. Endpoint E1 stays
-confirmatory and is still powered against the 3% floor. This is the whole point
-of §3.6's headline — panel size is not the binding constraint on this endpoint.
+The options, all on the scripted arm that carries the primary endpoint, computed
+from the same variance model as the §3.6 tables, against `H₀: lift ≤ 3%`,
+α = 0.025 one-sided:
 
-**What it gives up: per-fold item calibration.** With 5-fold cross-fitting each
-calibration set holds ~640 participants instead of 1,200. At k = 40 from a
-120-item probe pool that is **~213 answers per probe item** (down from 400), and
-at 12 calibration items from a 40-item interview pool **~192 per interview-pool
-item** (down from 360). Both sit **below the ~300-answers floor** named in
-point 1 above, under which thresholds go unstable. That is not a cosmetic loss:
-unstable item parameters are the exact failure mode Gate 4 measured, where
-thresholds predicted from item text alone collapsed the lift to 2.7%
-(`results/stage4_gate4.json`, `model_text_thresholds` arm). The cheap design
-therefore risks funding a study whose item parameters are too noisy to deliver
-the effect it is powered to detect. **If this variant is chosen, pre-register a
-calibration-stability check** (split-half reliability of fitted thresholds per
-fold) and report it beside E1, so a null result can be attributed correctly.
+| Option | Scripted arm | J | k | Answers per probe item | SE | Min detectable lift @90% | Power at 9% |
+|---|---|---|---|---|---|---|---|
+| **(A) breadth-preserving** | 400 | 120 | 40 | 213 ✗ under floor | 0.0170 | 8.5% | 0.94 |
+| **(B) calibration-preserving** | 400 | **80** | 40 | **320 ✓** | 0.0201 | 9.5% | **0.85** |
+| (B′) smallest pool clearing the floor | 400 | 85 | 40 | 301 ✓ | 0.0196 | 9.3% | 0.87 |
+| **(C) longer-session** | 400 | 120 | **60** | **320 ✓** | 0.0167 | 8.4% | **0.95** |
+| *reference: primary design, N = 1,500* | *750* | *120* | *40* | *400* | *0.0162* | *8.3%* | *0.96* |
 
-**What it also gives up.** Pre-registered subgroup analyses (age band,
-education, region) drop below usable precision; treat them as descriptive only.
-The retest subsample thins to ~150 completions, which widens the E1c
-retest-corrected interval.
+**(A) Hold the pool at J = 120 — keeps probe breadth, loses the floor.**
+Calibration falls to 213 answers per probe item and ~192 per interview-pool item
+(12 calibration items from a 40-item pool), both under ~300, where thresholds go
+unstable. That is not cosmetic: unstable item parameters are the exact failure
+mode Gate 4 measured, where thresholds predicted from item text alone collapsed
+the lift to 2.7% (`results/stage4_gate4.json`, `model_text_thresholds` arm). The
+primary test itself is comfortable (power 0.94). **Choose this when probe breadth
+and the near/same-domain/far curve are the priority**, and pre-register a
+**calibration-stability check** (split-half reliability of fitted thresholds per
+fold) reported beside E1, so a null can be attributed correctly.
 
-**Do not take the saving out of the item pool instead.** Cutting J is the one
-cut that hits the confirmatory claim directly: at J = 80 the minimum detectable
-lift rises to 9.3% and power at the 9% design point falls to 0.87; at J = 60,
-to 0.77 (probe-pool table above). Fewer people costs calibration; fewer distinct
-questions costs the primary test itself.
+**(B) Shrink the probe pool to J = 80 — keeps the floor, costs breadth and
+power.** 640 × 40 / 80 = **320 answers per probe item**, clear of the floor. The
+exact crossing is J = 85.3, so 80 is the nearest size that both clears the floor
+and keeps the frozen stratification proportions intact: the §4.2 split of
+near 30 / same-domain 45 / far 45 becomes **near 20 / same-domain 30 / far 30**.
+Stratum resolution drops with it — E8 (per-stratum lift, far ≥ near) is already
+report-only with no bar, and in this form it becomes frankly descriptive, since
+the near cell that carries the comparison holds 20 items. Interview-pool
+calibration is untouched by J and stays at ~192, so the calibration-stability
+check is still required here.
+
+**Flagged for the owner, because the two constraints collide.** At N ≈ 800 with
+k = 40, **no probe-pool size satisfies both the ~300-answers calibration floor
+and the 0.90 power target.** Clearing the floor needs J ≤ 85; at J = 85 power at
+the 9% design point is 0.87 and the minimum detectable lift is 9.3% — *above the
+9% effect the study is designed around*. So option (B) buys stable item
+parameters by accepting a primary test that is no longer powered to its own
+design effect. That is a real trade, not a rounding error, and it should be
+signed off explicitly rather than discovered in the field.
+
+**(C) The way out, if the budget can carry it: keep J = 120 and raise k to 60.**
+Answers per probe item = 640 × 60 / 120 = **320**, clearing the floor without
+touching the pool, and the primary test *improves* (SE 0.0167, power 0.95),
+because more probe answers per person shrink the residual term. The cost is
+session length: 87 closed items per participant instead of 67, roughly 7–10
+minutes longer on a ~25-minute session, which raises the per-complete rate in the §2 cost table and
+increases satisficing risk (§5.2 quality rules become load-bearing). **If the
+panel rates make this affordable, it dominates both (A) and (B)** — it is the
+only N ≈ 800 form that holds the calibration floor, full probe breadth, and 90%
+power at once.
+
+**Recommendation.** Prefer **(C)** if session length is purchasable. If it is
+not, take **(B)**: a study with trustworthy item parameters and an honestly
+under-powered primary test is more salvageable than one with good power and
+thresholds too noisy to deliver the effect. Take **(A)** only when the
+generalisation curve across near/same-domain/far is the point of the study.
+
+**Whichever is chosen, do not cut J below 80, and do not cut it at N = 1,500 at
+all.** Cutting the pool is the one cut that hits the confirmatory claim
+directly: at J = 60 power at the 9% design point is 0.77, at J = 40 it is 0.60
+(probe-pool table above). Fewer people costs calibration; fewer distinct
+questions costs the primary test itself. §3.6's headline still holds — panel
+size is not the binding constraint on this endpoint, the number of distinct
+questions is — which is exactly why shrinking J to protect calibration has to be
+a deliberate, signed-off trade rather than a quiet economy.
+
+**What the cheaper variant gives up in every form.** Pre-registered subgroup
+analyses (age band, education, region) drop below usable precision; treat them as
+descriptive only. The retest subsample thins to ~150 completions, widening the
+E1c retest-corrected interval.
 
 ### 3.7 Assumptions, listed
 
