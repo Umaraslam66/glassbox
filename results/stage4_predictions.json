@@ -32,7 +32,7 @@
       "topic one-hot",
       "reduced embeddings (16)"
     ],
-    "embedding_source": "/Users/umaraslam/Projects/GLASSBOX/data/runs/stage3_qwen/item_embeddings.npz",
+    "embedding_source": "data/runs/stage3_qwen/item_embeddings.npz",
     "embed_components": 16,
     "likert_head": {
       "n_train_items": 133,
@@ -82,15 +82,15 @@
     "seed": 2026
   },
   "inputs": {
-    "fit": "/Users/umaraslam/Projects/GLASSBOX/results/stage2_v2_fit.npz",
-    "fused": "/Users/umaraslam/Projects/GLASSBOX/results/stage3_person_fused.npz",
-    "item_predictions": "/Users/umaraslam/Projects/GLASSBOX/data/runs/stage3_qwen/item_encoder_predictions.npz",
-    "answers": "/Users/umaraslam/Projects/GLASSBOX/data/runs/full_sweep_v2/answers_noised.jsonl",
-    "bank": "/Users/umaraslam/Projects/GLASSBOX/data/public/bank_items.json",
-    "embeddings": "/Users/umaraslam/Projects/GLASSBOX/data/runs/stage3_qwen/item_embeddings.npz"
+    "fit": "results/stage2_v2_fit.npz",
+    "fused": "results/stage3_person_fused.npz",
+    "item_predictions": "data/runs/stage3_qwen/item_encoder_predictions.npz",
+    "answers": "data/runs/full_sweep_v2/answers_noised.jsonl",
+    "bank": "data/public/bank_items.json",
+    "embeddings": "data/runs/stage3_qwen/item_embeddings.npz"
   },
   "artifacts": {
-    "predictions": "/Users/umaraslam/Projects/GLASSBOX/results/stage4_predictions.npz"
+    "predictions": "results/stage4_predictions.npz"
   },
   "runtime_seconds": 1.0836100578308105
 }

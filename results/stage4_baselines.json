@@ -248,13 +248,13 @@
     "interview_items": 15
   },
   "inputs": {
-    "fit": "/Users/umaraslam/Projects/GLASSBOX/results/stage2_v2_fit.npz",
-    "transcripts": "/Users/umaraslam/Projects/GLASSBOX/data/runs/interview_v1/transcripts.jsonl",
-    "answers": "/Users/umaraslam/Projects/GLASSBOX/data/runs/full_sweep_v2/answers_noised.jsonl",
-    "bank": "/Users/umaraslam/Projects/GLASSBOX/data/public/bank_items.json"
+    "fit": "results/stage2_v2_fit.npz",
+    "transcripts": "data/runs/interview_v1/transcripts.jsonl",
+    "answers": "data/runs/full_sweep_v2/answers_noised.jsonl",
+    "bank": "data/public/bank_items.json"
   },
   "artifacts": {
-    "baselines": "/Users/umaraslam/Projects/GLASSBOX/results/stage4_baselines.npz"
+    "baselines": "results/stage4_baselines.npz"
   },
   "runtime_seconds": 0.5665221214294434
 }
