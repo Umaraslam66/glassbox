@@ -1,5 +1,8 @@
 # Stage 6 notes (forward-looking only — nothing here is actioned before Stage 6)
 
+Superseded by results/REPORT.md; retained as provenance — these findings were
+banked, with commit timestamps, before the report existed.
+
 Recorded 2026-07-31, on owner instruction at the Gate 2 fix round.
 
 The Stage 6 HUMAN_PROTOCOL will include, alongside the pre-registered new-panel
