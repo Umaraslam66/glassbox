@@ -585,7 +585,7 @@ that capped Gates 2–3 largely drops out. These bars are meant to be
 passable at full strength.
 
 Probe stratification verified frozen and committed with the Stage-2
-splits (commit 2ea1f72, seed 2026): near 13 / same-domain 19 / far 18
+splits (commit 482d54a, seed 2026): near 13 / same-domain 19 / far 18
 over the 50 held-out items. No fix needed.
 
 Confirmatory path: held-out persona → N=15 fused transcript θ̂ (Stage 3
@@ -1007,9 +1007,9 @@ hashes cited there):
 WHAT: the noise layer's system-side output carried the responder's
 pre-noise answer under a "raw" field — the noise was undoable
 cell-by-cell for anyone reading the file. Committed 2026-07-31
-03:37:58 (7a687e5), first confirmatory materialization 04:04:17
+03:37:58 (fc69cd6), first confirmatory materialization 04:04:17
 (full_sweep), stripped on disk 14:29:45 and fixed in code 14:32:56
-(a9244ba). Window: 10 h 54 min. The damning detail, recorded as such:
+(7a8b2eb). Window: 10 h 54 min. The damning detail, recorded as such:
 the leaking commit's own tests ASSERTED the field survived — the
 schema was written down, tested, and wrong.
 
