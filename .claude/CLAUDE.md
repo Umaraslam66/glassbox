@@ -19,7 +19,7 @@ You are the **orchestrator, reviewer, and decision-maker only**. You are token-e
 ## Leonardo EuroHPC
 
 - Access via the provided socket; usage instructions are in the how-to-Leonardo file the user will add — read it before first use.
-- Create a new folder for this project inside the `548` project space. Keep everything there.
+- Create a new folder for this project inside the owner's allocation workspace. Keep everything there.
 - GPU jobs: nodes are billed whole. **Any long training run must use 4 GPUs of the node with distributed training** — never a 1-GPU job on a full node. Short debugging runs excepted; prefer CPU/login-appropriate resources for non-GPU work.
 - Prefer better CPU/memory allocations when the task doesn't need A100s.
 
@@ -41,3 +41,4 @@ You are the **orchestrator, reviewer, and decision-maker only**. You are token-e
 - Bars in PREREGISTRATION.md are frozen; label anything else exploratory.
 - Log API/compute cost per experiment.
 - When a result looks surprisingly good, your first move is to hunt for leakage (contamination, split violation, distractor weakness), not to celebrate.
+- Wall incidents are surfaced in the gate report of the stage where they occur, never first in a summary.

@@ -222,3 +222,30 @@ Every experiment logs compute (Leonardo core-hours) and API cost in
   development tools only and never appear in reported confirmatory numbers.
 - Predictor and MIRT fitting: pure Python statistical code, no LLM.
 - Anthropic models are never used for simulating humans or grading.
+
+---
+
+## Amendment — 2026-08-01: infrastructure identifier redaction (redaction only)
+
+This document is frozen. Frozen means the science is frozen, not the cluster id.
+Before public release the owner ordered infrastructure identifiers stripped from
+the release tree. This amendment records that sweep.
+
+**Strings redacted across the release tree** (PRD.md, `.claude/CLAUDE.md`,
+`results/COSTS.md`):
+
+1. The project-space / allocation identifier written as `` `548` project space ``,
+   "project folder under 548", and "this project's folder under `548`" — replaced
+   with "the owner's allocation workspace".
+2. The sibling project folder name — replaced with "a sibling project
+   on the same cluster".
+
+**This file itself required no string replacements.** The only occurrence of the
+number 548 in this document is `seed-base 548` in §5, which is the frozen random
+seed, not an allocation id. It stays, unchanged, as do all other 548 seed uses in
+`src/`, `tests/`, and `experiments/`. The generic names "Leonardo" and "EuroHPC"
+also stay.
+
+**Nothing scientific changed.** No hypothesis, no gate, no bar, no analysis
+choice, no baseline, no seed, no number in this document was touched by this
+amendment. It is a text redaction of infrastructure identifiers and nothing else.

@@ -13,7 +13,7 @@ accordingly if it is ever used for bulk development calls.
 | 2026-07-30 | 0 | OpenRouter fallback verification (1 trivial call) | qwen/qwen3.7-flash API, 17 in / 178 out tokens (reasoning model) | ≈$0.00 |
 | 2026-07-30 | 0 | Gemma smoke test on Leonardo (job 51068113, 1 node × 10m46s, boost_qos_dbg) | 5.74 core-hours | 5.74 core-h |
 | 2026-07-30 | 1 | Question bank generation (252 closed + 20 open items, 108 drafting calls) | gemini-3.5-flash-lite API, ~44k in tokens | ≈$0.02 |
-| 2026-07-30 | 1 | Qwen3.6-27B copy [sibling-project] → glassbox (login-node I/O, no jobs) | none billed | 0 |
+| 2026-07-30 | 1 | Qwen3.6-27B copy from a sibling project on the same cluster → glassbox (login-node I/O, no jobs) | none billed | 0 |
 | 2026-07-31 | 1 | Gemma card writing, 500 personas (job 51146579, 1 node × 11m17s) | 6.02 core-hours | 6.02 core-h |
 | 2026-07-31 | 1 | Card retry for 6 leak-rejected personas (job 51150672, 1 node × 9m26s) | 5.03 core-hours | 5.03 core-h |
 | 2026-07-31 | 1 | Temperature pilot, attempt 1 — p0314 card rendered, both answer sweeps died on leaked GPU memory (job 51171292, 1 node × 10m40s) | 5.69 core-hours | 5.69 core-h |
