@@ -1042,3 +1042,41 @@ occur, never first in a summary. This incident is the rule's origin:
 the breach was fixed honestly mid-Stage-2 and logged, but no Gate 2
 report carried it as an incident, and it surfaced first in a
 release-facing summary.
+
+## 2026-08-01 — History rewrite executed; repo set PRIVATE; residual exposure flagged
+
+Owner-approved rewrite run 2026-08-01 (filter-repo 07:29, force-push
+~20:14 CEST; full mirror backup taken first and retained off-repo).
+Purged from all blob contents and commit messages: the owner email,
+the allocation id, the cluster workspace paths, and the sibling
+project folder name (an addition to the owner's named list, for
+consistency with the tree redaction). The frozen seed 548 and generic
+"Leonardo" mentions untouched. 103 commits mapped 1:1; all 7
+doc-cited hashes updated across PROJECT_LOG and REPORT (21 citations,
+machine-verified to resolve on the new history). Fresh-clone scan of
+every blob of every commit (287 blobs, 13.8 MB, 4 literals + 9
+key-shape regexes): ZERO hits; the same scanner against the retained
+backup mirror still finds the originals, proving the method.
+
+DISCOVERED AND ESCALATED: (1) the repo was PUBLIC, contrary to the
+owner's standing "stays private" instruction — set to PRIVATE by the
+orchestrator on 2026-08-01, implementing that instruction; owner
+flips it public when ready. (2) GitHub retains force-pushed-away
+commits as dangling objects fetchable by SHA (verified live: an old
+PRD blob with the pre-redaction strings still returns 200 by SHA);
+the branch-level redaction is complete but the platform-level purge
+needs a GitHub Support GC request or a delete-and-recreate of the
+repo — owner decision, listed at Gate 6. (3) Author/committer
+METADATA on all 105 commits still carries the owner email (left per
+the rewrite's scope: blob contents only); (4) the owner's local home
+path remains in two historical result-JSON blobs. Both are one-line
+additions to the replace rules if a second rewrite is bundled with
+the GC/recreate — recommended to do together.
+
+Release pass (fresh clone from GitHub, README followed literally):
+one friction found and fixed — the README quickstart omitted
+matplotlib, a hard dependency of the suite (commit on the new
+history). Fresh clone without data/: 706 passed, 20 skipped (all
+proper skip-if-missing), 0 failed; dashboard serves, six-gate
+Overview renders, degrades correctly without data. Main repo with
+data: 726 passed, 0 failed. Local == origin, clean tree.
