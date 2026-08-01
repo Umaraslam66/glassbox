@@ -51,12 +51,14 @@ data/           generated people, transcripts, planted truth (never committed)
 
 ## Running it
 
-Python 3.11 or newer. Dependencies: `numpy` and `pytest`. The dashboard adds
-`streamlit` (which brings `altair` and `pandas`); nothing outside `app/` needs it.
+Python 3.11 or newer. Dependencies: `numpy`, `matplotlib` and `pytest`. Matplotlib is
+what the graders use to write the PNG beside every metrics JSON, so the test suite needs
+it too. The dashboard adds `streamlit` (which brings `altair` and `pandas`); nothing
+outside `app/` needs it.
 
 ```bash
 python3 -m venv .venv
-./.venv/bin/pip install numpy pytest streamlit
+./.venv/bin/pip install numpy matplotlib pytest streamlit
 ./.venv/bin/python -m pytest tests/ -q
 ```
 
