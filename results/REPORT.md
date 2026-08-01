@@ -691,7 +691,7 @@ GPU cost, and recorded as an addendum in `PREREGISTRATION.md` section 5. Frozen 
 b = 4.0, T_noise = 16, temperature 0.7, seed base 548, and never touched again.
 
 The honest consequence, also recorded: this is a mechanical noise layer, not human
-psychology. See section 6.1.
+psychology. See section 7.1.
 
 ### 5.6 A Wall breach found mid-stage and closed
 
@@ -701,6 +701,10 @@ psychology. See section 6.1.
 system side. It was stripped, the layer was patched, and a **field-level** Wall test was
 added on top of the existing import-level test. The Wall suite now parses every Python file
 in the repo on every commit and also checks artifact fields.
+
+This is the only entry in this section with its own section. **Section 6, "Wall incident
+report", is the full write-up**: what leaked, for how long, which code could see it, which
+numbers were computed while it was visible, and the re-runs that show none of them moved.
 
 ### 5.7 A staging mistake that cost 4.60 core-hours
 
@@ -755,9 +759,207 @@ cases both readings are stored in the result file so the call can be re-made by 
 
 ---
 
-## 6. Limitations
+## 6. Wall incident report
 
-### 6.1 The inconsistency is mechanical, not psychological
+*Ordered by the owner as a blocking Gate-6 item. Summary in section 5.6; PROJECT_LOG,
+"Stage 2 run: Gate 2 FAILS 2 of 4 bars" ("Mid-stage Wall fix").*
+
+**Conclusion, up front: the breach touched nothing confirmatory in the final record.** Two
+confirmatory artifacts were computed while the leaked field was on disk, both were
+superseded by v2 re-runs that post-date the fix, and both have now been recomputed on the
+stripped file and reproduce **bit-identically** — the fit's 31 arrays and every value in the
+Gate-1 report. The evidence is (c) and (d) below.
+
+### 6.1 Timeline
+
+| when | commit | what happened |
+|---|---|---|
+| 2026-07-30 23:34:53 | `3287299` | `src/interview/parse_answers.py` starts writing `answers.jsonl` records as `{pid, item_id, round, answer, raw}`, where `raw` is the responder's verbatim completion. This file is **truth-side** and this is legitimate. |
+| 2026-07-31 03:35:31 | — | **First materialization.** The noise layer is run on the tuning pilot, writing `data/runs/pilot3/answers_noised.jsonl` with `raw` still attached (its stats file `data/truth/runs/pilot3/noise_stats.json` carries the same timestamp). |
+| 2026-07-31 03:37:58 | `7a687e5` | **Leak committed.** `src/personas/noise_layer.py` lands. `apply_noise` copies every input key except `logprobs`, so `raw` — the *pre-noise* answer — passes straight through into the system-side output. |
+| 2026-07-31 04:04:17 | — | **First confirmatory materialization.** `data/runs/full_sweep/answers_noised.jsonl` (141,000 records, full-sweep job 51200138). Gate 1 v1 QA is computed from it in the same second. |
+| 2026-07-31 14:26:00 | — | Stage 2 v1 MIRT fit runs against the same file. |
+| 2026-07-31 14:29:45 | — | **Both files stripped on disk** (`full_sweep` and `pilot3` rewritten). |
+| 2026-07-31 14:32:56 | `a9244ba` | **Fix committed** — "Stage 2: MIRT fit, recovery grader, results; close raw-field Wall hole". |
+| 2026-07-31 17:26:44 | `fbaa215` | The Stage-3 re-noising path (`draw_round`) is added with the same strip built in from the start, plus its own test. |
+
+**Exposure window: 2026-07-31 03:35:31 to 14:29:45 — 10 hours 54 minutes.**
+
+The before/after is one line in `apply_noise`:
+
+```python
+# 7a687e5
+record = {k: v for k, v in row.items() if k != "logprobs"}
+
+# a9244ba
+# "raw" is the pre-noise answer -- truth-side material that must not
+# reach the system-side output (Wall rule; see tests/test_wall.py).
+record = {k: v for k, v in row.items() if k not in ("logprobs", "raw")}
+```
+
+The honest part: this was not an unnoticed corner. The introducing commit's own unit tests
+**asserted the field survived** onto the system side —
+`assert set(out[0]) == {"pid", "item_id", "round", "answer", "raw"}`, and the same assertion
+again on the CLI's output rows. The fix had to flip two green tests. A schema was written
+down, tested, and wrong; nothing failed until someone re-read it.
+
+### 6.2 What was exposed, and whether anything consumed it
+
+**One field, in two files.** `raw` — a string holding the responder's verbatim pre-noise
+answer ("4", "no"). It matters because the layer *overwrites* `answer` when a noise event
+fires but left `raw` untouched, so a reader could have undone the injected inconsistency
+cell by cell. The files: `data/runs/full_sweep/answers_noised.jsonl` (141,000 records) and
+`data/runs/pilot3/answers_noised.jsonl` (16,920). No others existed —
+`data/runs/full_sweep_v2/`, `interview_v1/` and `rl_batch/` were all created after the fix.
+
+**Which system-side code could see it, and what it actually read.** At the last commit
+before the fix (`2ea1f72`, 13:56:47) `src/model/` held only `__init__.py`. The complete set
+of modules that open a noised answer file, then and now, is three — and **none of them reads
+`raw`**:
+
+- `src/eval/population_qa.py` — unchanged since `3287299`, so the code that ran the Gate-1 QA
+  is exactly today's code. It reads `str(row["pid"])`, `str(row["item_id"])`,
+  `str(row.get("round") or "main")` and `row["answer"]`, and nothing else.
+- `src/model/mirt.py::load_answers` — written during the window, run at 14:26:00. Reads
+  `record.get("round")`, `record["item_id"]`, `record["pid"]`, `record["answer"]`. Its
+  docstring names the hazard outright: *"Exactly one answer field is read (`answer`). Every
+  other field on the record is ignored on purpose: the file also carries the responder's
+  pre-noise string under `raw`, which is upstream material this side of the Wall has no
+  business fitting to."*
+- `src/eval/recovery.py::obedience_ceiling` — same four fields, for the model-free ceiling.
+
+**Verdict: exposure without consumption.** No code path read the field. Two more system-side
+inputs created in the window are clean by construction rather than by inspection —
+`src/eval/make_splits.py` and `src/eval/export_population_summary.py` take `--truth` and
+`--public` only and never open an answers file at all.
+
+### 6.3 Every confirmatory artifact computed inside the window
+
+This is the complete list of files written to `results/` or `experiments/` between the first
+materialization and the strip — nothing else was produced in those 10h54m.
+
+| artifact | written | read a leaked file? | status in the final record |
+|---|---|---|---|
+| `results/pilot3_noised_recommended_qa.json` | 03:35:31 | **yes** (pilot3) | Stage-1 tuning only, not confirmatory — no claim rests on it |
+| `results/full_sweep_raw_qa.json` | 04:04:04 | no — reads the truth-side un-noised `answers.jsonl` | the deliberate raw-vs-noised comparison; unaffected |
+| `results/full_sweep_qa.json` | 04:04:17 | **yes** | **Gate 1 v1, confirmatory.** Superseded by `full_sweep_v2_qa.json` (16:24:34) |
+| `results/population_summary.json` | 04:04:28 | no — truth + public bank only | still live; unaffected |
+| `experiments/splits_v1.json` | 13:55:25 | no — truth only | still live, and used by the v2 fit; unaffected |
+| `results/stage2_fit.npz`, `stage2_fit_diagnostics.json` | 14:26:00 | **yes** | **Gate 2 v1, confirmatory.** Superseded by `stage2_v2_fit.npz` (16:44:40) |
+| `results/stage2_recovery.json`, `stage2_heatmap.png` | 14:26:07 | **yes** | superseded by `stage2_v2_recovery.json` (16:45:23) |
+| `results/stage2_scatter.png` | 14:26:08 | **yes** | superseded by `stage2_v2_scatter.png` |
+
+**Two confirmatory artifacts, both superseded.** Nothing downstream reaches back to them:
+every Stage 3, 4 and 5 module and result file names `results/stage2_v2_fit.npz` and either
+`data/runs/full_sweep_v2/answers_noised.jsonl` or `data/runs/rl_batch/answers_noised.jsonl`
+— checked in the module defaults (`predictor.py`, `person_encoder.py`, `item_encoder.py`,
+`open_fusion.py`, `profile_baseline.py`, `stage4_baselines.py`, `episodes.py`, `gate3.py`,
+`rl_proxy_watch.py`) and in the provenance blocks of `stage3_person_backbone.json`,
+`stage3_item_encoder.json`, `stage3_gate3.json` and `stage5_strategies.json`. All three of
+those input files were created after 14:29:45.
+
+### 6.4 Re-runs: old versus new
+
+Both artifacts produced under the breach were recomputed on the now-stripped file. Local
+CPU, about two minutes total, zero GPU, zero API.
+
+**Gate 1 v1 QA — byte-identical.** `population_qa.py` has not changed since `3287299`, so
+this is the same code on the same inputs minus the leaked field.
+
+| Gate 1 bar | recorded (04:04:17, under the breach) | re-run (stripped file) |
+|---|---|---|
+| max pairwise agreement | 0.746032 | **0.746032** |
+| median pairwise agreement | 0.388889 | **0.388889** |
+| participation ratio | 29.363186 | **29.363186** |
+| trait obedience, median | 0.826676 | **0.826676** |
+| pooled test–retest | 0.7934 | **0.7934** |
+
+Not just the headline five: a leaf-by-leaf comparison of the whole report gives **0 differing
+values**.
+
+**Stage 2 v1 fit — bit-identical.** Re-run with the recorded configuration (dims 8, ridge
+0.01, seeds 0/1/2, `--max-iters 6000`); 57.6 s. `mirt.py`'s only change since `a9244ba` is the
+`--out-prefix` flag (`6cd5d82`), which touches filenames, not numerics.
+
+- All **31 arrays** in `stage2_fit.npz` compare equal (NaN-aware).
+- Every value in `stage2_fit_diagnostics.json` matches; the only differences are wall-clock
+  `seconds` fields.
+
+**Gate 2 v1 grading — all four frozen bars reproduce to full float precision.**
+
+| Gate 2 bar | recorded | re-run |
+|---|---|---|
+| trait recovery (worst dimension, SOC) | 0.7806625269284982 | **0.7806625269284982** |
+| item recovery (median per-item r) | 0.9247967944602787 | **0.9247967944602787** |
+| blur honesty (pooled coverage) | 0.33875 | **0.33875** |
+| weak-item ordering | 0.8368055555555556 | **0.8368055555555556** |
+
+26 leaves elsewhere in the report do differ, and every one is a **truth-side** edit made
+*after* Gate 2 v1, not an answer-side change: `data/truth/bank_truth.json` was rewritten at
+15:07:20 to correct the q229/q234 designed labels (owner-ordered, section 5.1 / PROJECT_LOG
+"Gate 2 fix round"). Those two items' `designed_loading` flips 0.25 → −0.25 and their watch-
+list flag goes from "SIGN FLIPPED against the designed direction" to "ok"; the train-context
+item summary's minimum moves −0.794 → −0.053 for the same reason; the answer-matrix ceiling
+shifts in the fourth decimal on PRC and TEC because that statistic flips negatively-keyed
+items. Ten further "differences" are NaN-versus-NaN on five single-loading held-out items.
+None of them involves an answer.
+
+**What this proves.** The MIRT fit reads the answers file and nothing else that changed. If
+the `raw` column had influenced the fit by any route, deleting the column would move the
+numbers. It moves nothing — not the fourth decimal, not a single bit of a single array. That
+is the cleanest available evidence that the field was inert.
+
+### 6.5 The guard
+
+**File-level, pre-existing.** `tests/test_wall.py::test_run_directories_hold_no_raw_material`
+— no responder completions, prompts or un-noised answers anywhere under `data/runs/`. It
+passed throughout the breach, because the leaked file had a permitted *name*. That is the
+gap the incident exposed.
+
+**Field-level, added by the fix (`a9244ba`) and widened since.**
+`tests/test_wall.py::test_noised_answer_files_carry_only_the_allowed_fields` reads every
+record of every `data/runs/**/answers_noised.jsonl` and `answers_interview*.jsonl` from the
+outside and asserts the keys are a subset of the allowlist `{pid, item_id, round, answer}`.
+It also names `{raw, logprobs, logprob, completion, answer_raw, pre_noise}` explicitly, so a
+reintroduction of the original field fails with its own name in the message. (`a9244ba`
+shipped this as a denylist over `{raw, logprobs}`; it was turned into an allowlist during
+this investigation, because a denylist only catches fields somebody already thought of.)
+
+**Proven, not assumed.** Two probe files were dropped into `data/runs/` and the test run:
+
+- `{"pid", "item_id", "round", "answer", "raw"}` → FAILS: `has pre-noise field(s) ['raw']`.
+- `{"pid", "item_id", "round", "answer", "answer_before_noise"}` → FAILS:
+  `has unexpected field(s) ['answer_before_noise']`. The denylist version would have passed
+  this one.
+
+**Same class of check, elsewhere.** `test_transcripts_carry_only_the_allowed_fields`,
+`test_transcripts_name_nothing_that_belongs_to_the_planted_truth` and
+`test_transcript_open_answers_pass_the_leak_check` (added `fbaa215`) hold Stage-3 transcripts
+to their own allowlists at every depth.
+
+**Layer level.** `tests/test_noise_layer.py::test_layer_keeps_the_schema_and_drops_inline_logprobs`
+and `::test_cli_writes_answers_and_stats` are the two assertions that were flipped at
+`a9244ba` — they now assert `set(row) == {"pid", "item_id", "round", "answer"}`.
+`::test_draw_round_relabels_the_round_and_drops_truth_side_fields` covers the second strip
+site added at `fbaa215`.
+
+**State right now**, checked over every record of every file, not a sample:
+
+| file | records | fields present |
+|---|---|---|
+| `data/runs/full_sweep/answers_noised.jsonl` | 141,000 | `answer, item_id, pid, round` |
+| `data/runs/full_sweep_v2/answers_noised.jsonl` | 141,000 | `answer, item_id, pid, round` |
+| `data/runs/rl_batch/answers_noised.jsonl` | 141,000 | `answer, item_id, pid, round` |
+| `data/runs/pilot3/answers_noised.jsonl` | 16,920 | `answer, item_id, pid, round` |
+
+`data/runs/interview_v1/` holds no answer file at all — only `transcripts.jsonl`, which is
+covered by the transcript allowlist above. Nothing non-allowlisted anywhere.
+
+---
+
+## 7. Limitations
+
+### 7.1 The inconsistency is mechanical, not psychological
 
 Real people are inconsistent because they are ambivalent, tired, primed by the last
 question, or performing for an interviewer. Our people are inconsistent because a seeded
@@ -770,7 +972,7 @@ psychology model**. It has no memory, no order effects, no interviewer effects, 
 motivated reasoning. A real test-retest of 79% and our synthetic 79% are the same number
 for different reasons.
 
-### 6.2 Demographics carry zero trait signal here; on real people they do not
+### 7.2 Demographics carry zero trait signal here; on real people they do not
 
 Finding 3.2 in reverse. Our public profiles are informationally empty about traits, which
 made two things easy that would not be easy in reality. The lift-over-profile bar collapsed
@@ -779,7 +981,7 @@ with. **On real humans a profile-only baseline would be genuinely strong, and th
 would be harder to clear.** Do not read finding 3.7 as "LLMs are bad at people"; read it as
 "an LLM given a signal-free profile invents signal, and the invention costs you".
 
-### 6.3 One persona model family, one system model
+### 7.3 One persona model family, one system model
 
 Everything on the persona side is Gemma 4 31B. Everything confirmatory on the system side
 is Qwen3.6-27B. The Wall's family-split rule is satisfied, but the study has **n = 1 on
@@ -791,7 +993,7 @@ downstream story with it. Nothing here establishes that ~85% (measured median 0.
 0.770-0.871 across dimensions) is a general property of LLM persona rendering. It is what
 we measured, once, with one model, after one rewrite that moved it very little.
 
-### 6.4 The trait model is 8-dimensional and linear, and we can see its edge
+### 7.4 The trait model is 8-dimensional and linear, and we can see its edge
 
 The Gate 4 correlation failure is the resolution limit made visible: 66.9% of the
 oracle-to-model gap is the model class itself, and the full-information ceiling of that
@@ -802,14 +1004,14 @@ Also: the recovered between-trait correlation structure is compressed. The slope
 recovered on planted off-diagonals is 0.650 (section 5.4). Individual traits recover better
 than the relationships between them.
 
-### 6.5 The interview is short, scripted, and closed-form-dominated
+### 7.5 The interview is short, scripted, and closed-form-dominated
 
 Confirmatory results use N = 15 closed questions plus 3 open answers, frozen at split time.
 Gate 5's adaptive work is closed items only, on recorded distributions, by owner RULING 3 —
 no open prompts in the adaptive loop. So the efficiency result is about **selecting scored
 questions**, and says nothing about an interviewer that writes its own follow-ups.
 
-### 6.6 Recovery study, not prediction of humans
+### 7.6 Recovery study, not prediction of humans
 
 Restating section 1 because it is the limitation that matters most. Every number here is
 measured against truth we planted ourselves, in people we generated ourselves. **Nothing in
@@ -818,7 +1020,7 @@ two routes to that evidence — a pre-registered human panel, and a shallow-reso
 calibration replication on real survey responses — are specified in `HUMAN_PROTOCOL.md` at
 the repository root. They are a separate deliverable and are not tested here.
 
-### 6.7 Known instrument defects that were accepted, not fixed
+### 7.7 Known instrument defects that were accepted, not fixed
 
 Recorded so nobody rediscovers them as findings. Item q246 is answered "3" by all 500
 personas raw and is content-free. Item q044 is near-dead (488 of 500 answer "no" raw) and
@@ -832,7 +1034,7 @@ tests demographic realism.
 
 ---
 
-## 7. Costs
+## 8. Costs
 
 | Stage | GPU core-hours | Notes |
 |---|---|---|
