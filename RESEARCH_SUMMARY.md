@@ -41,7 +41,9 @@ result beat expectations, the first action was a documented leakage hunt, not a
 celebration. Four hunts fired; one found a real problem (the story-writing model entangles
 two traits we planted as unrelated), reported as a limitation rather than quietly fixed.
 The Wall itself was breached once, by a file carrying a pre-noise answer field into
-system-side view. It was caught, closed, and a new class of test added.
+system-side view. It was caught, closed, and a new class of test added. Full write-up in
+`results/REPORT.md`, section 6 "Wall incident report" — including the re-runs showing that
+the two numbers computed while the field was visible come back bit-identical without it.
 
 ## Five numbers
 
