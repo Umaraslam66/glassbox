@@ -358,8 +358,8 @@ collapses to 2.7% Brier lift (stage4_gate4.json -> arms.model_text_thresholds.br
 against arms.marginal.brier 0.08601). With thresholds fitted from training personas'
 answers and only the loadings zero-shot, the same predictor reaches 27.1%.
 
-Cold-start implication for any real product: you can guess what a new question measures,
-but you cannot guess how hard it is. That needs response data.
+Cold-start implication for anything built on this: you can guess what a new question
+measures, but you cannot guess how hard it is. That needs response data.
 
 ### 3.9 (banked, Gate 4) Aggregate prediction is dramatically easier than per-person prediction
 
@@ -449,8 +449,8 @@ spreads across **118 distinct items**
 (stage5_rl_proxy_watch.json -> gate5_harness_arms.heuristic.mean_distinct_items_used).
 
 So on this population, the value of "adaptive" interviewing is **question selection, not
-per-person branching**. A good fixed 25-question set captures nearly all of it. That is a
-cheaper product than a live adaptive loop, and it is directly testable on real people.
+per-person branching**. A good fixed 25-question set captures nearly all of it. That is
+far cheaper to build than a live adaptive loop, and it is directly testable on real people.
 (Past its training horizon the policy spreads out again — 152 distinct items by N=150.)
 
 This lines up with the exploratory note filed at Stage 3: a D-optimal 15-item set was
@@ -474,9 +474,9 @@ gap is 0.0242 at N=5 — and it favours the *deployable* policy. At N=25, the tr
 horizon, the difference is 0.0029 (computed from stage5_rl_proxy_watch.json and
 stage5_rl_exploratory_oracle_proxy_watch.json -> checkpoints[-1].truth_rmse_by_n).
 
-**Confidence-driven interviewing needs no truth signal.** For a real product this is the
-whole ballgame: you can train the thing that decides what to ask next without ever knowing
-the right answer.
+**Confidence-driven interviewing needs no truth signal.** Outside a study built like this
+one, this is the whole ballgame: you can train the thing that decides what to ask next
+without ever knowing the right answer.
 
 *(Number corrected in the log: a first report said +/-0.014; recomputation against the
 watch files gave +/-0.024, and the result file wins. Commit 74d4e88.)*

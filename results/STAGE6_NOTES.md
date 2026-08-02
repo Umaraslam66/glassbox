@@ -57,8 +57,8 @@ connect to Simile's confidence-model direction in the writeup.
 
 2. Item difficulty/thresholds cannot be predicted from question text
    alone (zero-shot thresholds collapse to 2.7% lift); they must be
-   learned from response data. Cold-start implication for any real
-   product.
+   learned from response data. Cold-start implication for anything
+   built on this.
 
 3. Aggregate prediction is dramatically easier than per-cell: population
    marginals r 0.983, cross-tabs r 0.967 while per-cell correlation sits

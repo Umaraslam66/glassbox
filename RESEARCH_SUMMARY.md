@@ -86,10 +86,10 @@ Same model, same predictions, three levels of aggregation:
 - Two-way cross-tabs across 1,225 question pairs: **r = 0.97**
 - Individual person-by-question probabilities: **r = 0.68** — the bar we failed (target 0.90).
 
-*Why it matters:* this is the number most likely to be misused. Synthetic-panel and
-digital-twin claims are almost always quoted at the aggregate level ("matches the real
-survey within 3 points"), which is the easy measurement. Individual accuracy is the hard,
-honest currency, and the gap is enormous.
+*Why it matters:* this is the number most likely to be misused. Our own aggregate numbers
+are near-perfect, and quoted alone they would have made this study look like a success.
+Aggregate agreement is the easy measurement; individual accuracy is the hard, honest
+currency, and the gap is enormous.
 
 We know why it failed and how far it could go. The ceiling for this kind of model — the
 full 202-question answer matrix *and* perfect item parameters — is 0.786, still below the
@@ -114,7 +114,7 @@ check what an untrained baseline does to the same proxy. And we trained a forbid
 using real answers as reward — the two stay within **0.0242** of each other at every
 interview length, and the forbidden version's best advantage anywhere is 0.0144, i.e.
 nothing. **You can train the thing that decides what to ask next without ever knowing the
-right answer.** That is the finding with the most direct product consequence here.
+right answer.** That is the finding with the most direct practical consequence here.
 
 One more, deflating in a useful way: the trained interviewer converged to a nearly **fixed**
 25-question order — 25 distinct questions across 500 different people, against 118 for the
@@ -135,7 +135,7 @@ Bars were frozen before anything ran and were not moved afterwards.
 
 Most failures are one thing seen five times. Bars graded against planted truth inherit the
 card-writing ceiling (number 3 above) and fail. Bars graded against the person's own
-answers — what Gate 4 does, and what a real product would do — pass at full strength. That
+answers — what Gate 4 does, and what any deployed system is graded on — pass at full strength. That
 pattern was predicted in writing before Gates 3, 4 and 5 ran, and held every time.
 
 The Gate 5 target being unreachable was flagged as a real possibility *before* that stage's

@@ -768,7 +768,7 @@ agreement is **0.006**, i.e. ±1.1 points at 95%. Ample.
 | **Above 90%** | Memory or order effects; the two visits are not independent measurements | Lengthen the gap, re-randomise more aggressively, re-run on a fresh subsample. Do **not** report E1c — the correction would be badly biased downward |
 | **70–90%** | Normal | Proceed |
 | **60–70%** | Noisy panel or noisy items | Report E1 as pre-registered; flag that the effect-size assumption (§3.3 factor 3) was optimistic and the achievable lift is lower for everyone, model and baseline alike. Identify whether the noise is concentrated in specific items and report per-item retest |
-| **Below 60%** | The panel or the instrument is not measuring stable attitudes | **The primary endpoint is not interpretable.** Report it anyway, with the retest number front and centre, and stop before drawing product conclusions |
+| **Below 60%** | The panel or the instrument is not measuring stable attitudes | **The primary endpoint is not interpretable.** Report it anyway, with the retest number front and centre, and stop before drawing any wider conclusions |
 
 Failing this band is a finding about the panel and the instrument, and it must
 be reported in the abstract, not in an appendix. A model cannot predict answers
@@ -829,8 +829,8 @@ recorded seed.
 
 **Why not a random-order arm?** GLASSBOX used random ordering as the reference
 because it could simulate it 51 times per persona at no cost. With real people
-you cannot. The scripted arm is the honest field comparator: it is what a
-company would actually deploy today.
+you cannot. The scripted arm is the honest field comparator: it is what would
+actually be run in the field today.
 
 ### 7.3 Questions-to-target, without planted truth
 
@@ -932,12 +932,12 @@ demographics carried essentially zero trait signal: the profile-only ridge
 baseline came in at +0.1% lift, indistinguishable from knowing nothing, and an
 LLM given demographics alone scored **−34.8%** — worse than predicting the
 population average, because its priors tilted per-person in error-adding
-directions. That is a clean negative worth carrying into any pitch, and it is
+directions. That is a clean negative worth stating up front, and it is
 also a population-realism limitation: real demographics do carry signal, so a
 demographics-only baseline will be genuinely harder to beat. Predicted: the
 demographics-only model gets 2–5% lift over the marginal, and the interview
 model beats it by 5 points. **If the interview does not beat demographics by a
-clear margin, the product case is weak regardless of E1.**
+clear margin, the practical case for interviewing is weak regardless of E1.**
 
 **E9b — a pre-registered expectation of failure.** The bar stays frozen at 0.6
 while the filed prediction is 0.42, following this project's own precedent: at
@@ -951,8 +951,8 @@ GLASSBOX's item encoder predicted loading *direction* well (cosine 0.861) and
 detector, not a graded predictor — dropping the weakest-fitted quintile
 collapsed the correlation to 0.231. And a clean negative worth repeating:
 **directly asking an LLM to rate how much people would disagree about an item
-predicted the fitted discrimination at r = −0.003.** Zero. Do not build a
-cold-start product on text-predicted item parameters.
+predicted the fitted discrimination at r = −0.003.** Zero. Do not bootstrap
+cold-start item parameters from question text alone.
 
 **E10 — aggregate numbers are cheap.** GLASSBOX predicted population marginals
 at r 0.983 and 1,225 two-way cross-tabs at r 0.967, while per-cell correlation
