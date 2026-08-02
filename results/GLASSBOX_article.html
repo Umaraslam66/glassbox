@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Answer Key Problem</title>
+<style>
+  @page {
+    size: A4;
+    margin: 19mm 20mm 17mm 20mm;
+    @bottom-center {
+      content: counter(page) " / " counter(pages);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 8pt;
+      color: #8a8a8a;
+    }
+  }
+
+  html { font-size: 10.6pt; }
+
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.52;
+    color: #1a1a1a;
+    hyphens: auto;
+    text-align: left;
+  }
+
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22.5pt;
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.35rem 0;
+  }
+
+  .standfirst {
+    font-size: 11.6pt;
+    line-height: 1.42;
+    color: #3d3d3d;
+    font-style: italic;
+    margin: 0 0 0.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1.5pt solid #1a1a1a;
+  }
+
+  .byline {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #6e6e6e;
+    margin: 0.55rem 0 1.2rem 0;
+  }
+
+  h2 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 11.4pt;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: #000;
+    margin: 1.25rem 0 0.4rem 0;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 9.6pt;
+    font-weight: 700;
+    color: #000;
+    margin: 0.85rem 0 0.25rem 0;
+    page-break-after: avoid;
+  }
+
+  p { margin: 0 0 0.62rem 0; orphans: 2; widows: 2; }
+
+  p.lead {
+    font-size: 11.1pt;
+    line-height: 1.46;
+  }
+
+  ol.steps {
+    margin: 0.3rem 0 0.7rem 0;
+    padding-left: 1.15rem;
+  }
+  ol.steps li { margin-bottom: 0.3rem; padding-left: 0.15rem; }
+
+  ul.plain { margin: 0.25rem 0 0.7rem 0; padding-left: 1.05rem; }
+  ul.plain li { margin-bottom: 0.28rem; }
+
+  .box {
+    border: 0.9pt solid #b9b9b9;
+    border-left: 3.5pt solid #1a1a1a;
+    background: #f6f5f2;
+    padding: 0.65rem 0.85rem 0.5rem 0.85rem;
+    margin: 0.9rem 0 1.05rem 0;
+    page-break-inside: avoid;
+  }
+  .box h3 {
+    margin: 0 0 0.4rem 0;
+    font-size: 8.4pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #000;
+  }
+  .box table { width: 100%; border-collapse: collapse; font-size: 9.1pt; }
+  .box td {
+    padding: 0.19rem 0;
+    vertical-align: baseline;
+    border-bottom: 0.4pt solid #dedbd4;
+  }
+  .box tr:last-child td { border-bottom: none; }
+  .box td.n {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    white-space: nowrap;
+    width: 30%;
+    padding-right: 0.7rem;
+  }
+  .box td.good { color: #17603a; }
+  .box td.bad  { color: #8f2020; }
+
+  .pull {
+    font-size: 11.2pt;
+    line-height: 1.36;
+    font-style: italic;
+    color: #000;
+    border-top: 0.9pt solid #1a1a1a;
+    border-bottom: 0.9pt solid #1a1a1a;
+    padding: 0.5rem 0;
+    margin: 0.9rem 0 0.95rem 0;
+    page-break-inside: avoid;
+  }
+
+  .kicker { font-weight: 700; }
+
+  .footer-note {
+    margin-top: 1.3rem;
+    padding-top: 0.55rem;
+    border-top: 0.9pt solid #cfcfcf;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 8.3pt;
+    line-height: 1.45;
+    color: #5c5c5c;
+  }
+</style>
+</head>
+<body>
+
+<h1>The answer key problem</h1>
+<p class="standfirst">Can an AI interview someone for ten minutes and then answer a survey as them? We built a way to actually grade that question — by inventing 500 people whose minds we wrote down first — and then graded our own system honestly, failures included.</p>
+<p class="byline">Project GLASSBOX &nbsp;·&nbsp; A plain-language report</p>
+
+<h2>1. Nobody can check the homework</h2>
+
+<p class="lead">We wanted to know whether a short interview — fifteen survey questions and three written answers — is enough for an AI system to predict how one specific person would answer questions they were never asked. Not roughly, for a crowd: for that one person, with a stated confidence you could act on.</p>
+
+<p>The obstacle is that this question is normally impossible to grade. With a real person, nobody knows the right answers to the questions being skipped — that is the whole point of skipping them. To check whether the machine got <em>you</em> right, someone would have to go and ask you everything anyway, for hundreds of people, at real cost. And a second questionnaire would not settle it either: it is just another noisy measurement of you, not the truth.</p>
+
+<p>Without an answer key, “the system understands this person” is a sentence that cannot be wrong. We did not want to write that sentence. So the first thing we built was not the system — it was the answer key.</p>
+
+<h2>2. So we wrote the answer key first</h2>
+
+<p>We could not afford a panel of real humans. Instead we built 500 people whose insides we already knew, because we invented them.</p>
+
+<p>Each person begins as eight hidden numbers — how much they trust institutions, how much risk they’ll take, how sensitive they are to price, how comfortable they are with new technology, and so on. Those eight numbers are the truth about that person. We wrote them down and locked them away.</p>
+
+<p>Then we tested whether the system could find them again from nothing but a short conversation.</p>
+
+<p>The lock matters more than anything else here, so it is worth a sentence. The hidden numbers live in one folder, and exactly one piece of code is allowed to open it: the grader, at the very end. Everything else — the interviewer, the part that guesses the person, the part that predicts answers — is blind by construction. An automatic check reads every file in the project and refuses to run if anything but the grader so much as touches the truth. We also had the people played by one AI model family and the system tested by a different one, so the two sides could not be quietly agreeing with themselves.</p>
+
+<p>We call that the Wall. It was breached once, halfway through, by a file that carried a stray field across it. We caught it, closed it, wrote a new class of test, re-ran the affected numbers to prove they came back identical, and published the whole incident. It is in the report with timestamps.</p>
+
+<h2>3. How it actually worked</h2>
+
+<ol class="steps">
+  <li><span class="kicker">Eight dials.</span> Each of the 500 people gets a hidden setting on each of eight traits.</li>
+  <li><span class="kicker">A life story.</span> An AI writes each person a short biography from those dials — showing the traits, never naming them. Nobody downstream ever sees the dials.</li>
+  <li><span class="kicker">252 questions, in character.</span> The person answers a full survey as themselves, with realistic wobble built in: ask again and they give the same answer about 79% of the time, like a real respondent on a real Tuesday.</li>
+  <li><span class="kicker">A short interview.</span> The system on the other side gets only a public profile — age, job, size of city, household — plus 15 survey questions and 3 open-ended written answers. That’s it.</li>
+  <li><span class="kicker">A guess, with a stated margin.</span> From that, it estimates the eight dials and attaches an honest “how sure am I” to each one.</li>
+  <li><span class="kicker">Predictions on unseen questions.</span> It then predicts how the person would answer 50 questions nobody ever asked them.</li>
+  <li><span class="kicker">The grade.</span> We compare those predictions to what the person would really have said — and the guessed dials to the dials we planted.</li>
+</ol>
+
+<p>One rule ran through all of it: never report raw accuracy. Everything is measured against a deliberately stupid comparison — just predict the population average and ignore the person entirely. Getting survey questions “mostly right” is easy. Beating the version of yourself that knows nothing about the individual is the only score that means anything.</p>
+
+<div class="box">
+  <h3>The numbers at a glance</h3>
+  <table>
+    <tr><td class="n good">27% better</td><td>than knowing nothing about the person, when predicting answers to questions never asked.</td></tr>
+    <tr><td class="n good">Beats 24%</td><td>which is what you get from simply copying the people who answered most like them. Our margin over that shortcut is thin.</td></tr>
+    <tr><td class="n good">60% means 60%</td><td>when it says there’s a 60% chance of an answer, that answer happens about 60% of the time.</td></tr>
+    <tr><td class="n good">18 questions → 77%</td><td>15 survey questions plus 3 written answers get you 77% of what the full 200-question battery would tell you.</td></tr>
+    <tr><td class="n good">Half the questions</td><td>an interviewer that picks the next question intelligently hits the same accuracy in about half as many questions.</td></tr>
+    <tr><td class="n bad">15% lost</td><td>in the step where the dials become a life story. That loss caps every measurement taken against the hidden truth.</td></tr>
+    <tr><td class="n bad">75% → 36%</td><td>how often its stated margin actually contained the truth, from one answer of evidence to all of them. It gets more confident as it gets more wrong.</td></tr>
+    <tr><td class="n bad">0.68, not 0.90</td><td>person-by-person, question-by-question precision. We needed 0.90. We got 0.68. A person is more than eight dials.</td></tr>
+    <tr><td class="n bad">35% worse</td><td>than knowing nothing — what you get from an AI handed only someone’s demographics and asked to be them.</td></tr>
+  </table>
+</div>
+
+<h2>4. What worked</h2>
+
+<p><span class="kicker">The predictions beat ignorance by 27%.</span> Given 15 questions and 3 short written answers, the system predicted a stranger’s answers to questions it had never seen 27% better than the population-average baseline. It also beat the obvious shortcut — find the people who answered most like this one, and copy them — but only just: that shortcut alone gets 24%. Worth saying plainly, because a thin margin over a simple shortcut is exactly the kind of number that is easiest to leave out. We are leading with it instead.</p>
+
+<p><span class="kicker">Its confidence was honest.</span> When the system said 60%, it happened about 60% of the time. That sounds like a technicality. It isn’t: a prediction you can’t trust the confidence of is a prediction you can’t act on.</p>
+
+<p><span class="kicker">Short interviews are surprisingly enough.</span> Eighteen questions carried 77% of what the full 200-question battery knew about the same person. Seven per cent of the questions, three-quarters of the value.</p>
+
+<p><span class="kicker">And you can train the question-asker without an answer key.</span> We trained a system to choose which question to ask next, using nothing but its own sense of what it was still unsure about — no access to the truth, ever. Then we cheated on purpose and trained a forbidden version that could see the right answers. The two performed within a rounding error of each other. For anyone doing this where the answer key never exists — which is everywhere outside a study built like ours — that is the most useful result we have.</p>
+
+<h2>5. What didn’t</h2>
+
+<p><span class="kicker">The life-story step leaks about 15% of the signal.</span> When the dials became a biography, roughly a sixth of the information didn’t make it into the text. Nothing downstream can recover what never left the page. Every measurement we took against the hidden dials inherits that ceiling — and that single fact explains most of our failed targets. We measured the leak rather than assuming it, which is why we can say that.</p>
+
+<p><span class="kicker">The error bars go bad as evidence piles up.</span> This is our most uncomfortable result, and probably the most important. With one answer to go on, the system’s stated margin contained the truth about 75% of the time — roughly what it promised. With 15 answers, 65%. With the entire question bank, 36% — half of what it claimed.</p>
+
+<div class="pull">More data made the system more confident and no more correct. Its confidence was measured against the noise it could see, and was blind to the loss it couldn’t.</div>
+
+<p><span class="kicker">A person is more than eight dials.</span> Predicting <em>this</em> person on <em>this</em> question, we needed a precision of 0.90 and reached 0.68. We then measured the best this whole approach could ever do — full information, perfect settings — and it was 0.79. Still short. Two-thirds of the gap is simply that eight numbers cannot hold a person’s individual quirks. We reported the failure and the diagnosis; we did not move the target.</p>
+
+<p><span class="kicker">Demographics alone are worse than useless.</span> We handed an AI model nothing but “you are a 42-year-old teacher in a mid-sized city” and asked it to answer as that person. It did 35% <em>worse</em> than just predicting the population average. It invents a personality to go with the label, and the invention is noise. (Fair caveat: in our invented population, demographics genuinely carry no signal. With real people they carry some. But the direction of the result stands: a persona prompt is not a person.)</p>
+
+<h2>6. Three things worth keeping</h2>
+
+<h3>Crowds are easy. Individuals are the honest test.</h3>
+<p>The same model, the same predictions: at the level of “what percentage of the population picks option B”, agreement with the truth was 0.98 — near-perfect. At the level of “what will <em>this</em> person say”, 0.68. If we had graded ourselves on the crowd-level number alone, this study would have looked like a triumph. That is exactly why we graded at the individual level: it is the measurement that can actually fail, so it is the one that means something when it doesn’t.</p>
+
+<h3>Confidence built only on what you can see drifts into overconfidence.</h3>
+<p>Any pipeline with a lossy step in the middle — a summariser, a transcriber, a persona writer — will produce a system that is honest about the noise it observes and silent about the information it lost. On small samples it looks perfectly calibrated. As data accumulates it quietly stops being so. The only real fix is feedback anchored to the truth — which is exactly what we gave ourselves by inventing the people, and what almost no system in the wild ever has.</p>
+
+<h3>Most of the value of “adaptive” was just asking better questions.</h3>
+<p>Our trained interviewer halved the number of questions needed. Then we looked at what it was actually doing: across 500 different people it converged on essentially the same 25 questions in nearly the same order. It wasn’t branching per person; it had found a good fixed questionnaire. That is a much simpler thing to build than a live adaptive loop, and it is testable on real people tomorrow.</p>
+
+<h2>7. What this proves, and what it doesn’t</h2>
+
+<p>It says nothing about real humans. Every person in this study is invented, with traits we planted — that was the entire point, because you cannot grade a recovery without knowing what was there to recover. But no number here is evidence the system would find anything real in a real person. The study with actual humans is written, pre-registered, and has not been run.</p>
+
+<p>Our people are also inconsistent for mechanical reasons, not human ones: a noise layer resamples them. Real people waver because they’re ambivalent, tired, or nudged by the previous question. Same number, different cause. And all our people were written by one AI, and read by one other — the 15% leak measures those two, not a law of nature.</p>
+
+<p>What it does prove is narrower and, we think, more useful: that this kind of system <em>can</em> be graded, that most of what breaks is traceable to one measurable step, and that the confident-sounding version of our own results — the near-perfect crowd-level numbers — does not survive being asked for individual-level answers.</p>
+
+<h2>8. Why you can believe the failures</h2>
+
+<p>The pass marks were written down and frozen before a single measurement existed. Six of them were missed. Two more turned out to be unreachable in principle — and we said so and reported “undefined” rather than lowering the bar to something we could clear. None were moved. Every failure is in the report, most of them before the wins.</p>
+
+<p>Four times a result looked better than expected. Four times the first move was to hunt for a leak rather than celebrate. One of those hunts found a real problem — the story-writing AI quietly linked two traits we had planted as unrelated — and it is published as a limitation, not silently patched.</p>
+
+<p>That is the argument for trusting any of this. Not that the numbers are good; several of them aren’t. But that the scoring rules were fixed in advance, the answer key was locked away from everything that could have peeked at it, and the parts that failed are described in the same detail as the parts that worked.</p>
+
+<p class="footer-note">All figures come from the project’s result files and are reproduced with sources in the full technical report. Total compute for the study: about 129 core-hours and roughly two cents of API spend. The pre-registered human study is specified and unrun.</p>
+
+</body>
+</html>
