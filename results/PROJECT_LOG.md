@@ -1080,3 +1080,31 @@ history). Fresh clone without data/: 706 passed, 20 skipped (all
 proper skip-if-missing), 0 failed; dashboard serves, six-gate
 Overview renders, degrades correctly without data. Main repo with
 data: 726 passed, 0 failed. Local == origin, clean tree.
+
+## 2026-08-02 — PRD purged from history; article moved into results/
+
+Owner instruction: the internal build spec (PRD.md) does not belong in a
+public repository. Second history rewrite executed with git filter-repo
+(--invert-paths --path PRD.md): all 107 commits mapped 1:1, PRD.md absent
+from every tree in the new history, verified with a full-history path
+scan. The 7 doc-cited commit hashes were remapped to the new history
+(REPORT and this log) and machine-verified to resolve. PRD.md is kept as
+a local, gitignored file; the README pointer to it is removed. In-text
+mentions of "PRD section N" in code comments and this log are left as
+is — they reference the internal spec without exposing its contents.
+
+Also today, before the rewrite: the plain-language article was reworded
+to describe the work itself rather than industry claims, and the same
+product/company framing was removed from RESEARCH_SUMMARY, REPORT,
+HUMAN_PROTOCOL and STAGE6_NOTES (wording only, no numbers touched). The
+article now lives in the repo at results/GLASSBOX_article.{html,pdf}
+and is linked from the README.
+
+RESIDUAL EXPOSURE, unchanged from the 2026-08-01 entry and now covering
+this purge too: GitHub retains force-pushed-away commits as dangling
+objects fetchable by SHA — the pre-purge history including PRD.md
+remains reachable that way until a GitHub Support GC request or a
+delete-and-recreate of the repository. The repo is PUBLIC at the time
+of this entry. The open Gate 6 owner decision (Support GC vs
+delete-recreate, plus the bundled second redaction pass for commit
+metadata and home paths) is the remaining path to a complete purge.
