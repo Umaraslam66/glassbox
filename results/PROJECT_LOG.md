@@ -1108,3 +1108,13 @@ delete-and-recreate of the repository. The repo is PUBLIC at the time
 of this entry. The open Gate 6 owner decision (Support GC vs
 delete-recreate, plus the bundled second redaction pass for commit
 metadata and home paths) is the remaining path to a complete purge.
+
+## 2026-08-02 — Article published on Zenodo, DOI minted
+
+The plain-language article (results/GLASSBOX_article.pdf, md5
+3715b4a31688e47e96da3f527f2ca0d4) was deposited on Zenodo and
+published: DOI 10.5281/zenodo.21759587, CC-BY-4.0, author Umar Aslam,
+record linked back to this repository. The uploaded file's checksum
+matches the committed PDF byte for byte. Note: Zenodo records are
+permanent — files cannot be replaced after publish, only superseded by
+a new version under the same concept DOI; metadata remains editable.
