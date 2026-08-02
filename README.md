@@ -24,6 +24,7 @@ The Wall is the rule that keeps the study honest: the planted truth lives in one
 
 - `results/REPORT.md` — the findings, every gate's numbers, and the limitations.
 - `RESEARCH_SUMMARY.md` — the short version.
+- `results/GLASSBOX_article.pdf` — the plain-language article (no prior context needed).
 - `results/PROJECT_LOG.md` — the chronological map: what was run, when, what it showed, and which file holds each number. Read this first in a cold session. It links; it is never the source of truth for a number.
 - `results/COSTS.md` — compute and API spend, per experiment.
 - `HUMAN_PROTOCOL.md` — the pre-registered follow-up study on real people.
@@ -47,7 +48,7 @@ tests/
 data/           generated people, transcripts, planted truth (never committed)
 ```
 
-`PRD.md` is the build spec. `PREREGISTRATION.md` is the frozen contract: stages, hypotheses and numeric bars, signed off before Stage 1. `example.md` walks one persona through the whole pipeline with concrete numbers and is the fastest way to understand what this repo does.
+`PREREGISTRATION.md` is the frozen contract: stages, hypotheses and numeric bars, signed off before Stage 1. `example.md` walks one persona through the whole pipeline with concrete numbers and is the fastest way to understand what this repo does.
 
 ## Running it
 

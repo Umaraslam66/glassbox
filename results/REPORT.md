@@ -479,7 +479,7 @@ one, this is the whole ballgame: you can train the thing that decides what to as
 without ever knowing the right answer.
 
 *(Number corrected in the log: a first report said +/-0.014; recomputation against the
-watch files gave +/-0.024, and the result file wins. Commit 74d4e88.)*
+watch files gave +/-0.024, and the result file wins. Commit f4db09a.)*
 
 ### 3.13 The proxy-gaming watch fired, was chased down, and came back clean
 
@@ -733,7 +733,7 @@ killed at ~1,200 iterations; the 0.18 core-hours are logged because they were sp
 
 ### 5.9 A number that was wrong in the log and got corrected
 
-*PROJECT_LOG, commit 74d4e88.*
+*PROJECT_LOG, commit f4db09a.*
 
 The oracle-versus-deployable reward gap was first reported as +/-0.014. It failed
 recomputation against the watch files and is +/-0.024. The log was corrected rather than
@@ -774,24 +774,24 @@ Gate-1 report. The evidence is (c) and (d) below.
 
 | when | commit | what happened |
 |---|---|---|
-| 2026-07-30 23:34:53 | `d05eb46` | `src/interview/parse_answers.py` starts writing `answers.jsonl` records as `{pid, item_id, round, answer, raw}`, where `raw` is the responder's verbatim completion. This file is **truth-side** and this is legitimate. |
+| 2026-07-30 23:34:53 | `33f9b2a` | `src/interview/parse_answers.py` starts writing `answers.jsonl` records as `{pid, item_id, round, answer, raw}`, where `raw` is the responder's verbatim completion. This file is **truth-side** and this is legitimate. |
 | 2026-07-31 03:35:31 | — | **First materialization.** The noise layer is run on the tuning pilot, writing `data/runs/pilot3/answers_noised.jsonl` with `raw` still attached (its stats file `data/truth/runs/pilot3/noise_stats.json` carries the same timestamp). |
-| 2026-07-31 03:37:58 | `fc69cd6` | **Leak committed.** `src/personas/noise_layer.py` lands. `apply_noise` copies every input key except `logprobs`, so `raw` — the *pre-noise* answer — passes straight through into the system-side output. |
+| 2026-07-31 03:37:58 | `93abd3e` | **Leak committed.** `src/personas/noise_layer.py` lands. `apply_noise` copies every input key except `logprobs`, so `raw` — the *pre-noise* answer — passes straight through into the system-side output. |
 | 2026-07-31 04:04:17 | — | **First confirmatory materialization.** `data/runs/full_sweep/answers_noised.jsonl` (141,000 records, full-sweep job 51200138). Gate 1 v1 QA is computed from it in the same second. |
 | 2026-07-31 14:26:00 | — | Stage 2 v1 MIRT fit runs against the same file. |
 | 2026-07-31 14:29:45 | — | **Both files stripped on disk** (`full_sweep` and `pilot3` rewritten). |
-| 2026-07-31 14:32:56 | `7a8b2eb` | **Fix committed** — "Stage 2: MIRT fit, recovery grader, results; close raw-field Wall hole". |
-| 2026-07-31 17:26:44 | `dfd2e8f` | The Stage-3 re-noising path (`draw_round`) is added with the same strip built in from the start, plus its own test. |
+| 2026-07-31 14:32:56 | `7139637` | **Fix committed** — "Stage 2: MIRT fit, recovery grader, results; close raw-field Wall hole". |
+| 2026-07-31 17:26:44 | `5dba1fa` | The Stage-3 re-noising path (`draw_round`) is added with the same strip built in from the start, plus its own test. |
 
 **Exposure window: 2026-07-31 03:35:31 to 14:29:45 — 10 hours 54 minutes.**
 
 The before/after is one line in `apply_noise`:
 
 ```python
-# fc69cd6
+# 93abd3e
 record = {k: v for k, v in row.items() if k != "logprobs"}
 
-# 7a8b2eb
+# 7139637
 # "raw" is the pre-noise answer -- truth-side material that must not
 # reach the system-side output (Wall rule; see tests/test_wall.py).
 record = {k: v for k, v in row.items() if k not in ("logprobs", "raw")}
@@ -813,11 +813,11 @@ cell by cell. The files: `data/runs/full_sweep/answers_noised.jsonl` (141,000 re
 `data/runs/full_sweep_v2/`, `interview_v1/` and `rl_batch/` were all created after the fix.
 
 **Which system-side code could see it, and what it actually read.** At the last commit
-before the fix (`482d54a`, 13:56:47) `src/model/` held only `__init__.py`. The complete set
+before the fix (`dc7efa9`, 13:56:47) `src/model/` held only `__init__.py`. The complete set
 of modules that open a noised answer file, then and now, is three — and **none of them reads
 `raw`**:
 
-- `src/eval/population_qa.py` — unchanged since `d05eb46`, so the code that ran the Gate-1 QA
+- `src/eval/population_qa.py` — unchanged since `33f9b2a`, so the code that ran the Gate-1 QA
   is exactly today's code. It reads `str(row["pid"])`, `str(row["item_id"])`,
   `str(row.get("round") or "main")` and `row["answer"]`, and nothing else.
 - `src/model/mirt.py::load_answers` — written during the window, run at 14:26:00. Reads
@@ -863,7 +863,7 @@ those input files were created after 14:29:45.
 Both artifacts produced under the breach were recomputed on the now-stripped file. Local
 CPU, about two minutes total, zero GPU, zero API.
 
-**Gate 1 v1 QA — byte-identical.** `population_qa.py` has not changed since `d05eb46`, so
+**Gate 1 v1 QA — byte-identical.** `population_qa.py` has not changed since `33f9b2a`, so
 this is the same code on the same inputs minus the leaked field.
 
 | Gate 1 bar | recorded (04:04:17, under the breach) | re-run (stripped file) |
@@ -878,8 +878,8 @@ Not just the headline five: a leaf-by-leaf comparison of the whole report gives 
 values**.
 
 **Stage 2 v1 fit — bit-identical.** Re-run with the recorded configuration (dims 8, ridge
-0.01, seeds 0/1/2, `--max-iters 6000`); 57.6 s. `mirt.py`'s only change since `7a8b2eb` is the
-`--out-prefix` flag (`101d373`), which touches filenames, not numerics.
+0.01, seeds 0/1/2, `--max-iters 6000`); 57.6 s. `mirt.py`'s only change since `7139637` is the
+`--out-prefix` flag (`142e138`), which touches filenames, not numerics.
 
 - All **31 arrays** in `stage2_fit.npz` compare equal (NaN-aware).
 - Every value in `stage2_fit_diagnostics.json` matches; the only differences are wall-clock
@@ -916,12 +916,12 @@ is the cleanest available evidence that the field was inert.
 passed throughout the breach, because the leaked file had a permitted *name*. That is the
 gap the incident exposed.
 
-**Field-level, added by the fix (`7a8b2eb`) and widened since.**
+**Field-level, added by the fix (`7139637`) and widened since.**
 `tests/test_wall.py::test_noised_answer_files_carry_only_the_allowed_fields` reads every
 record of every `data/runs/**/answers_noised.jsonl` and `answers_interview*.jsonl` from the
 outside and asserts the keys are a subset of the allowlist `{pid, item_id, round, answer}`.
 It also names `{raw, logprobs, logprob, completion, answer_raw, pre_noise}` explicitly, so a
-reintroduction of the original field fails with its own name in the message. (`7a8b2eb`
+reintroduction of the original field fails with its own name in the message. (`7139637`
 shipped this as a denylist over `{raw, logprobs}`; it was turned into an allowlist during
 this investigation, because a denylist only catches fields somebody already thought of.)
 
@@ -934,14 +934,14 @@ this investigation, because a denylist only catches fields somebody already thou
 
 **Same class of check, elsewhere.** `test_transcripts_carry_only_the_allowed_fields`,
 `test_transcripts_name_nothing_that_belongs_to_the_planted_truth` and
-`test_transcript_open_answers_pass_the_leak_check` (added `dfd2e8f`) hold Stage-3 transcripts
+`test_transcript_open_answers_pass_the_leak_check` (added `5dba1fa`) hold Stage-3 transcripts
 to their own allowlists at every depth.
 
 **Layer level.** `tests/test_noise_layer.py::test_layer_keeps_the_schema_and_drops_inline_logprobs`
 and `::test_cli_writes_answers_and_stats` are the two assertions that were flipped at
-`7a8b2eb` — they now assert `set(row) == {"pid", "item_id", "round", "answer"}`.
+`7139637` — they now assert `set(row) == {"pid", "item_id", "round", "answer"}`.
 `::test_draw_round_relabels_the_round_and_drops_truth_side_fields` covers the second strip
-site added at `dfd2e8f`.
+site added at `5dba1fa`.
 
 **State right now**, checked over every record of every file, not a sample:
 
