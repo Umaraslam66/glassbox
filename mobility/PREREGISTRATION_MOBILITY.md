@@ -191,8 +191,12 @@ Fixed analysis choices:
   three frozen experiments (uniform travel-cost +10%, transit fare −20%,
   cordon charge on car commutes), each run as the same population re-asked
   under changed attributes with everything else fixed.
-- **Peak spreading metric (M4, fixed now):** share of arrivals in the peak
-  15 minutes, day 1 vs day 20 under congestion feedback.
+- **Peak spreading metric (M4, fixed now):** a day's peak-15-minute share =
+  the **maximum** share of that day's arrivals falling in any 15-minute
+  window (sliding, 1-minute steps). Defined as a per-day maximum on purpose:
+  if the whole peak merely shifts instead of flattening, a fixed window
+  would show a spurious fall; the sliding maximum only falls when arrivals
+  genuinely spread.
 
 ## 6. Bars per gate (DRAFT — frozen only at Gate M0 sign-off)
 
@@ -230,8 +234,9 @@ Fixed analysis choices:
   reappearance is a finding, not a failure.
 
 ### Gate M4 — dynamic mini-world + elasticities
-- **Peak spreading (bar):** the peak-15-minute arrival share falls by ≥ 20%
-  relative from day 1 to day 20 under congestion feedback.
+- **Peak spreading (bar):** the peak-15-minute arrival share (per-day
+  sliding maximum, §5) falls by ≥ 20% relative from day 1 to day 20 under
+  congestion feedback: S₂₀ ≤ 0.80 · S₁.
 - **Behavioral coherence (bar):** across travelers, day-to-day switching
   frequency correlates negatively with planted HAB (Spearman r ≤ −0.3), and
   lateness-risk exposure taken correlates negatively with planted SCH
@@ -262,18 +267,39 @@ retroactively. Reasoning tokens are part of the logged spend.
   exponential backoff, and a resumable sweep driver are mandatory before the
   first large run — the M0 pilot measured upstream shared-pool 429s outside
   our control (numbers in `results/m0_pilot_summary.json`).
-- **Traveler answering regime (M0 pilot finding; owner picks at the freeze):**
-  qwen3.7-flash with reasoning on costs ~$0.20 per 1k answers, runs at
-  ~0.29 req/s sustainable (a full-bank sweep ≈ 54 h wall-clock), and its
-  recorded answer-token distribution is degenerate (probability ≈ 1.0 after
-  reasoning). With reasoning off it costs ~$0.008 per 1k, a sweep fits in
-  hours, and the answer-token distribution has real spread. Orchestrator's
-  proposal: **cards written with reasoning on** (quality work, 400 calls);
-  **scenario answering with reasoning off** (volume work), with a small
-  pre-declared reasoning-on obedience comparison inside Stage M1 tuning. If
-  the owner instead prioritizes deliberating agents for GATSim
-  comparability, answering runs reasoning-on and the noise mechanism is the
-  repeat-sample variant below.
+- **Traveler answering regime (Gate M0 Decision 3, approved):** cards are
+  written with reasoning **on** (quality work, 400 calls); scenario
+  answering runs with reasoning **off** (volume work: ~$0.008 vs ~$0.20 per
+  1k answers, hours vs days of wall-clock, and a usable answer-token
+  distribution — the M0 pilot measured the reasoning-on distribution as
+  degenerate, probability ≈ 1.0 after hidden reasoning). This regime choice
+  is verified by the frozen obedience comparison below before the full-bank
+  sweep.
+- **Obedience comparison, reasoning-on vs reasoning-off (frozen check, runs
+  at the start of Stage M1, after the bank audit, before the full-bank
+  sweep). Nothing in this check may be improvised after data exists:**
+  - **Travelers:** 60 — the first 60 positions of a seeded shuffle
+    (seed 2141) of the 400-traveler population.
+  - **Scenarios:** a fixed 24-scenario subset drawn from the audited bank by
+    a seeded stratified draw (seed 2142): 12 mode-choice (of which 4 from
+    the CRW-isolating sub-block and 4 from the PRC-isolating sub-block),
+    6 departure-time, 4 route/reliability, 2 policy. The drawn scenario IDs
+    are recorded in the experiment config at draw time, before any traveler
+    answers anything.
+  - **Protocol:** both arms answer the identical traveler × scenario grid at
+    the frozen temperature (0.7), one round, no noise layer applied — this
+    measures the renderer, not the noise. Arm A = reasoning off; Arm B =
+    reasoning on.
+  - **Numeric rule (frozen):** per-dimension obedience in each arm = the
+    correlation across the 60 travelers between planted φ_d and mean
+    standardized choice tendency on the subset scenarios designed to load on
+    dimension d (sign-flipped where negatively keyed). Reasoning-off is
+    confirmed as the answering regime iff **median obedience across the 6
+    dimensions in Arm A ≥ (median in Arm B − 0.10)** and **Arm A median
+    ≥ 0.5**. Any other outcome is a stop-and-ask event: the owner picks the
+    regime, and the noise mechanism follows the matching branch below.
+  - **Pre-declared cost cap:** 60 × 24 × 2 = 2,880 answers, ≈ $0.65 (the
+    reasoning-on arm dominates), logged in COSTS_MOBILITY.md at run time.
 - **System side (any LLM role): Gemini 3.5 flash-lite** via Google AI Studio
   (~$0.076 per 1k answers measured; no rate-limit hits at concurrency 4).
   The confirmatory estimator itself is pure Python statistical code with no
@@ -285,24 +311,22 @@ retroactively. Reasoning tokens are part of the logged spend.
   (system) at start. If Leonardo returns mid-study and the traveler side
   moves to Gemma 4 31B (Plan A), that is a stop-and-ask amendment; stages
   stay coherent on one assignment or are re-run.
-- **Noise mechanism (final mechanism + parameters frozen at Gate M1):**
-  - If answering runs **reasoning-off**: port the parent's mechanism —
-    seeded mechanical noise driven by the traveler's recorded answer-token
-    distribution, tuned into the frozen band. One engineering caveat the
-    owner must sanction: the parent Wall test bans the distribution keyword
-    from every Python file in the repo, so the mobility traveler-side reader
-    accesses the API field with the key assembled from parts, documented in
-    PROJECT_LOG_MOBILITY.md, and the mobility wall test §4.4 adds its own
-    field-level checks with mobility-correct exemptions.
-  - If answering runs **reasoning-on**: seeded mechanical noise calibrated
-    by repeated-sample disagreement (a Stage M1 pilot measures per-scenario
-    disagreement under repeated sampling at the frozen temperature; the
-    seeded layer flips answers on low-conviction scenarios at a rate tuned
-    into the band). The M0 pilot confirmed choice-level disagreement exists
-    under repeated sampling with reasoning on.
-  - Either way the 70–90% pooled test–retest band is the bar, and the
-    mechanism never crosses the Wall: it runs traveler-side, and the system
-    side sees only the noised choices.
+- **Noise mechanism (Gate M0 Decision 3: the parent's mechanism is ported;
+  final parameters frozen at Gate M1):** seeded mechanical noise driven by
+  the traveler's recorded answer-token distribution (available under the
+  approved reasoning-off answering regime), tuned into the frozen band.
+  Because the frozen parent Wall test bans a token-distribution keyword from
+  every Python file in the repository, mobility code takes the API field
+  names for this access from `mobility/config/api_fields.json` rather than
+  spelling them in code (Gate M0 Ruling 4; no string-assembly of the banned
+  word anywhere), with a comment at the read site and the rationale logged
+  in PROJECT_LOG_MOBILITY.md. If the obedience comparison above forces the
+  answering regime to reasoning-on, the fallback mechanism is seeded
+  mechanical noise calibrated by repeated-sample disagreement (the M0 pilot
+  confirmed choice-level disagreement exists under repeated sampling with
+  reasoning on). Either way the 70–90% pooled test–retest band is the bar,
+  and the mechanism never crosses the Wall: it runs traveler-side, and the
+  system side sees only the noised choices.
 - Anthropic models are never used for simulating travelers or for grading.
 
 ## 9. Provenance
