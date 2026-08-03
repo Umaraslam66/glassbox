@@ -1,13 +1,18 @@
 # PREREGISTRATION — GLASSBOX-Mobility
 
-> **STATUS: DRAFT — NOT FROZEN.** Nothing here is binding yet. This document
-> becomes the frozen contract only when the owner signs off at Gate M0, with
-> whatever amendments the owner orders. Until then every number below is a
-> proposal. After the freeze, anything measured differently from what is
-> written here is labeled **exploratory** in every report where it appears,
-> and deviations require stopping and asking the owner first.
+> **STATUS: FROZEN — approved by the owner on 2026-08-03** via the Gate M0
+> review (Decisions 1–3: parameters, model assignment, answering regime +
+> noise port; Rulings 4–6: config-based field access, PRD untracked, pilot
+> tool committed) and the Gate M1a review (Ruling 7: VOT bar 35% with 25%
+> retained as a reported ambition line, transmission decomposition declared;
+> Ruling 8: exact M4 index formulas). The freeze followed the reachability
+> memos in `docs/REACHABILITY_MEMOS.md`; memo (c)'s record stands unchanged.
+> Nothing in this document moves. Anything measured differently from what is
+> written here is labeled **exploratory** in every report where it appears.
+> Deviations require stopping and asking the owner first.
 
-Sign-off: PENDING (Gate M0). Drafted 2026-08-03.
+Sign-off: owner (chat, Gate M0 review + Gate M1a rulings 7–8).
+Date frozen: 2026-08-03.
 
 ---
 
@@ -32,8 +37,8 @@ travelers and held-out scenarios, measured against the bars in §6.
 
 ## 2. Planted truth: traveler parameters, population, noise
 
-**PENDING OWNER CONFIRMATION (Gate M0 decision):** the 6 dimensions and the
-correlation matrix below are the orchestrator's proposal, not yet approved.
+**APPROVED at the Gate M0 review (Decision 1):** the 6 dimensions, the
+correlation matrix, and the structural anchors below.
 
 Each traveler has a hidden parameter vector φ with 6 dimensions, each on
 roughly −2 to +2 (clipped at ±2; ~4.6% of draws per dimension clip — same
@@ -100,7 +105,15 @@ Gate M1 exactly as the parent froze its noise layer.
 **Population size:** 400 travelers, minted from a recorded seed,
 re-creatable and extendable at any time.
 
-## 3. The scenario bank (~140 scenarios; design pending owner sign-off)
+**Mint acceptance tolerances (pre-declared before any sampling; checked at
+the M1 mint, remint with the next sequential seed on failure, every attempt
+logged):** every realized pairwise correlation within ±0.10 of its planted
+value; the two designed-zero pairs at |r| ≤ 0.10 realized; per-dimension
+|mean| ≤ 0.10 and SD in [0.90, 1.02] (clipping shrinks SD below 1);
+per-dimension clip share ≤ 7%; realized VOT median in [10.8, 13.2] €/h; no
+two travelers identical.
+
+## 3. The scenario bank (~140 scenarios; design APPROVED at the Gate M0 review, Decision 1)
 
 | Block | n | Choice set | Attributes varied | Primary loadings | Identification design |
 |---|---|---|---|---|---|
@@ -187,6 +200,39 @@ Fixed analysis choices:
   fresh session; agreement = exact choice match; binary and multi-alternative
   scenarios reported separately beside their chance levels, pooled band is
   the bar.
+- **Card transmission, measured at Stage M1 (feeds the M2 decomposition;
+  reported, no bar):** for each dimension d, ρ̂_d = r(φ_d, T_d) / √rel_d,
+  where T_d is the traveler's mean standardized **pre-noise** choice tendency
+  over the full-bank scenarios designed to load on d (sign-flipped where
+  negatively keyed), and rel_d is the Spearman–Brown-corrected split-half
+  reliability of T_d (random half-split of d's designed scenarios, split
+  seed recorded in the experiment config). ρ̂_d is capped at 1. Computed
+  grader-side (it reads planted φ and pre-noise answers).
+- **VOT transmission decomposition (declared primary presentation, Gate M2
+  report):** e_raw = median_i |VOT̂_i − VOT_i| / VOT_i on held-out
+  travelers; e_ceiling = exp(0.55 · 0.6745 · √(1 − ρ̂_VOT²)) − 1 (the
+  shrinkage-optimal ceiling-implied median error, the same formula as
+  REACHABILITY_MEMOS.md memo c); estimator overhead = e_raw − e_ceiling;
+  disattenuated correlation = r(φ̂_VOT, φ_VOT)/ρ̂_VOT, capped at 1 (also
+  reported for the other five dimensions). The correction removes the
+  ceiling's systematic component only; the report states this in words
+  wherever the decomposition appears.
+- **M4 switching-frequency index (exact, Ruling 8 companion):** for
+  traveler i over days t = 2..20, W_i = (1/19) · Σ_t 1[mode_i,t ≠
+  mode_i,t−1 OR route_i,t ≠ route_i,t−1]. Departure-time changes alone do
+  not count as switches (they are the peak-spreading channel).
+- **M4 lateness-risk exposure index (exact, Ruling 8):** for traveler i
+  over days t = 2..20, with d_i,t the chosen departure time, τ_{t−1}(·) the
+  previous day's realized travel-time profile on the chosen route (travel
+  time as a function of departure minute, linearly interpolated between
+  observed departures), PAT_i the traveler's required arrival time, and a
+  fixed safety buffer b = 5 minutes:
+  X_i = (1/19) · Σ_t 1[d_i,t + τ_{t−1}(d_i,t) > PAT_i − b].
+  In words: the share of days the traveler departs late enough that, under
+  the most recently experienced conditions, they would arrive inside the
+  5-minute danger zone or later. Both indices are computed by the grader;
+  the Gate M4 coherence bars in §6 are Spearman correlations of W_i and X_i
+  against planted HAB and SCH respectively.
 - **Elasticities (M4):** arc elasticities on population aggregates for the
   three frozen experiments (uniform travel-cost +10%, transit fare −20%,
   cordon charge on car commutes), each run as the same population re-asked
@@ -212,12 +258,27 @@ Fixed analysis choices:
   band, produced by the frozen noise mechanism (§8).
 - Reasoning-token spend per answer is logged and reported at the gate
   (traveler side runs on a reasoning model; cost honesty).
+- **Card transmission ρ̂_d** (§5) is measured and reported per dimension at
+  this gate — no bar; it feeds the frozen Gate M2 decomposition.
 
 ### Gate M2 — structural recovery (the core claim)
 - **Per-dimension recovery:** r(φ̂_d, φ_d) ≥ 0.75 on held-out travelers, all
   6 dimensions. (Set knowing the parent's ~0.83 card-transmission ceiling —
   before any data, which is what makes it legitimate rather than lax.)
-- **VOT in real units:** median absolute error ≤ 25% against planted €/h.
+- **VOT in real units (Gate M0 Ruling 7):** median absolute error ≤ **35%**
+  against planted €/h. The **25% level is retained as a REPORTED threshold**
+  on the scoreboard — reported pass/fail, never a gate condition. Recorded
+  verbatim per the owner's ruling: "The 25% bar was assessed unreachable by
+  ceiling arithmetic before freeze (REACHABILITY_MEMOS.md memo c); the
+  frozen bar is 35% with 25% retained as a reported ambition line."
+- **Declared primary presentation for the VOT result (Ruling 7c, fixed
+  before any data):** beside the raw error, the report shows the
+  transmission decomposition computed with mobility's own card transmission
+  measured at Stage M1 (formulas in §5): the measured ρ̂_VOT, the
+  ceiling-implied median error e_ceiling(ρ̂_VOT), the estimator overhead
+  e_raw − e_ceiling, and the disattenuated correlation
+  r(φ̂_VOT, φ_VOT)/ρ̂_VOT. This is a declared primary presentation, not a
+  post-hoc rescue.
 - **Uncertainty coverage:** 60–75%.
 - **Designed-zero separability:** the recovered VOT–PRC correlation satisfies
   |r(φ̂_VOT, φ̂_PRC) − 0| ≤ 0.15 on held-out travelers.
@@ -237,10 +298,9 @@ Fixed analysis choices:
 - **Peak spreading (bar):** the peak-15-minute arrival share (per-day
   sliding maximum, §5) falls by ≥ 20% relative from day 1 to day 20 under
   congestion feedback: S₂₀ ≤ 0.80 · S₁.
-- **Behavioral coherence (bar):** across travelers, day-to-day switching
-  frequency correlates negatively with planted HAB (Spearman r ≤ −0.3), and
-  lateness-risk exposure taken correlates negatively with planted SCH
-  (Spearman r ≤ −0.3).
+- **Behavioral coherence (bar):** across travelers, Spearman r(W_i, HAB_i)
+  ≤ −0.3 and Spearman r(X_i, SCH_i) ≤ −0.3, with W (switching frequency)
+  and X (lateness-risk exposure) exactly as defined in §5 (Ruling 8).
 - **Elasticities (REPORTED, no bar):** arc elasticities for the three frozen
   experiments beside published empirical ranges, always with the
   by-construction caveat: the population's planted VOT/PRC distributions
@@ -259,7 +319,7 @@ Every experiment logs API spend (and compute, once Leonardo returns) in
 `mobility/results/COSTS_MOBILITY.md` at the time it runs, never
 retroactively. Reasoning tokens are part of the logged spend.
 
-## 8. Models (assignment recorded at freeze; PENDING pilot + owner sign-off)
+## 8. Models (assignment APPROVED at the Gate M0 review, Decision 2; recorded at freeze)
 
 - **Traveler side (cards + choices): OpenRouter `qwen/qwen3.7-flash`**
   (Plan B; Leonardo Booster verified unreachable during its Aug 3–17
@@ -332,6 +392,10 @@ retroactively. Reasoning tokens are part of the logged spend.
 ## 9. Provenance
 
 Drafted at Stage M0 by the orchestrator, following the parent
-PREREGISTRATION.md as the discipline template. Frozen only with the owner's
-Gate M0 sign-off, with amendments applied and recorded exactly as the parent
-did.
+PREREGISTRATION.md as the discipline template. Frozen 2026-08-03 with the
+owner's Gate M0 review decisions (1–3) and rulings (4–8) applied. The
+pre-freeze correction trail — the 25% VOT bar assessed unreachable by
+ceiling arithmetic and replaced by 35% with 25% as a reported line — is
+recorded in `docs/REACHABILITY_MEMOS.md` and PROJECT_LOG_MOBILITY.md; a bar
+corrected before freeze is a finding, not a blemish. The freeze commit hash
+is recorded in PROJECT_LOG_MOBILITY.md.
