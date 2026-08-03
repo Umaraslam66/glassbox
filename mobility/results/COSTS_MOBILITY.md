@@ -27,9 +27,10 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 | 2026-08-03 | M1 bank audit round 4 + spot verifications | Gemini 3.5 flash-lite | ≈145 | ≈40k in | ≈$0.013 |
 | 2026-08-03 | M1 round-2 sweep (Ruling 19f) — **DIED AT LAUNCH, HTTP 402 insufficient OpenRouter credits**; zero shards, resumable | OpenRouter qwen3.7-flash | 0 completed | 0 | $0.00 |
 
-**Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $1.21. Grand total ≈ $1.23.**
-No compute used (Leonardo in maintenance). **OpenRouter balance exhausted —
-awaiting owner top-up; ~$0.60 completes the Ruling-19 gate.**
+| 2026-08-03 | M1 round-2 sweep (Ruling 19f, after credit top-up): 400 × 140, reasoning-off, distributions recorded; ledger truth | OpenRouter qwen3.7-flash | 56,000 calls | 19.2M prompt / 56k completion tokens | $0.578 |
+
+**Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $1.79. Grand total ≈ $1.81.**
+No compute used (Leonardo in maintenance).
 
 Notes recorded at run time:
 

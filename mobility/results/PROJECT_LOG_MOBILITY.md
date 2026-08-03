@@ -331,6 +331,23 @@ Gemini refuses distribution access (M0 finding). Stopped; the owner is
 asked to top up credits (~$0.60 completes the Ruling-19 gate; a few dollars
 covers the remaining study stages).
 
+**Credits added by the owner; sweep r2 completed 2026-08-03 late evening**
+(`results/m1_sweep_r2_summary.json`): 56,000 answers, 22 invalid (0.04%),
+100% with recorded distributions, $0.578 ledger, 202 retries, no failures.
+
+**RULING-19 GATE: PASSED** (`results/m1_qa_r2.json`, gate_only per Ruling
+19g — nothing beyond the gate ran). Full-bank pre-noise obedience, round 1
+→ round 2: VOT 0.714 → 0.660, SCH 0.450 → 0.478, MOD 0.765 → 0.707, CRW
+0.361 → 0.617, PRC 0.488 → 0.508, HAB 0.464 → 0.567; **median 0.4761 →
+0.5922, bar ≥ 0.5 PASSED.** The four targeted dimensions all rose (CRW
++0.256 — the biggest, from the scenario de-contamination + decision-form
+cards; HAB +0.103; PRC +0.020; SCH +0.028, still individually under 0.5,
+which the gate report states plainly). The two strong dimensions paid a
+small price for the decision-form emphasis (VOT −0.055, MOD −0.058), both
+still comfortably high. Stopped per Ruling 19g: no noise tuning, no
+transmission computation — those await the owner's go with the round-2
+population accepted.
+
 **Pre-declaration (written before any obedience-comparison data existed):**
 the comparison's Arm A (reasoning-off, the frozen answering regime) will
 additionally be used for an **exploratory early-read of card transmission**

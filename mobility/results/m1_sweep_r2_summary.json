@@ -1,0 +1,32 @@
+{
+  "experiment": "m1_sweep_r2",
+  "date": "2026-08-03",
+  "n_travelers": 400,
+  "n_scenarios": 140,
+  "n_answers": 56000,
+  "n_invalid_answers": 22,
+  "share_with_distribution": 1.0,
+  "travelers_already_done_at_start": 0,
+  "client": {
+    "calls_made": 55997,
+    "cache_hits": 3,
+    "retries": 202,
+    "cost_usd": 0.5783,
+    "prompt_tokens": 19227305,
+    "completion_tokens": 55997,
+    "reasoning_tokens": 0
+  },
+  "config": {
+    "experiment": "m1_sweep_r2",
+    "date": "2026-08-03",
+    "temperature": 0.7,
+    "concurrency": 16,
+    "round": 0,
+    "regime": "reasoning-off (frozen; Gate M1 Ruling 11), one round, pre-noise, distributions recorded per Gate M0 Ruling 4",
+    "authorized_by": "Gate M1 Ruling 19f",
+    "population": "phi_m1.npz seed 3105; cards m1_cards; bank seed 3200 audit round 3",
+    "prereg_commit": "57bfcfb",
+    "notes": "Round-2 sweep on the Ruling-19 cards; same frozen answering config (reasoning-off, T 0.7, one round, distributions recorded).",
+    "cards_run": "m1_cards_r2"
+  }
+}
