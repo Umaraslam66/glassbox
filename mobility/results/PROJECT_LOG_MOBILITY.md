@@ -152,3 +152,29 @@ at VOT–PRC −0.004 and CRW–PRC −0.021; VOT median €11.71/h (p5 €4.82,
 p95 €26.83); φ-level participation ratio 5.11; minimum pairwise traveler
 distance 0.44 (no duplicates). Choice-based diversity bars are graded at
 Gate M1 proper, after rendering is authorized.
+
+## 2026-08-03 — Ruling 9 + Stage M1 proper (cards, bank, obedience comparison)
+
+**Ruling 9 logged:** the VOT bar (35% frozen / 25% reported) is confirmed at
+**Gate M2**; the "M3" label in Ruling 7 was the owner's labeling error,
+corrected at Gate M1a. No numeric change.
+
+**Execution-order note, surfaced at the gate:** the owner's authorization
+listed the obedience comparison (step 2) before the bank build (step 4), but
+the frozen prereg draws the comparison's 24 scenarios from the audited bank
+and orders it "after the bank audit" — so execution ran cards → bank+audit →
+obedience comparison. The frozen document wins over the numbering of a chat
+instruction.
+
+**Pre-declaration (written before any obedience-comparison data existed):**
+the comparison's Arm A (reasoning-off, the frozen answering regime) will
+additionally be used for an **exploratory early-read of card transmission**
+ρ̂_d, computed with the frozen §5 estimator but on the 60×24 subset instead
+of the full bank. It is labeled exploratory everywhere: the confirmatory
+transmission number requires the full-bank pre-noise sweep, which the owner
+has not yet authorized. Sub-stratification of the 24-scenario draw within
+the frozen strata (recorded in `experiments/m1_obedience.json` at draw time,
+before any traveler answered): the 4 non-isolating mode slots = 2 MOD +
+1 VOT + 1 HAB; the 4 route slots = 2 VOT + 1 SCH + 1 HAB; the 2 policy
+slots = 1 PRC + 1 MOD — this guarantees every dimension is covered so the
+frozen median rule is computable.

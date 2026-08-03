@@ -1,0 +1,11 @@
+{
+  "experiment": "m1_obedience",
+  "date": "2026-08-03",
+  "travelers_seed": 2141,
+  "scenarios_seed": 2142,
+  "n_travelers": 60,
+  "temperature": 0.7,
+  "concurrency": 6,
+  "cost_cap_usd": 0.65,
+  "notes": "Frozen check (prereg section 8, commit 57bfcfb). Sub-stratification within the frozen strata pre-declared in PROJECT_LOG_MOBILITY.md: mode non-iso slots 2 MOD + 1 VOT + 1 HAB; route 2 VOT + 1 SCH + 1 HAB; policy 1 PRC + 1 MOD. Drawn traveler and scenario IDs are appended to this config at draw time, before any traveler answers."
+}
