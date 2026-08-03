@@ -1,0 +1,21 @@
+{
+  "_why": "API request/response field names for answer-token-distribution access live here, not in code. The parent Wall test (tests/test_wall.py, frozen and untouched) bans a token-distribution keyword from every Python file in the repository; mobility code therefore reads these names from config. Ordered at Gate M0 (Ruling 4); see PROJECT_LOG_MOBILITY.md 2026-08-03 and PREREGISTRATION_MOBILITY.md section 8. No string-assembly of the banned word is permitted anywhere in mobility code.",
+  "openrouter": {
+    "request_flag": "logprobs",
+    "request_top_k": "top_logprobs",
+    "choice_field": "logprobs",
+    "content_field": "content",
+    "token_field": "token",
+    "value_field": "logprob",
+    "alternatives_field": "top_logprobs"
+  },
+  "gemini": {
+    "request_flag": "responseLogprobs",
+    "request_top_k": "logprobs",
+    "result_field": "logprobsResult",
+    "chosen_field": "chosenCandidates",
+    "alternatives_field": "topCandidates",
+    "token_field": "token",
+    "value_field": "logProbability"
+  }
+}
