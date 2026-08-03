@@ -1,0 +1,56 @@
+{
+  "experiment": "M0 availability pilot",
+  "date": "2026-08-03",
+  "purpose": "PRD_MOBILITY section 7: verify Leonardo maintenance, measure OpenRouter qwen3.7-flash and Gemini 3.5 flash-lite throughput, rate limits, cost per 1k scenario answers, reasoning-token spend, answer-token distribution availability, and repeated-sample disagreement.",
+  "fixtures_note": "Pilot used 1 hand-written traveler card and 3 mode/route/policy scenarios as placeholder fixtures; not study data; raw per-request records kept out of the repo.",
+  "leonardo": {
+    "checked": "2026-08-03T14:45+02:00",
+    "result": "SSH to login node closed pre-authentication (Connection closed by 131.175.44.5)",
+    "verdict": "unreachable, consistent with announced Aug 3-17 Booster maintenance; Plan B in effect"
+  },
+  "openrouter_qwen37_flash": {
+    "requests_total": 96,
+    "reasoning_on": {
+      "latency_median_s": 10.6,
+      "latency_p90_s": 13.2,
+      "reasoning_tokens_per_answer_mean": "1300-1700 (98-99% of billed output for a one-letter answer)",
+      "usd_per_1k_scenario_answers": "0.18-0.22 (provider-metered)",
+      "answer_token_distribution": "returned on request but DEGENERATE: answer-token probability ~1.0 after reasoning (measured -3.6e-07 nats); useless as a conviction signal",
+      "sustained_throughput": {
+        "concurrency_3_with_backoff_retry": {"n": 18, "ok": 18, "first_try_429": 1, "eff_req_per_s": 0.29},
+        "burst_concurrency_8": {"n": 24, "ok": 16, "429": 8},
+        "repeat_block_concurrency_5": {"n": 30, "ok": 20, "429": 10}
+      },
+      "full_bank_sweep_projection": "400 travelers x 140 scenarios = 56k answers ~= $11 and ~54h wall-clock at 0.29 req/s"
+    },
+    "reasoning_off": {
+      "latency_typical_s": 0.5,
+      "completion_tokens": 1,
+      "usd_per_1k_scenario_answers": 0.008,
+      "answer_token_distribution": "USABLE: top-5 alternatives returned with real spread, e.g. B 58% / A 31% / C 10% on the roadworks scenario",
+      "repeat_sample_10x_T0.7": {"scenario_1": {"A": 3, "B": 7}, "429": 0, "consistent_with_distribution": true},
+      "full_bank_sweep_projection": "56k answers ~= $0.45 and roughly 4-5h wall-clock at reasoning-off latency under the same upstream limits"
+    },
+    "rate_limit_nature": "429s are upstream shared-pool limits (provider Alibaba, error 'temporarily rate-limited upstream', limit_source 'upstream_provider_shared_pool'), no Retry-After header; not our key's quota; varies with global load",
+    "repeat_sample_disagreement_reasoning_on": {
+      "scenario_0": {"A": 10},
+      "scenario_1": {"A": 5, "B": 5},
+      "scenario_2": "all 10 requests rate-limited, no data",
+      "note": "choice-level disagreement under repeated sampling exists with reasoning on; usable as calibration signal for a mechanical noise layer"
+    }
+  },
+  "gemini_35_flash_lite": {
+    "requests_total": 19,
+    "latency_median_s": 0.5,
+    "burst_concurrency_4": {"n": 12, "ok": 12, "429": 0, "eff_req_per_s": 7.7},
+    "answer_token_distribution": "NOT AVAILABLE: HTTP 400 'Logprobs is not enabled for this model'",
+    "thinking_tokens": 0,
+    "pricing_usd_per_m": {"input": 0.30, "output": 2.50, "source": "ai.google.dev/gemini-api/docs/pricing, fetched 2026-08-03"},
+    "usd_per_1k_scenario_answers": 0.076
+  },
+  "costs_usd": {
+    "openrouter_metered": 0.012,
+    "gemini_computed": 0.0015,
+    "total": 0.0135
+  }
+}
