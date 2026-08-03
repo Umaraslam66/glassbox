@@ -108,12 +108,23 @@ def mechanical_audit(bank: list[dict]) -> dict:
     # isolation sub-blocks: everything constant across scenarios except the
     # isolated attribute
     crw = [s for s in bank if "crw_iso" in s["tags"]]
-    fixed = {(o["attrs"].get("time_min"), o["attrs"].get("cost_eur"))
-             for s in crw for o in s["options"]}
-    if fixed != {(26, 2.80), (26, 5.50)}:
-        problems.append(f"crw_iso: trip not held constant, saw {fixed}")
+    fixed = {(o["attrs"].get("time_min"), o["attrs"].get("cost_eur"),
+              o["attrs"].get("mode")) for s in crw for o in s["options"]}
+    if fixed != {(24, 2.80, "transit"), (31, 2.80, "transit")}:
+        problems.append(f"crw_iso: same-ticket constant trade violated, saw {fixed}")
     if len({s["options"][0]["attrs"]["crowding"] for s in crw}) < 3:
         problems.append("crw_iso: crowding barely varies")
+
+    hab = [s for s in bank if "switch_vs_stick" in s["tags"]]
+    for s in hab:
+        if s["scores"][s["options"][0]["key"]] != 1 or \
+                s["options"][0]["attrs"].get("habitual") != 1:
+            problems.append(f"{s['sid']}: habitual option must come first and score +1")
+    for prefix, ladder in (("mode_hab", (2, 4, 7, 10)), ("route_hab", (3, 5, 8, 12))):
+        gains = [s["options"][0]["attrs"]["time_min"] - s["options"][1]["attrs"]["time_min"]
+                 for s in sorted(hab, key=lambda x: x["sid"]) if s["sid"].startswith(prefix)]
+        if tuple(gains) != ladder:
+            problems.append(f"{prefix}: flip-point ladder {gains} != {ladder}")
 
     prc = [s for s in bank if "prc_iso" in s["tags"]]
     if {o["attrs"]["time_min"] for s in prc for o in s["options"]} != {24}:

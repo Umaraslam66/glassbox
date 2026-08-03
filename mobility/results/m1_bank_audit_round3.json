@@ -11,7 +11,7 @@
     "per_block": {
       "mode": {
         "n": 50,
-        "agree": 39,
+        "agree": 35,
         "misses": [
           "mode_mod_01: designed MOD read as None",
           "mode_mod_02: designed MOD read as None",
@@ -19,13 +19,17 @@
           "mode_mod_04: designed MOD read as None",
           "mode_mod_05: designed MOD read as None",
           "mode_mod_06: designed MOD read as None",
-          "mode_mod_07: designed MOD read as None",
           "mode_mod_08: designed MOD read as None",
           "mode_mod_09: designed MOD read as None",
           "mode_mod_10: designed MOD read as CRW",
-          "mode_prc_07: designed PRC read as HAB"
+          "mode_crw_00: designed CRW read as MOD",
+          "mode_crw_01: designed CRW read as MOD",
+          "mode_crw_02: designed CRW read as MOD",
+          "mode_crw_03: designed CRW read as MOD",
+          "mode_prc_07: designed PRC read as None",
+          "mode_prc_09: designed PRC read as HAB"
         ],
-        "agreement": 0.78
+        "agreement": 0.7
       },
       "dep_time": {
         "n": 30,
@@ -41,13 +45,12 @@
       },
       "policy": {
         "n": 25,
-        "agree": 22,
+        "agree": 23,
         "misses": [
-          "policy_mod_00: designed MOD read as VOT",
           "policy_mod_01: designed MOD read as PRC",
-          "policy_mod_03: designed MOD read as HAB"
+          "policy_mod_05: designed MOD read as HAB"
         ],
-        "agreement": 0.88
+        "agreement": 0.92
       },
       "distractor": {
         "n": 10,
@@ -56,7 +59,7 @@
         "agreement": 1.0
       }
     },
-    "overall_agreement": 0.9
+    "overall_agreement": 0.879
   },
   "config": {
     "experiment": "m1_bank",

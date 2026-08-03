@@ -73,11 +73,17 @@ _DESCRIPTORS = {
         "pays almost anything to skip a delay; time is the scarcest thing they have",
     ),
     "SCH": (
-        "start times barely exist for them; arriving late is a shrug",
-        "prefers being roughly on time but does not build in buffers",
-        "tries to be punctual and mildly dislikes cutting it close",
-        "plans arrivals with a clear safety margin; lateness genuinely bothers them",
-        "has hard fixed start times, builds large early buffers, and fears being late",
+        "regularly walks in well after start times and has never set an alarm buffer; "
+        "deadlines get renegotiated, not chased",
+        "aims loosely at start times and accepts arriving a few minutes late rather "
+        "than leave earlier",
+        "leaves enough margin to be roughly on time and occasionally moves a departure "
+        "earlier when something matters",
+        "moves departures earlier whenever an arrival matters and skips optional stops "
+        "that would cut the margin",
+        "builds double buffers before anything with a start time — earlier trains "
+        "taken, coffees skipped, notes left unfinished — because arriving late is not "
+        "an option",
     ),
     "MOD": (
         "finds owning and driving a car a pure burden; happily car-free",
@@ -87,25 +93,36 @@ _DESCRIPTORS = {
         "the car is part of who they are; other modes feel like a downgrade",
     ),
     "CRW": (
-        "packed vehicles do not register with them at all",
-        "notices crowding but rarely lets it change a plan",
-        "prefers a seat but tolerates rush-hour crowds when needed",
-        "actively plans around crowded services and values personal space",
-        "avoids crowds at real cost; will reroute, retime, or pay to sit alone",
+        "boards crush-loaded vehicles without a second thought and never changes a "
+        "plan over crowds",
+        "takes the crowded service when it is the practical one, grumbling at most",
+        "prefers a seat and sometimes waits for the next service when the first is packed",
+        "routinely takes a slower or earlier connection specifically to avoid packed "
+        "vehicles",
+        "re-times whole days around crowds — off-peak departures, longer routes, "
+        "letting full trains pass on the platform — so as never to ride packed",
     ),
     "PRC": (
-        "barely looks at prices for daily travel; small fees are invisible",
-        "knows roughly what trips cost but rarely optimizes",
-        "compares prices when the difference is obvious",
-        "checks fares and fees and adjusts plans over moderate amounts",
-        "recalculates whole routines over small fees and hunts every discount",
+        "buys tickets and fuel without checking amounts and has no idea what the "
+        "monthly pass costs",
+        "notices prices but almost never changes a plan over them",
+        "compares prices when the difference is visible and switches when clearly "
+        "worth it",
+        "changes tickets, routes and shopping habits over modest savings and keeps "
+        "rough monthly tallies",
+        "restructures routines over small fees — switched supermarkets over cents, "
+        "buys every ticket the cheapest possible way, tracks each expense",
     ),
     "HAB": (
-        "changes routes, modes and departure times constantly, partly for fun",
-        "tries alternatives now and then without much resistance",
-        "has loose routines but switches when there is a clear reason",
-        "keeps stable routines and needs a good push to change them",
-        "same route, same time, for years; change feels genuinely wrong",
+        "takes a different route or mode most weeks just to try it and rearranges "
+        "routines on a whim",
+        "tries an alternative whenever one looks promising, with no attachment to "
+        "the old way",
+        "keeps loose routines but switches when there is a clear reason",
+        "has kept the same route and departure for years and needs a strong push to "
+        "change either",
+        "runs on fixed rails — same seat, same platform spot, same route since the "
+        "job began — and declines suggested changes without weighing them",
     ),
 }
 
@@ -140,19 +157,22 @@ def leak_reasons(card: str) -> list[str]:
 _WRITER_SYSTEM = (
     "You write concise, realistic character biographies for transport research. "
     "Hard rules: never name behavioral traits or use rating language (no 'high "
-    "value of time', no scores, no scales, no signed numbers); show every "
-    "tendency through concrete life details — job, family, commute history, "
-    "money habits, routines; stay fully consistent with the given public "
-    "profile; third person; a plausible European everyday setting; 160-220 "
-    "words; output the biography only, no headers."
+    "value of time', no scores, no scales, no signed numbers); every tendency "
+    "must surface as at least one concrete decision the person makes because of "
+    "it (a route chosen, a ticket bought, a departure moved, an offer declined) "
+    "— never as an adjective or a summary; stay fully consistent with the given "
+    "public profile; third person; a plausible European everyday setting; "
+    "160-220 words; output the biography only, no headers."
 )
 
 _CHECKER_SYSTEM = (
     "You check a biography against rules and revise it minimally. Rules: no "
-    "trait names, no rating or scale language, no signed numbers; every one of "
-    "the six tendencies must be visible through at least one concrete life "
-    "detail; the public profile facts must be respected; 160-220 words. Return "
-    "the corrected biography only — no commentary."
+    "trait names, no rating or scale language, no signed numbers; verify each "
+    "of the six tendencies appears as at least one concrete decision the "
+    "person makes because of it — where a tendency is only described in "
+    "adjectives or left implicit, rewrite that part into such a decision; the "
+    "public profile facts must be respected; 160-220 words. Return the "
+    "corrected biography only — no commentary."
 )
 
 

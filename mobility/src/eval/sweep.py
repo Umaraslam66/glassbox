@@ -49,7 +49,7 @@ def main(config_path: Path) -> dict:
     bank = {s["sid"]: s for s in json.loads(
         (MOBILITY_ROOT / "data" / "bank" / "scenarios.json").read_text())}
     sids = sorted(bank)
-    card_dir = vault / "runs" / "m1_cards" / "cards"
+    card_dir = vault / "runs" / config.get("cards_run", "m1_cards") / "cards"
     ids = [f"t{i:04d}" for i in range(400)]
     cards = {pid: json.loads((card_dir / f"{pid}.json").read_text())["card"]
              for pid in ids}

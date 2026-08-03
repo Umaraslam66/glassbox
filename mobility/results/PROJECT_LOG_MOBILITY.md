@@ -265,6 +265,55 @@ renderer's obedience genuinely sits just under the bar on four dimensions
 (SCH, CRW, PRC, HAB), with CRW weakest at 0.361. An honest bar miss,
 surfaced at the gate where it occurred.
 
+## 2026-08-03 — Ruling 19: the one authorized improvement round (documented BEFORE rendering)
+
+**Rulings 18–19 recorded.** Model unchanged (qwen3.7-flash traveler-side —
+family split and the distribution-based noise mechanism both preclude a
+switch; considered and rejected by the owner, not to be revisited). One
+improvement round authorized: card instructions + within-cell CRW/HAB
+scenario sharpening; frozen bars untouched; hard rule — no third round.
+
+**Card instruction diff (Ruling 19a, written before any card is rendered):**
+
+1. Writer system prompt gains one rule: *"every tendency must surface as at
+   least one concrete decision the person makes because of it (a route
+   chosen, a ticket bought, a departure moved, an offer declined) — never as
+   an adjective or a summary."*
+2. Checker system prompt now instructs: *"verify each of the six tendencies
+   appears as at least one concrete decision the person makes because of it;
+   where a tendency is only described in adjectives or left implicit,
+   rewrite that part into such a decision."* (Ruling 19b.)
+3. The five descriptor sentences for each of SCH, CRW, PRC and HAB are
+   rewritten from adjective-form to decision-form (examples: SCH very-high
+   now reads "builds double buffers before anything with a start time —
+   earlier trains taken, coffees skipped — because arriving late is not an
+   option"; CRW high now reads "routinely takes a slower or earlier
+   connection specifically to avoid packed vehicles"). VOT and MOD
+   descriptors are byte-identical to round 1 (they cleared the bar at 0.71
+   and 0.77).
+
+**CRW/HAB scenario sharpening (Ruling 19c, design principles only):**
+
+- **CRW sub-block**: round-1 design made escaping the crowd cost €2.70 more
+  and a mode change (car), so the escape choice was contaminated by PRC and
+  MOD. New design: both options are the SAME transit ticket at the SAME
+  price; the escape is the stopping service at a constant +7 minutes; only
+  the crowding level on the fast service varies across the 10 scenarios
+  (levels 1,1,2,2,2,3,3,3,3,3). The across-scenario constancy doctrine
+  (logged at bank build) is preserved and between-option cost equality is
+  now literal.
+- **HAB scenarios (4 mode + 4 route)**: random gain draws replaced by fixed
+  flip-point ladders (mode: 2/4/7/10 min; route: 3/5/8/12 min) so habit
+  strength is identified by where each traveler abandons the routine;
+  routine texture strengthened ("your route and mode of the last six
+  years"). The generator draws-and-discards the same random numbers as
+  round 1 so every other scenario in the shared stream stays byte-identical
+  (verified after minting).
+
+**Costs pre-stated:** re-render ≈ $0.20, re-sweep ≈ $0.58 (ledger truth
+logged at run time). Same frozen gate afterwards: full-bank obedience
+median ≥ 0.5. Then STOP either way.
+
 **Pre-declaration (written before any obedience-comparison data existed):**
 the comparison's Arm A (reasoning-off, the frozen answering regime) will
 additionally be used for an **exploratory early-read of card transmission**

@@ -77,15 +77,19 @@ def _mode_mod(rng, i):
 
 
 def _mode_crw_iso(level_idx, i):
-    # Whole trip held constant across the sub-block; only crowding varies.
-    text = (f"Your usual trip to the center, both options 26 minutes door-to-door:\n"
-            f"A) Tram, EUR 2.80, currently {CROWD_LEVELS[level_idx]}.\n"
-            f"B) Drive and park, EUR 5.50, alone in the car.")
+    # Ruling 19c sharpening: both options are the SAME ticket at the SAME
+    # price; the escape is the stopping service at a constant +7 minutes;
+    # only the crowding level on the fast service varies across the
+    # sub-block. Round 1's escape cost money and a mode change, which let
+    # PRC and MOD contaminate the choice.
+    text = (f"Your usual line into the center, same ticket price either way:\n"
+            f"A) Direct tram: 24 min, currently {CROWD_LEVELS[level_idx]}.\n"
+            f"B) The stopping service: 31 min, same ticket, seats guaranteed.")
     return _sc(f"mode_crw_{i:02d}", "mode", "CRW", text,
-               [(f"Tram, 26 min, EUR 2.80, {CROWD_LEVELS[level_idx]}",
-                 {"time_min": 26, "cost_eur": 2.80, "crowding": level_idx}),
-                ("Drive, 26 min, EUR 5.50",
-                 {"time_min": 26, "cost_eur": 5.50, "crowding": 0})],
+               [(f"Direct, 24 min, {CROWD_LEVELS[level_idx]}",
+                 {"time_min": 24, "cost_eur": 2.80, "crowding": level_idx, "mode": "transit"}),
+                ("Stopping service, 31 min, seats",
+                 {"time_min": 31, "cost_eur": 2.80, "crowding": 0, "mode": "transit"})],
                [-1, +1], tags=("crw_iso",))
 
 
@@ -116,14 +120,22 @@ def _mode_prc_iso(base, save, i):
                [+1, -1], tags=("prc_iso",))
 
 
+#: Fixed flip-point ladders (Ruling 19c): habit strength is identified by the
+#: time gain at which a traveler abandons the routine.
+_MODE_HAB_GAINS = (2, 4, 7, 10)
+_ROUTE_HAB_GAINS = (3, 5, 8, 12)
+
+
 def _mode_hab(rng, i):
-    gain = int(rng.integers(3, 8))
+    _ = int(rng.integers(3, 8))  # draw-and-discard: preserves the round-1 stream
+    gain = _MODE_HAB_GAINS[i]
     text = (f"A colleague shows you a different way to work:\n"
-            f"A) Your usual route and mode, as every day: 31 min, EUR 3.10.\n"
-            f"B) The new alternative: {31 - gain} min, EUR 3.10, you have never tried it.")
+            f"A) Your route and mode of the last six years, as every day: 31 min, EUR 3.10.\n"
+            f"B) The alternative your colleague swears by: {31 - gain} min, EUR 3.10, "
+            f"you have never tried it.")
     return _sc(f"mode_hab_{i:02d}", "mode", "HAB", text,
-               [("Usual route, 31 min", {"time_min": 31, "cost_eur": 3.10, "habitual": 1}),
-                (f"New alternative, {31 - gain} min", {"time_min": 31 - gain, "cost_eur": 3.10, "habitual": 0})],
+               [("Your route of six years, 31 min", {"time_min": 31, "cost_eur": 3.10, "habitual": 1}),
+                (f"The colleague's alternative, {31 - gain} min", {"time_min": 31 - gain, "cost_eur": 3.10, "habitual": 0})],
                [+1, -1], tags=("switch_vs_stick",))
 
 
@@ -175,13 +187,14 @@ def _route_sch(rng, i):
 
 
 def _route_hab(rng, i):
-    gain = int(rng.integers(4, 9))
+    _ = int(rng.integers(4, 9))  # draw-and-discard: preserves the round-1 stream
+    gain = _ROUTE_HAB_GAINS[i]
     text = (f"Navigation suggests a route you have never used:\n"
-            f"A) Your route of many years: 28 min today.\n"
-            f"B) Suggested new route: {28 - gain} min today, unfamiliar streets.")
+            f"A) The road you have driven for years, every light and lane known: 28 min today.\n"
+            f"B) The suggested route through unfamiliar streets: {28 - gain} min today.")
     return _sc(f"route_hab_{i:02d}", "route", "HAB", text,
-               [("Your usual route, 28 min", {"time_min": 28, "habitual": 1, "cost_eur": 0.0}),
-                (f"New route, {28 - gain} min", {"time_min": 28 - gain, "habitual": 0, "cost_eur": 0.0})],
+               [("The road of many years, 28 min", {"time_min": 28, "habitual": 1, "cost_eur": 0.0}),
+                (f"Unfamiliar suggested route, {28 - gain} min", {"time_min": 28 - gain, "habitual": 0, "cost_eur": 0.0})],
                [+1, -1], tags=("switch_vs_stick",))
 
 
