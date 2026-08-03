@@ -2,6 +2,8 @@
 
 GLASSBOX is a recovery study. We build synthetic people whose true traits we planted ourselves, hide the truth, and then test whether an interview pipeline can recover it from interview text alone.
 
+**Active sub-study:** `mobility/` — GLASSBOX-Mobility turns the same harness on LLM travel agents; start at `mobility/README.md`.
+
 ## Why
 
 If you want to know whether a system can "learn a person from a conversation", you have to already know who that person is. With real humans you never do — you only have another questionnaire, which is just a second noisy measurement, not the truth. That is the validation problem: every claim about modelling a person is graded against a proxy for the thing it is trying to predict.
