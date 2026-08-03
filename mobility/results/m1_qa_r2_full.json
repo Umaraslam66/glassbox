@@ -1,0 +1,217 @@
+{
+  "experiment": "m1_qa_r2_full",
+  "date": "2026-08-03",
+  "config": {
+    "experiment": "m1_qa_r2_full",
+    "date": "2026-08-03",
+    "sweep": "m1_sweep_r2",
+    "wobble_seed": 3160,
+    "wobble_range": [
+      0.4,
+      1.6
+    ],
+    "retest_seed": 3170,
+    "retest_k": 30,
+    "split_half_seed": 3180,
+    "noise_seed": 3190,
+    "b": 4.0,
+    "a_grid": [
+      0.05,
+      0.08,
+      0.12,
+      0.18,
+      0.25,
+      0.35,
+      0.5,
+      0.7,
+      0.9,
+      1.2
+    ],
+    "target": 0.79,
+    "notes": "Gate M1 Ruling 20: round-2 population (cards r2 + bank r4) accepted; the remaining zero-spend M1 pipeline authorized off the cached m1_sweep_r2 answers. Same frozen knobs and seeds as m1_qa/m1_qa_r2 (wobble 3160, retest 3170, split-half 3180, noise 3190; b fixed at the parent's 4.0, a tuned to the 0.79 target inside the frozen 70-90 band). gate_only removed per the authorization; the gate step re-runs deterministically on the same cached answers and must reproduce the m1_qa_r2 PASS record, which stays untouched as the Ruling-19 gate artifact. No API calls of any kind."
+  },
+  "obedience_full_bank_pre_noise": {
+    "VOT": {
+      "r": 0.6596,
+      "n_scenarios": 31
+    },
+    "SCH": {
+      "r": 0.4783,
+      "n_scenarios": 38
+    },
+    "MOD": {
+      "r": 0.7074,
+      "n_scenarios": 18
+    },
+    "CRW": {
+      "r": 0.6173,
+      "n_scenarios": 10
+    },
+    "PRC": {
+      "r": 0.5081,
+      "n_scenarios": 25
+    },
+    "HAB": {
+      "r": 0.5672,
+      "n_scenarios": 8
+    },
+    "median": 0.5922
+  },
+  "ruling16_gate": {
+    "bar": "median >= 0.5 (frozen M1 QA obedience bar on its native instrument)",
+    "median": 0.5922,
+    "pass": true
+  },
+  "transmission_confirmatory": {
+    "VOT": {
+      "r_raw": 0.6596,
+      "split_half_reliability": 0.9704,
+      "rho_hat": 0.6696,
+      "n_scenarios": 31
+    },
+    "SCH": {
+      "r_raw": 0.4783,
+      "split_half_reliability": 0.9681,
+      "rho_hat": 0.4861,
+      "n_scenarios": 38
+    },
+    "MOD": {
+      "r_raw": 0.7074,
+      "split_half_reliability": 0.9311,
+      "rho_hat": 0.7332,
+      "n_scenarios": 18
+    },
+    "CRW": {
+      "r_raw": 0.6173,
+      "split_half_reliability": 0.9488,
+      "rho_hat": 0.6337,
+      "n_scenarios": 10
+    },
+    "PRC": {
+      "r_raw": 0.5081,
+      "split_half_reliability": 0.9698,
+      "rho_hat": 0.516,
+      "n_scenarios": 25
+    },
+    "HAB": {
+      "r_raw": 0.5672,
+      "split_half_reliability": 0.9415,
+      "rho_hat": 0.5845,
+      "n_scenarios": 8
+    },
+    "median_rho_hat": 0.6091
+  },
+  "noise_tuning": {
+    "mechanism": "seeded flip to second choice; p_flip = min(0.5, wobble * a * exp(-b * gap))",
+    "b_fixed": 4.0,
+    "a_grid": [
+      {
+        "a": 0.05,
+        "pooled_agreement": 0.982
+      },
+      {
+        "a": 0.08,
+        "pooled_agreement": 0.9719
+      },
+      {
+        "a": 0.12,
+        "pooled_agreement": 0.9606
+      },
+      {
+        "a": 0.18,
+        "pooled_agreement": 0.9445
+      },
+      {
+        "a": 0.25,
+        "pooled_agreement": 0.9255
+      },
+      {
+        "a": 0.35,
+        "pooled_agreement": 0.9038
+      },
+      {
+        "a": 0.5,
+        "pooled_agreement": 0.8769
+      },
+      {
+        "a": 0.7,
+        "pooled_agreement": 0.8486
+      },
+      {
+        "a": 0.9,
+        "pooled_agreement": 0.8263
+      },
+      {
+        "a": 1.2,
+        "pooled_agreement": 0.7981
+      }
+    ],
+    "a_chosen": 1.2,
+    "achieved_pooled_retest": 0.7981,
+    "frozen_band": [
+      0.7,
+      0.9
+    ],
+    "target": 0.79,
+    "in_band": true,
+    "share_of_answers_with_distribution": 1.0
+  },
+  "diversity_official": {
+    "max_pairwise_agreement": 0.9714,
+    "median_pairwise_agreement": 0.6,
+    "participation_ratio": 22.152,
+    "n_constant_scenarios_dropped": 0,
+    "bars": {
+      "no_pair_above": 0.95,
+      "median_at_most": 0.8,
+      "participation_at_least": 4
+    },
+    "pass": false
+  },
+  "obedience_official_noised": {
+    "VOT": {
+      "r": 0.6577,
+      "n_scenarios": 31
+    },
+    "SCH": {
+      "r": 0.555,
+      "n_scenarios": 38
+    },
+    "MOD": {
+      "r": 0.7082,
+      "n_scenarios": 18
+    },
+    "CRW": {
+      "r": 0.6083,
+      "n_scenarios": 10
+    },
+    "PRC": {
+      "r": 0.5026,
+      "n_scenarios": 25
+    },
+    "HAB": {
+      "r": 0.5716,
+      "n_scenarios": 8
+    },
+    "median": 0.5899
+  },
+  "test_retest": {
+    "pooled_agreement": 0.7981,
+    "band": [
+      0.7,
+      0.9
+    ],
+    "pass": true,
+    "two_option": {
+      "agreement": 0.8037,
+      "chance": 0.5,
+      "n": 10939
+    },
+    "three_option": {
+      "agreement": 0.7403,
+      "chance": 0.333,
+      "n": 1055
+    },
+    "note": "fresh-session re-ask operationalized as an independent seeded application of the frozen layer (parent addendum convention)"
+  }
+}

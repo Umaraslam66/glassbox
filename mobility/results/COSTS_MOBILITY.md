@@ -29,6 +29,8 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 
 | 2026-08-03 | M1 round-2 sweep (Ruling 19f, after credit top-up): 400 × 140, reasoning-off, distributions recorded; ledger truth | OpenRouter qwen3.7-flash | 56,000 calls | 19.2M prompt / 56k completion tokens | $0.578 |
 
+| 2026-08-03 | M1 QA close-out (Ruling 20): transmission, noise tuning, diversity, test-retest — all off cached sweep-r2 answers, laptop CPU only | none — pure NumPy | 0 API requests | — | $0.00 |
+
 **Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $1.79. Grand total ≈ $1.81.**
 No compute used (Leonardo in maintenance).
 

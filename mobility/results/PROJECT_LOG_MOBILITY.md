@@ -360,3 +360,81 @@ before any traveler answered): the 4 non-isolating mode slots = 2 MOD +
 1 VOT + 1 HAB; the 4 route slots = 2 VOT + 1 SCH + 1 HAB; the 2 policy
 slots = 1 PRC + 1 MOD — this guarantees every dimension is covered so the
 frozen median rule is computable.
+
+## 2026-08-03 — Ruling 20 executed: M1 close-out pipeline, zero spend — ONE DIVERSITY BAR FAILED
+
+**Authorization.** Ruling 20 accepted the round-2 population (cards r2 + bank
+r4) and authorized the remaining M1 pipeline off the cached sweep-r2 answers:
+confirmatory transmission, diversity bars, noise tuning, test-retest. Zero
+API calls. Run as experiment `m1_qa_r2_full` (config in `experiments/`) so
+the committed Ruling-19 gate artifact `m1_qa_r2.json` stays untouched; the
+gate step re-ran deterministically and reproduced its 0.5922 PASS exactly.
+All numbers below: `results/m1_qa_r2_full.json` (the source of truth).
+
+**Confirmatory card transmission (frozen §5 estimator, split seed 3180,
+reported — no bar).** ρ̂ per dimension: VOT 0.670, SCH 0.486, MOD 0.733,
+CRW 0.634, PRC 0.516, HAB 0.585 — **median 0.609 vs the parent's 0.83
+reference**. Every mobility dimension sits below the parent's worst (0.77).
+Split-half reliabilities are high (0.93–0.97), so the correction is small:
+the tendencies are measured reliably; the cards genuinely carry this much
+signal and no more. Stated plainly for the owner because the frozen Gate M2
+arithmetic consumes these numbers: with ρ̂_VOT = 0.670 the frozen
+ceiling formula gives e_ceiling ≈ 31.7% median VOT error — under the frozen
+35% bar with little room for estimator overhead — and the r ≥ 0.75
+per-dimension recovery bar exceeds the measured transmission ceiling on
+every dimension except MOD's near miss (r(φ̂,φ) cannot beat ρ̂ except by
+luck). That is a statement of arithmetic, not a proposal to move anything.
+
+**Noise layer tuned (frozen §8 port; parameters to be ratified at the
+gate).** Mechanism as ported: p_flip = min(0.5, wobble·a·exp(−b·gap)), gap =
+top-two share gap of the recorded answer distribution, wobble per traveler
+uniform [0.4, 1.6] (seed 3160, planted independent of φ, deposited as
+`wobble_m1.npz`). b fixed at the parent's 4.0; a tuned over the recorded
+grid to the 0.79 target: **a = 1.2 chosen (top of the recorded grid),
+pooled retest 0.7981, inside the frozen 70–90 band.** 15.3% of answers
+flip under the layer. Official noised world (round 0, seed 3190) written
+system-side to `data/runs/m1/answers_noised.jsonl` with exactly the
+allowlisted fields.
+
+**Test-retest (frozen §5 procedure: 30 fixed scenarios per traveler, seed
+3170; fresh session = independent seeded application, parent addendum
+convention).** Pooled **0.7981 — PASS** (band 70–90). Two-option 0.804
+(chance 0.5, n 10,939); three-option 0.740 (chance 0.333, n 1,055).
+
+**Diversity bars (official noised world). Bars (b) and (c) PASS, bar (a)
+FAILED.** Median pairwise agreement 0.600 ≤ 0.80 PASS; participation ratio
+22.15 ≥ 4 PASS; max pairwise agreement **0.9714 > 0.95 FAIL** — exactly one
+pair, t0009–t0361, agreeing on 136/140 scenarios. Diagnostic (documented
+before this entry): their planted φ differ substantially (Euclidean distance
+2.34 — VOT −1.18, SCH +1.25, CRW +1.50 apart), so this is not a mint
+near-twin; agreement does track φ distance population-wide (r = −0.34 over
+sampled pairs), the bank is not dominated (median majority-option share
+0.677; 1/140 scenarios above 0.90), and pre-noise there were 31 pairs above
+0.95, which the noise layer cut to 1. Verdict offered, not acted on: an
+order-statistic tail event over 79,800 pairs on a 140-item discrete
+instrument, missing the ceiling by 3 scenarios. An honest miss, surfaced at
+the gate where it occurred; the owner rules on what follows.
+
+**Mechanism observation (recorded, not a defect).** Obedience on the noised
+world is 0.590 vs 0.592 pre-noise, but SCH *rose* 0.478 → 0.555: 22.9% of
+flips land on the distribution's top token (the recorded temperature-0.7
+sample had itself landed on the runner-up), so the layer partly de-noises
+sampling flukes on low-conviction answers. The frozen obedience bar is
+pre-noise, so nothing rides on this; recorded because a noise layer that
+raises a trait correlation is the kind of surprise that must be on the
+record.
+
+**Cost honesty.** Answer sweep ran reasoning-off: 0 reasoning tokens,
+exactly 1 completion token per answer (56k total; `m1_sweep_r2_summary.json`).
+This close-out: $0.00 (pure NumPy off the cache). Grand total unchanged
+≈ $1.81 (COSTS_MOBILITY.md).
+
+**Tests at close.** Parent suite 726 passed; mobility suite 14 passed +
+1 expected skip (opt-in live smoke); wall tests green (parent 10, mobility 6
+— the former data-dir skip now runs against the existing vault).
+
+**GATE M1-CLOSE: HARD STOP.** Bars: obedience PASS 0.5922, retest PASS
+0.7981, diversity (b)(c) PASS, diversity (a) FAIL 0.9714 > 0.95.
+Transmission reported (median 0.609). Noise parameters a = 1.2, b = 4.0
+await ratification. Awaiting the owner's ruling on the diversity (a) miss
+and the go/no-go for Stage M2.
