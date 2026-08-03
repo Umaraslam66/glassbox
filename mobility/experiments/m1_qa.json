@@ -1,0 +1,15 @@
+{
+  "experiment": "m1_qa",
+  "date": "2026-08-03",
+  "sweep": "m1_sweep",
+  "wobble_seed": 3160,
+  "wobble_range": [0.4, 1.6],
+  "retest_seed": 3170,
+  "retest_k": 30,
+  "split_half_seed": 3180,
+  "noise_seed": 3190,
+  "b": 4.0,
+  "a_grid": [0.05, 0.08, 0.12, 0.18, 0.25, 0.35, 0.5, 0.7, 0.9, 1.2],
+  "target": 0.79,
+  "notes": "Gate M1 Ruling 16 pipeline. Step 1 gates on the frozen full-bank obedience bar (median >= 0.5, pre-noise) and stops everything on a miss. Noise mechanism port per frozen section 8; b fixed at the parent's 4.0, a tuned to the 0.79 target inside the frozen 70-90 band; wobble range is the recorded tuning knob."
+}

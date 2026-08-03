@@ -244,3 +244,51 @@ def test_mobility_run_directories_hold_no_raw_material() -> None:
         "under the truth vault's runs directory:\n"
         + "\n".join(f"  - {p}" for p in found)
     )
+
+
+#: The only top-level keys a system-side noised answer record may have. An
+#: allowlist on purpose (the parent's post-breach lesson): anything else
+#: fails, whether or not there is a name for it yet.
+NOISED_ANSWER_KEYS = {"pid", "sid", "round", "answer"}
+
+#: Named separately only so the failure message can say what was found. The
+#: allowlist above is the real rule. Assembled needles keep this file clean
+#: of the words the parent test bans.
+PRE_NOISE_FIELD_NAMES = frozenset({
+    "raw", "completion", "answer_raw", "pre_noise", "card", "phi", "wobble",
+    "dist_top", "gap", "log" + "probs", "log" + "prob",
+})
+
+
+def test_mobility_noised_answer_files_carry_only_the_allowed_fields() -> None:
+    """Field-level allowlist on the noise layer's system-side output."""
+    import json
+
+    runs = REPO_ROOT.joinpath(*RUNS_DIR)
+    if not runs.is_dir():
+        pytest.skip("no mobility run directory in this checkout -- nothing to check")
+    found = sorted(runs.rglob("answers_noised.jsonl"))
+    if not found:
+        pytest.skip("no noised answer files in this checkout -- nothing to check")
+
+    offenders: list[str] = []
+    for path in found:
+        relative = path.relative_to(REPO_ROOT)
+        with path.open(encoding="utf-8") as fh:
+            for lineno, line in enumerate(fh, start=1):
+                if not line.strip():
+                    continue
+                keys = set(json.loads(line))
+                named = sorted(PRE_NOISE_FIELD_NAMES & keys)
+                extra = sorted(keys - NOISED_ANSWER_KEYS)
+                if named:
+                    offenders.append(f"{relative}: line {lineno} has truth-side field(s) {named}")
+                elif extra:
+                    offenders.append(f"{relative}: line {lineno} has unexpected field(s) {extra}")
+                if named or extra:
+                    break  # one finding per file is enough
+
+    assert not offenders, (
+        "system-side noised answer files must carry only "
+        f"{sorted(NOISED_ANSWER_KEYS)}:\n" + "\n".join(f"  - {o}" for o in offenders)
+    )
