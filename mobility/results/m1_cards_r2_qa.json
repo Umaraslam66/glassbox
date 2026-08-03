@@ -1,0 +1,37 @@
+{
+  "experiment": "m1_cards_r2",
+  "date": "2026-08-03",
+  "n_cards": 400,
+  "n_rendered_this_run": 400,
+  "n_failing_quality_gate": 1,
+  "leaks_remaining": 0,
+  "repaired": 28,
+  "truncated": 1,
+  "retried_attempts": 31,
+  "word_count": {
+    "min": 141,
+    "median": 184,
+    "max": 248
+  },
+  "client": {
+    "calls_made": 928,
+    "cache_hits": 0,
+    "retries": 21,
+    "cost_usd": 0.1303,
+    "prompt_tokens": 549726,
+    "completion_tokens": 885271,
+    "reasoning_tokens": 475136
+  },
+  "config": {
+    "experiment": "m1_cards_r2",
+    "date": "2026-08-03",
+    "seed_profiles": 3150,
+    "temperature": 0.7,
+    "max_tokens": 3500,
+    "concurrency": 12,
+    "reasoning_budget": 512,
+    "passes": "write + self-check (reasoning ON, budget 512), mechanical leak check with one repair pass, quality-gate retries",
+    "population": "phi_m1.npz, seed 3105, prereg 57bfcfb",
+    "notes": "Gate M1 Ruling 19e: the one authorized improvement round. Instruction diff documented in PROJECT_LOG_MOBILITY.md BEFORE this render: decision-form descriptors for SCH/CRW/PRC/HAB (VOT and MOD byte-identical to round 1), writer rule requiring every tendency to surface as a concrete decision, checker instructed to rewrite adjective-only tendencies into decisions. Same profiles (seed 3150), same leak checks, same length discipline."
+  }
+}

@@ -157,6 +157,11 @@ def main(config_path: Path) -> dict:
         results["stopped"] = "Ruling 16: full-bank obedience median < 0.5 — nothing further ran"
         _write(results)
         return results
+    if config.get("gate_only"):
+        results["stopped"] = ("gate_only (Ruling 19g): gate PASSED but the pipeline stops "
+                              "here — noise tuning and transmission await the owner's go")
+        _write(results)
+        return results
 
     # ---- step 2: confirmatory transmission (frozen section 5) -------------
     results["transmission_confirmatory"] = transmission_table(

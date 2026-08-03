@@ -314,6 +314,23 @@ scenario sharpening; frozen bars untouched; hard rule — no third round.
 logged at run time). Same frozen gate afterwards: full-bank obedience
 median ≥ 0.5. Then STOP either way.
 
+**Round-2 execution, 2026-08-03 evening.** Cards re-rendered clean:
+400/400, leak-free, lengths 141–248 (median 184), one truncated-pass flag,
+$0.130 ledger (`results/m1_cards_r2_qa.json`); spot-checks confirm
+decision-form tendencies. Bank audit round 4 (`m1_bank_audit.json`; round 3
+preserved): 0 mechanical problems, 90% blind agreement, exactly 18 sids
+changed, all in the two authorized cells, zero misses among them.
+
+**BLOCKED: OpenRouter credits exhausted.** The Ruling-19f re-sweep died on
+its first calls with HTTP 402 (insufficient credits; the account balance
+ran out after ~$1.33 of cumulative traveler-side spend). Zero shards
+written, $0 spent on the dead run, fully resumable. Plan C (Gemini
+takeover) is NOT available for the traveler side: Ruling 18 forbids the
+model change, the family split reserves Gemini for the system side, and
+Gemini refuses distribution access (M0 finding). Stopped; the owner is
+asked to top up credits (~$0.60 completes the Ruling-19 gate; a few dollars
+covers the remaining study stages).
+
 **Pre-declaration (written before any obedience-comparison data existed):**
 the comparison's Arm A (reasoning-off, the frozen answering regime) will
 additionally be used for an **exploratory early-read of card transmission**

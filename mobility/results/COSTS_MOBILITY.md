@@ -23,8 +23,13 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 
 | 2026-08-03 | M1 full-bank pre-noise sweep (Ruling 16): 400 travelers × 140 scenarios, reasoning-off, distributions recorded; ledger truth from the call cache | OpenRouter qwen3.7-flash | 56,000 calls | 14M+ prompt tokens, 56k completion tokens (1 per answer), 0 reasoning | **$0.583** (estimate was ~$0.45; overrun from card-length prompts, +30%) |
 
-**Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $1.07. Grand total ≈ $1.09.**
-No compute used (Leonardo in maintenance).
+| 2026-08-03 | M1 round-2 card re-render (Ruling 19e), 400 cards, quality-gate retries included | OpenRouter qwen3.7-flash, reasoning on, budget 512 | 928 calls | 885k completion tokens | $0.130 |
+| 2026-08-03 | M1 bank audit round 4 + spot verifications | Gemini 3.5 flash-lite | ≈145 | ≈40k in | ≈$0.013 |
+| 2026-08-03 | M1 round-2 sweep (Ruling 19f) — **DIED AT LAUNCH, HTTP 402 insufficient OpenRouter credits**; zero shards, resumable | OpenRouter qwen3.7-flash | 0 completed | 0 | $0.00 |
+
+**Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $1.21. Grand total ≈ $1.23.**
+No compute used (Leonardo in maintenance). **OpenRouter balance exhausted —
+awaiting owner top-up; ~$0.60 completes the Ruling-19 gate.**
 
 Notes recorded at run time:
 
