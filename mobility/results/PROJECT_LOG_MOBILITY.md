@@ -166,6 +166,44 @@ and orders it "after the bank audit" — so execution ran cards → bank+audit �
 obedience comparison. The frozen document wins over the numbering of a chat
 instruction.
 
+**Cards rendered (step 1).** 400/400 through the two-pass reasoning-on
+factory with a 512-token reasoning budget (operational knob adopted after a
+timing probe; the 34 unbounded-reasoning cards were discarded for
+uniformity, ≈$0.056). Quality gate: leak-free 400/400, lengths 143–229
+words (median 189), one card (t0267) carries an honest truncated-pass flag
+but ends complete and in range. Ledger: 995 calls, $0.189. Numbers:
+`results/m1_cards_qa.json`.
+
+**Bank + audit (step 4, run before step 2 per the frozen ordering).** 140
+scenarios per the frozen design table; audit round 1 (mechanical 0 problems;
+Gemini blind classification 72%) caught four real faults — a 2-cent
+coin-flip fare, variance-salient wording on mean-gap route scenarios,
+price-mediated MOD policy scenarios, distractors leaking HAB through
+novelty/routine wording — all fixed; round 2: 0 mechanical problems, 88%
+blind agreement, route and distractors at 100%. Remaining misses documented
+as inherent (near-equal MOD vehicles read as "no construct"; isolation-block
+anchors read individually). Files: `results/m1_bank_audit_round1.json`,
+`results/m1_bank_audit.json`. NOTE, recorded before the obedience data was
+read: round 1 also flagged the PRC-isolating scenarios as reading like
+car-vs-transit choices; the wording was kept because the sub-block design
+identifies via the across-scenario fare flip point. The obedience run below
+proved the auditor right and the design wrong.
+
+**Obedience comparison (step 2): STOP-AND-ASK.** Frozen rule fired: Arm A
+(reasoning-off) median obedience 0.477 < the 0.5 floor (the relative
+condition passed: 0.477 ≥ 0.570 − 0.10). Arm B (reasoning-on) median 0.570.
+Numbers: `results/m1_obedience.json`; spend $0.224 against the frozen $0.65
+cap. Post-verdict diagnostic on recorded answers (no new API calls): **the
+PRC scenarios do not measure PRC** — on equal-time fare choices ~85% of
+travelers take the cheaper option regardless of planted price sensitivity
+(the cheap option dominates for any character who computes), so the
+PRC-scenario tendency correlates with φ_MOD at −0.38 and with φ_PRC at
++0.05, in BOTH arms. Price sensitivity planted as a cost-coefficient
+multiplier does not show in dominated-choice direction; it needs
+non-dominated price-vs-friction trades within one mode. Every other
+dimension shows real signal in both arms (0.43–0.74). Stopped per the
+owner's instruction; no bank revision, no re-run without a ruling.
+
 **Pre-declaration (written before any obedience-comparison data existed):**
 the comparison's Arm A (reasoning-off, the frozen answering regime) will
 additionally be used for an **exploratory early-read of card transmission**

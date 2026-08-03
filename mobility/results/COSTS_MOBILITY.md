@@ -13,7 +13,12 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 
 | 2026-08-03 | M1 population mint (6 seeded attempts, laptop CPU seconds) | none — pure NumPy | 0 API requests | — | $0.00 |
 
-**Stage M0 total: ≈ $0.0155. Stage M1 so far: $0.00.** No compute used
+| 2026-08-03 | M1 card rendering: 400 two-pass cards + quality-gate retries (ledger truth from the call cache; includes ≈$0.056 for 34 discarded unbounded-reasoning cards, logged when discarded) | OpenRouter qwen3.7-flash, reasoning on, budget 512 | 995 calls | 1.35M completion tokens (mostly reasoning) | $0.189 |
+| 2026-08-03 | M1 reasoning-knob probes (effort / budget tests, 4 calls) | OpenRouter qwen3.7-flash | 4 | ~30k | ≈$0.004 |
+| 2026-08-03 | M1 obedience comparison, both arms 60×24 (frozen cap $0.65) | OpenRouter qwen3.7-flash | 2,880 calls | 1.51M completion tokens (arm B reasoning ≈ 99%) | $0.224 |
+| 2026-08-03 | M1 bank blind audits ×2 rounds + verification probes | Gemini 3.5 flash-lite | ≈283 | ≈75k in / ≈1.5k out | ≈$0.025 |
+
+**Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $0.44.** No compute used
 (Leonardo in maintenance).
 
 Notes recorded at run time:

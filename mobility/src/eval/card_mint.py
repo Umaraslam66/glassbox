@@ -181,15 +181,17 @@ def _checker_user(profile: dict, descriptors: list[str], draft: str) -> str:
 
 def render_card(client: ORClient, pid: str, profile: dict,
                 descriptors: list[str], temperature: float,
-                max_tokens: int, reasoning_budget: int | None = None) -> dict:
+                max_tokens: int, reasoning_budget: int | None = None,
+                attempt: int = 1) -> dict:
+    salt = "" if attempt == 1 else f":a{attempt}"
     draft = client.call(_WRITER_SYSTEM, _writer_user(profile, descriptors),
                         temperature=temperature, max_tokens=max_tokens,
-                        reasoning_on=True, seed_key=f"{pid}:pass1",
+                        reasoning_on=True, seed_key=f"{pid}:pass1{salt}",
                         reasoning_budget=reasoning_budget)
     checked = client.call(_CHECKER_SYSTEM,
                           _checker_user(profile, descriptors, draft["text"]),
                           temperature=temperature, max_tokens=max_tokens,
-                          reasoning_on=True, seed_key=f"{pid}:pass2",
+                          reasoning_on=True, seed_key=f"{pid}:pass2{salt}",
                           reasoning_budget=reasoning_budget)
     card = checked["text"]
     leaks = leak_reasons(card)
@@ -201,7 +203,7 @@ def render_card(client: ORClient, pid: str, profile: dict,
             + "\n\nThe draft violates these rules, fix them: "
             + "; ".join(leaks),
             temperature=temperature, max_tokens=max_tokens,
-            reasoning_on=True, seed_key=f"{pid}:repair",
+            reasoning_on=True, seed_key=f"{pid}:repair{salt}",
             reasoning_budget=reasoning_budget)
         card = repair["text"]
         leaks = leak_reasons(card)
@@ -214,7 +216,14 @@ def render_card(client: ORClient, pid: str, profile: dict,
         "leaks_remaining": leaks,
         "repaired": repaired,
         "truncated": any(r.get("finish") == "length" for r in (draft, checked)),
+        "attempt": attempt,
     }
+
+
+def card_ok(record: dict) -> bool:
+    """Quality gate: leak-free, untruncated, inside the length envelope."""
+    return (not record["leaks_remaining"] and not record["truncated"]
+            and 140 <= record["word_count"] <= 260)
 
 
 def mint_cards(config_path: Path) -> dict:
@@ -243,6 +252,27 @@ def mint_cards(config_path: Path) -> dict:
     with ThreadPoolExecutor(max_workers=int(config["concurrency"])) as pool:
         list(pool.map(work, todo))
 
+    # quality-gate retries: re-render substandard cards with a fresh attempt
+    # salt (same settings) and keep the first attempt that passes the gate.
+    for attempt in (2, 3):
+        bad = [pid for pid in ids
+               if not card_ok(json.loads((card_dir / f"{pid}.json").read_text()))]
+        if not bad:
+            break
+
+        def rework(pid: str) -> None:
+            row = phi[ids.index(pid)]
+            record = render_card(client, pid, profiles[pid], descriptors_for(row),
+                                 float(config["temperature"]), int(config["max_tokens"]),
+                                 reasoning_budget=config.get("reasoning_budget"),
+                                 attempt=attempt)
+            previous = json.loads((card_dir / f"{pid}.json").read_text())
+            if card_ok(record) or not card_ok(previous):
+                (card_dir / f"{pid}.json").write_text(json.dumps(record), encoding="utf-8")
+
+        with ThreadPoolExecutor(max_workers=int(config["concurrency"])) as pool:
+            list(pool.map(rework, bad))
+
     # assemble + aggregate QA (aggregates only leave the vault)
     records = [json.loads((card_dir / f"{pid}.json").read_text()) for pid in ids]
     with (run_dir / "cards.jsonl").open("w", encoding="utf-8") as fh:
@@ -259,9 +289,11 @@ def mint_cards(config_path: Path) -> dict:
         "date": _dt.date.today().isoformat(),
         "n_cards": len(records),
         "n_rendered_this_run": len(todo),
+        "n_failing_quality_gate": sum(not card_ok(r) for r in records),
         "leaks_remaining": sum(bool(r["leaks_remaining"]) for r in records),
         "repaired": sum(r["repaired"] for r in records),
         "truncated": sum(r["truncated"] for r in records),
+        "retried_attempts": sum(r.get("attempt", 1) > 1 for r in records),
         "word_count": {"min": min(words), "median": int(np.median(words)),
                        "max": max(words)},
         "client": client.stats(),
