@@ -204,6 +204,47 @@ non-dominated price-vs-friction trades within one mode. Every other
 dimension shows real signal in both arms (0.43–0.74). Stopped per the
 owner's instruction; no bank revision, no re-run without a ruling.
 
+## 2026-08-03 — Rulings 10–13 executed; re-run verdict: STOP-AND-ASK again (different cause)
+
+**Ruling 10 (PRC redesign).** The 10 PRC-isolating scenarios rebuilt from
+design principles only: within one mode, equal times, a fare saving (grid
+€0.20–€2.60) against a constant non-time friction (per-trip card re-entry in
+the app), no dominated option, no MOD loading. Implemented with a fixed grid
+so the shared rng stream is untouched — verified: exactly the 10
+`mode_prc_*` scenarios changed, the other 130 byte-identical. Audit round 3
+(`results/m1_bank_audit.json`; round 2 preserved as
+`m1_bank_audit_round2.json`): 0 mechanical problems, 88% blind agreement,
+8/10 PRC scenarios read as PRICE and the two stragglers are PRICE at modal
+read over 5 repeats (temp-0 flutter, documented, not a fault).
+
+**Ruling 10d re-run (`results/m1_obedience_r2.json`; run 1's verdict stands
+in the record).** Same travelers, same drawn scenario IDs (4 corrected PRC
+slots), frozen rule verbatim. **The instrument fix worked**: Arm A PRC
+obedience 0.047 → 0.454; every dimension now shows real signal (Arm A
+0.43–0.73). Verdict still **STOP-AND-ASK**: Arm A median 0.4768 — the
+relative condition passed again (0.4768 ≥ 0.5703 − 0.10) and the absolute
+0.5 floor failed again, by 0.023. Spend $0.039 (480 fresh calls, 2,400
+cache hits).
+
+**Why the floor keeps failing, stated for the owner's ruling:** the 0.5
+floor is the frozen M1 QA obedience bar, which is defined on the FULL BANK
+(10–38 designed scenarios per dimension, 400 travelers); the comparison
+reuses it on a 24-scenario, 60-traveler subset where each dimension's index
+sits on 2–7 scenarios (split-half reliabilities 0.60–0.90). The
+pre-declared exploratory reliability-corrected read of the same Arm-A data
+puts every dimension at 0.49–0.77 with a median ≈ 0.51 — consistent with
+the full-bank obedience median clearing the floor through aggregation
+alone. The subset rule embedded a full-bank-calibrated floor into a short
+instrument; that observation is offered to the owner, not acted on.
+
+**Ruling 12 branch taken: FAILED-AGAIN → STOPPED.** No sweep launched, no
+further spend. Sweep machinery (`src/eval/sweep.py`, distribution support
+in the client per Ruling 4, experiment config) is built and idle, awaiting
+a ruling.
+
+**Ruling 13:** the 512-token reasoning bound + uniform re-render is
+recorded as a logged operational amendment (entry above).
+
 **Pre-declaration (written before any obedience-comparison data existed):**
 the comparison's Arm A (reasoning-off, the frozen answering regime) will
 additionally be used for an **exploratory early-read of card transmission**

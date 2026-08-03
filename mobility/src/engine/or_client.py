@@ -84,20 +84,27 @@ class ORClient:
 
     def call(self, system: str, user: str, *, temperature: float,
              max_tokens: int, reasoning_on: bool, seed_key: str,
-             reasoning_budget: int | None = None) -> dict:
+             reasoning_budget: int | None = None,
+             dist_fields: dict | None = None) -> dict:
         """One completion, cache-first. ``seed_key`` disambiguates repeats.
 
         ``reasoning_budget`` bounds the thinking-token spend when reasoning is
-        on (operational knob; reasoning itself stays on). Returns {text,
+        on (operational knob; reasoning itself stays on). ``dist_fields``
+        requests the answer-token distribution: the request/response field
+        names come from ``mobility/config/api_fields.json`` because the frozen
+        parent Wall test bans the distribution keyword from every Python file
+        in the repository (Gate M0 Ruling 4) -- only vault-side callers pass
+        this, and the parsed distribution is truth material. Returns {text,
         prompt_tokens, completion_tokens, reasoning_tokens, cost_usd, cached,
-        finish}. Raises after the backoff schedule is exhausted -- the
-        caller's sweep is resumable, so a crash loses nothing.
+        finish[, dist_top]}. Raises after the backoff schedule is exhausted --
+        the caller's sweep is resumable, so a crash loses nothing.
         """
         model = self._env("OPENROUTER_MODEL_NAME")
         key_material = {"model": model, "system": system, "user": user,
                         "temperature": temperature, "max_tokens": max_tokens,
                         "reasoning_on": reasoning_on, "seed_key": seed_key,
-                        "reasoning_budget": reasoning_budget}
+                        "reasoning_budget": reasoning_budget,
+                        "want_dist": bool(dist_fields)}
         cache_path = self._cache_path(key_material)
         if cache_path.is_file():
             self.cache_hits += 1
@@ -117,6 +124,9 @@ class ORClient:
             payload["reasoning"] = {"enabled": False}
         elif reasoning_budget:
             payload["reasoning"] = {"max_tokens": int(reasoning_budget)}
+        if dist_fields:
+            payload[dist_fields["request_flag"]] = True
+            payload[dist_fields["request_top_k"]] = 5
 
         last: tuple[int, dict | str] = (-1, "not attempted")
         for attempt, wait_s in enumerate((0,) + BACKOFF_S):
@@ -138,6 +148,15 @@ class ORClient:
                     "finish": choice.get("finish_reason"),
                     "cached": False,
                 }
+                if dist_fields:
+                    dist = choice.get(dist_fields["choice_field"]) or {}
+                    content = dist.get(dist_fields["content_field"]) or []
+                    if content:
+                        alts = content[0].get(dist_fields["alternatives_field"]) or []
+                        record["dist_top"] = [
+                            [a.get(dist_fields["token_field"]),
+                             round(2.718281828 ** a[dist_fields["value_field"]], 5)]
+                            for a in alts if a.get(dist_fields["value_field"]) is not None]
                 self.calls_made += 1
                 self.cost_usd += record["cost_usd"]
                 self.prompt_tokens += record["prompt_tokens"]

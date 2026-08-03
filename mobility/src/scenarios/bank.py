@@ -89,17 +89,31 @@ def _mode_crw_iso(level_idx, i):
                [-1, +1], tags=("crw_iso",))
 
 
-def _mode_prc_iso(fare, i):
-    # Times and crowding held constant across the sub-block; only the fare varies.
-    text = (f"Same commute, both options 24 minutes door-to-door, {CROWD_LEVELS[1]} on the train:\n"
-            f"A) Train, EUR {fare:.2f} today.\n"
-            f"B) Drive and park, EUR 6.20.")
-    cheaper_is_a = fare < 6.20
+#: (base fare, saving) grid for the PRC isolation sub-block. Redesigned under
+#: Gate M1 Ruling 10 from design principles only: within ONE mode, equal
+#: times, a price saving against a small NON-TIME friction, so no option
+#: dominates and no other planted dimension loads. The friction is constant
+#: across the sub-block; only the saving moves — the flip point identifies
+#: price sensitivity.
+_PRC_GRID = (
+    (3.60, 0.20), (3.60, 0.35), (3.80, 0.50), (3.40, 0.70), (3.60, 0.90),
+    (3.80, 1.10), (3.40, 1.40), (3.60, 1.80), (3.80, 2.20), (3.60, 2.60),
+)
+
+
+def _mode_prc_iso(base, save, i):
+    text = (f"Your regular train to work, the same train either way, 24 minutes, "
+            f"seats usually available:\n"
+            f"A) Discounted fare, EUR {base - save:.2f}: it only exists in the operator's "
+            f"app, which does not store payment cards — you dig out your bank card and "
+            f"re-enter it before every single trip.\n"
+            f"B) Tap your regular card at the gate, EUR {base:.2f}: no steps, full price.")
     return _sc(f"mode_prc_{i:02d}", "mode", "PRC", text,
-               [(f"Train, 24 min, EUR {fare:.2f}", {"time_min": 24, "cost_eur": fare, "crowding": 1}),
-                ("Drive, 24 min, EUR 6.20", {"time_min": 24, "cost_eur": 6.20, "crowding": 0})],
-               [+1 if cheaper_is_a else -1, -1 if cheaper_is_a else +1],
-               tags=("prc_iso",))
+               [(f"App discount, EUR {base - save:.2f}, card re-entry every trip",
+                 {"time_min": 24, "cost_eur": round(base - save, 2), "friction": 1, "mode": "transit"}),
+                (f"Tap and go, EUR {base:.2f}",
+                 {"time_min": 24, "cost_eur": base, "friction": 0, "mode": "transit"})],
+               [+1, -1], tags=("prc_iso",))
 
 
 def _mode_hab(rng, i):
@@ -241,10 +255,9 @@ def generate_bank(seed: int) -> list[dict]:
     bank += [_mode_mod(rng, i) for i in range(12)]
     crw_levels = [0, 1, 1, 2, 2, 2, 3, 3, 3, 3]
     bank += [_mode_crw_iso(crw_levels[i], i) for i in range(10)]
-    # Fare grid straddles the fixed car cost (6.20) with no near-ties: every
-    # fare sits at least EUR 0.60 from it, so no scenario is a coin flip.
-    fares = (1.20, 1.90, 2.60, 3.40, 4.20, 5.00, 5.60, 6.90, 7.60, 8.40)
-    bank += [_mode_prc_iso(fares[i], i) for i in range(10)]
+    # No shared-rng draws in the PRC sub-block: its grid is fixed, so the
+    # Ruling-10 redesign leaves every other scenario's rng stream untouched.
+    bank += [_mode_prc_iso(*_PRC_GRID[i], i) for i in range(10)]
     bank += [_mode_hab(rng, i) for i in range(4)]
     bank += [_dep_time(rng, i) for i in range(30)]
     bank += [_route_vot(rng, i) for i in range(13)]

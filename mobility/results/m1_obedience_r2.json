@@ -1,0 +1,132 @@
+{
+  "experiment": "m1_obedience_r2",
+  "date": "2026-08-03",
+  "frozen_rule": "off confirmed iff median_off >= median_on - 0.10 AND median_off >= 0.5",
+  "median_obedience_off": 0.4768,
+  "median_obedience_on": 0.5703,
+  "verdict": "STOP-AND-ASK",
+  "arms": {
+    "off": {
+      "obedience": {
+        "VOT": {
+          "r": 0.571,
+          "n_scenarios": 3,
+          "n_travelers": 60
+        },
+        "SCH": {
+          "r": 0.4641,
+          "n_scenarios": 7,
+          "n_travelers": 60
+        },
+        "MOD": {
+          "r": 0.7329,
+          "n_scenarios": 3,
+          "n_travelers": 60
+        },
+        "CRW": {
+          "r": 0.4896,
+          "n_scenarios": 4,
+          "n_travelers": 60
+        },
+        "PRC": {
+          "r": 0.4538,
+          "n_scenarios": 5,
+          "n_travelers": 60
+        },
+        "HAB": {
+          "r": 0.4295,
+          "n_scenarios": 2,
+          "n_travelers": 60
+        }
+      },
+      "n_invalid_answers": 0
+    },
+    "on": {
+      "obedience": {
+        "VOT": {
+          "r": 0.6526,
+          "n_scenarios": 3,
+          "n_travelers": 60
+        },
+        "SCH": {
+          "r": 0.5915,
+          "n_scenarios": 7,
+          "n_travelers": 60
+        },
+        "MOD": {
+          "r": 0.7371,
+          "n_scenarios": 3,
+          "n_travelers": 60
+        },
+        "CRW": {
+          "r": 0.4988,
+          "n_scenarios": 4,
+          "n_travelers": 60
+        },
+        "PRC": {
+          "r": 0.3728,
+          "n_scenarios": 5,
+          "n_travelers": 60
+        },
+        "HAB": {
+          "r": 0.549,
+          "n_scenarios": 2,
+          "n_travelers": 60
+        }
+      },
+      "n_invalid_answers": 0
+    }
+  },
+  "exploratory_transmission_early_read": {
+    "label": "EXPLORATORY (pre-declared in PROJECT_LOG_MOBILITY.md before data existed): frozen section-5 estimator on the 60x24 Arm-A subset, not the full bank",
+    "by_dim": {
+      "VOT": {
+        "r_raw": 0.571,
+        "split_half_reliability": 0.6002,
+        "rho_hat": 0.7371,
+        "n_scenarios": 3
+      },
+      "SCH": {
+        "r_raw": 0.4641,
+        "split_half_reliability": 0.9024,
+        "rho_hat": 0.4886,
+        "n_scenarios": 7
+      },
+      "MOD": {
+        "r_raw": 0.7329,
+        "split_half_reliability": 0.8986,
+        "rho_hat": 0.7731,
+        "n_scenarios": 3
+      },
+      "CRW": {
+        "r_raw": 0.4896,
+        "split_half_reliability": 0.8874,
+        "rho_hat": 0.5197,
+        "n_scenarios": 4
+      },
+      "PRC": {
+        "r_raw": 0.4538,
+        "split_half_reliability": 0.7877,
+        "rho_hat": 0.5113,
+        "n_scenarios": 5
+      },
+      "HAB": {
+        "r_raw": 0.4295,
+        "split_half_reliability": 0.7754,
+        "rho_hat": 0.4878,
+        "n_scenarios": 2
+      }
+    }
+  },
+  "client": {
+    "calls_made": 480,
+    "cache_hits": 2400,
+    "retries": 0,
+    "cost_usd": 0.0393,
+    "prompt_tokens": 178496,
+    "completion_tokens": 264292,
+    "reasoning_tokens": 262702
+  },
+  "n_travelers": 60,
+  "n_scenarios": 24
+}

@@ -1,0 +1,11 @@
+{
+  "experiment": "m1_sweep",
+  "date": "2026-08-03",
+  "temperature": 0.7,
+  "concurrency": 6,
+  "round": 0,
+  "regime": "reasoning-off (frozen; Gate M1 Ruling 11), one round, pre-noise, distributions recorded per Gate M0 Ruling 4",
+  "authorized_by": "Gate M1 Ruling 12, contingent on the obedience re-run passing the frozen rule",
+  "population": "phi_m1.npz seed 3105; cards m1_cards; bank seed 3200 audit round 3",
+  "prereg_commit": "57bfcfb"
+}

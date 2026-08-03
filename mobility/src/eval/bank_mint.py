@@ -118,11 +118,15 @@ def mechanical_audit(bank: list[dict]) -> dict:
     prc = [s for s in bank if "prc_iso" in s["tags"]]
     if {o["attrs"]["time_min"] for s in prc for o in s["options"]} != {24}:
         problems.append("prc_iso: times not held constant")
-    fares = sorted(s["options"][0]["attrs"]["cost_eur"] for s in prc)
-    if len(set(fares)) != 10 or not (fares[0] < 6.20 < fares[-1]):
-        problems.append("prc_iso: fare grid must vary and straddle the car cost")
-    if min(abs(f - 6.20) for f in fares) < 0.4:
-        problems.append("prc_iso: a fare sits too close to the car cost (coin-flip scenario)")
+    if {o["attrs"].get("mode") for s in prc for o in s["options"]} != {"transit"}:
+        problems.append("prc_iso: both options must be the same mode (no MOD loading)")
+    savings = sorted(round(s["options"][1]["attrs"]["cost_eur"]
+                           - s["options"][0]["attrs"]["cost_eur"], 2) for s in prc)
+    if len(set(savings)) != 10 or savings[0] > 0.35 or savings[-1] < 2.0:
+        problems.append(f"prc_iso: savings grid must span small-to-large, saw {savings}")
+    if any(s["options"][0]["attrs"].get("friction") != 1
+           or s["options"][1]["attrs"].get("friction") != 0 for s in prc):
+        problems.append("prc_iso: discounted option must carry the friction, full-price none")
 
     return {"n_problems": len(problems), "problems": problems}
 
