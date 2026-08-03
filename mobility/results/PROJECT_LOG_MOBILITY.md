@@ -106,3 +106,29 @@ PREREGISTRATION_MOBILITY.md remains DRAFT — nothing frozen, no freeze
 commit, no hash to record. Stage M1 free steps (population sampling) NOT
 started: they were gated on a successful freeze. Awaiting the owner's ruling
 on the VOT bar before anything proceeds.
+
+## 2026-08-03 — Rulings 7–8, FREEZE, Stage M1 mint
+
+**Ruling 7 (VOT bar) applied.** Frozen bar: median VOT absolute error ≤ 35%;
+the 25% level retained as a REPORTED scoreboard threshold, never a gate
+condition; mobility card transmission measured at M1 (formula in prereg §5)
+and the transmission decomposition declared as the primary presentation of
+the VOT result; the owner's verbatim sentence recorded in prereg §6. Memo
+(c) stands unchanged in `docs/REACHABILITY_MEMOS.md`. Interpretation note,
+surfaced at Gate M1a: the ruling's text said "Gate M3 bar," but the one VOT
+median-error bar lives in Gate M2 (PRD §5, structural recovery) — applied
+there; a move between gates would be an owner-ordered amendment.
+
+**Ruling 8 applied.** Exact formulas for the M4 switching-frequency index
+W_i and the lateness-risk exposure index X_i (buffer b = 5 min) written into
+prereg §5; the Gate M4 coherence bars now reference them.
+
+**FREEZE.** `PREREGISTRATION_MOBILITY.md` marked FROZEN and committed:
+**commit `57bfcfb` (57bfcfba750e20cadc40a4f5ec3c0b32f0b13e88)**. Test counts
+at that commit: parent Wall test 10 passed; mobility suite 8 passed +
+2 expected skips (no data dir yet; live smoke opt-in); full parent suite
+726 passed. Bars never move from here.
+
+**Stage M1 free steps (no card rendering, no scenario answering, zero API
+spend).** Population minted per the frozen design: see the entry below and
+`results/m1_mint_qa.json` for every number.
