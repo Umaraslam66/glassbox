@@ -57,3 +57,52 @@ contingent on the pilot's log-probability finding. Nothing frozen.
 **Gate M0: HARD STOP.** Awaiting owner decisions: (1) the 6 dimensions +
 correlation matrix + scenario-bank design, (2) the preregistration freeze
 (bars, splits, model assignment, noise mechanism).
+
+## 2026-08-03 — Gate M0 review executed; freeze STOPPED by reachability memo (c)
+
+**Owner decisions recorded.** (1) Parameters, correlation matrix, and
+scenario-bank design APPROVED as drafted. (2) Model assignment APPROVED:
+Qwen traveler side / Gemini system side; any move to Gemma is stop-and-ask.
+(3) Answering regime Proposal A APPROVED: cards reasoning-on, answers
+reasoning-off, parent noise mechanism ported — conditional on the obedience
+comparison now pre-declared in full inside PREREGISTRATION_MOBILITY.md §8
+(60 travelers by seed 2141, 24 scenarios by stratified seed 2142, numeric
+rule frozen-form). Repo stays public; nothing is pushed without an explicit
+owner order.
+
+**Ruling 4 (word-ban workaround).** No string-assembly of the banned
+token-distribution keyword anywhere in mobility code. The API field names
+live in `mobility/config/api_fields.json`; code reads them from config, with
+a comment at the read site (`mobility/tools/m0_pilot.py`) and a sentence in
+the preregistration §8. The parent Wall test stays untouched and green.
+
+**Ruling 5 (git).** `PRD_MOBILITY.md` removed from version control and kept
+local (`mobility/.gitignore`), matching the parent PRD's treatment. Because
+the two Stage M0 commits existed only locally, they were rebuilt without the
+file rather than rewritten later — commit hashes changed accordingly; the
+old hashes existed on no remote. Owner's uncommitted `.claude/CLAUDE.md`
+edit left untouched.
+
+**Ruling 6 (pilot provenance).** The pilot recreated as
+`mobility/tools/m0_pilot.py` using the Ruling-4 config approach, committed
+with `mobility/tests/test_m0_pilot_tool.py`: offline tests hold the tool to
+the shape of `results/m0_pilot_summary.json` (fields and sanity, not
+numbers), and the opt-in live smoke (`GLASSBOX_M0_SMOKE=1`) passed 5/5
+(≈$0.002, in COSTS_MOBILITY.md). The M0 record's numbers stand.
+
+**Freeze preconditions.** Three reachability memos written to
+`mobility/docs/REACHABILITY_MEMOS.md` (mechanistic arguments only, no new
+data, no API calls). Verdicts: (a) peak spreading — attainable, not trivial,
+PASSES; (b) M4 coherence — attainable, not trivial, PASSES; (c) VOT median
+error ≤ 25% — **NOT SHOWN REACHABLE**: at the parent-measured transmission
+ceiling (median 0.83) the card-writing step alone produces 23.0–24.2% median
+VOT error, leaving an estimation-error budget (SD 0.148–0.225 latent) below
+any plausible per-traveler MNL noise level; at the parent's worst dimension
+(0.77–0.75 range) the ceiling alone breaks the bar. Full arithmetic in the
+memo.
+
+**Consequence, per the owner's precondition 2: STOPPED.**
+PREREGISTRATION_MOBILITY.md remains DRAFT — nothing frozen, no freeze
+commit, no hash to record. Stage M1 free steps (population sampling) NOT
+started: they were gated on a successful freeze. Awaiting the owner's ruling
+on the VOT bar before anything proceeds.
