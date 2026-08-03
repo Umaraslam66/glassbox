@@ -1,0 +1,11 @@
+{
+  "experiment": "m1_cards",
+  "date": "2026-08-03",
+  "seed_profiles": 3150,
+  "temperature": 0.7,
+  "max_tokens": 3500,
+  "concurrency": 6,
+  "passes": "write + self-check (reasoning ON, frozen regime), mechanical leak check with one repair pass",
+  "population": "phi_m1.npz, seed 3105, prereg 57bfcfb",
+  "notes": "Stage M1 proper step 1. Full cards and prompts stay vault-side; only public profiles (age band, occupation type, household, area type; sampled independently of phi, seed 3150) are emitted system-side. Concurrency raised 3->6 mid-run (run is cached+resumable; backoff client absorbs upstream 429s); reasoning stays ON per frozen regime \u2014 the effort knob was tested and barely changes qwen reasoning spend."
+}
