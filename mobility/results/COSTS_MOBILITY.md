@@ -21,8 +21,10 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 | 2026-08-03 | M1 obedience re-run on corrected bank (Ruling 10d; 480 fresh calls + 2,400 cache hits) | OpenRouter qwen3.7-flash | 480 | 264k completion tokens | $0.039 |
 | 2026-08-03 | M1 bank audit round 3 + PRC flutter verification (150 calls) | Gemini 3.5 flash-lite | ≈150 | ≈40k in | ≈$0.014 |
 
-**Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $0.49.** No compute used
-(Leonardo in maintenance).
+| 2026-08-03 | M1 full-bank pre-noise sweep (Ruling 16): 400 travelers × 140 scenarios, reasoning-off, distributions recorded; ledger truth from the call cache | OpenRouter qwen3.7-flash | 56,000 calls | 14M+ prompt tokens, 56k completion tokens (1 per answer), 0 reasoning | **$0.583** (estimate was ~$0.45; overrun from card-length prompts, +30%) |
+
+**Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $1.07. Grand total ≈ $1.09.**
+No compute used (Leonardo in maintenance).
 
 Notes recorded at run time:
 

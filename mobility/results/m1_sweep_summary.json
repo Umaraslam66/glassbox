@@ -1,0 +1,31 @@
+{
+  "experiment": "m1_sweep",
+  "date": "2026-08-03",
+  "n_travelers": 400,
+  "n_scenarios": 140,
+  "n_answers": 56000,
+  "n_invalid_answers": 83,
+  "share_with_distribution": 1.0,
+  "travelers_already_done_at_start": 107,
+  "client": {
+    "calls_made": 40428,
+    "cache_hits": 592,
+    "retries": 938,
+    "cost_usd": 0.4216,
+    "prompt_tokens": 14020239,
+    "completion_tokens": 40428,
+    "reasoning_tokens": 0
+  },
+  "config": {
+    "experiment": "m1_sweep",
+    "date": "2026-08-03",
+    "temperature": 0.7,
+    "concurrency": 16,
+    "round": 0,
+    "regime": "reasoning-off (frozen; Gate M1 Ruling 11), one round, pre-noise, distributions recorded per Gate M0 Ruling 4",
+    "authorized_by": "Gate M1 Ruling 12, contingent on the obedience re-run passing the frozen rule",
+    "population": "phi_m1.npz seed 3105; cards m1_cards; bank seed 3200 audit round 3",
+    "prereg_commit": "57bfcfb",
+    "notes": "Concurrency 6->12 after 8 min at ~1.2 calls/s under upstream 429 backoffs (resumable relaunch; cache intact). Then 12->16 at 104/400 shards (pace oscillating 3-14 calls/s with the upstream pool)."
+  }
+}

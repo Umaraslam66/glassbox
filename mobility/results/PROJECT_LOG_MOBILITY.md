@@ -245,6 +245,26 @@ a ruling.
 **Ruling 13:** the 512-token reasoning bound + uniform re-render is
 recorded as a logged operational amendment (entry above).
 
+## 2026-08-03 — Ruling 16 executed: sweep complete, obedience gate FAILED, stopped
+
+**Sweep (`results/m1_sweep_summary.json`).** 56,000 answers (400 × 140),
+reasoning-off, one round, 83 invalid (0.15%), 100% carry recorded
+answer-token distributions. Ledger truth: $0.583 (the ~$0.45 estimate was
+30% under — prompts carry full cards at ~350 tokens each). Concurrency was
+stepped 6 → 12 → 16 against the oscillating upstream pool; 938 retries, no
+failures. All pre-noise material vault-side.
+
+**Ruling-16 gate: FAILED.** Full-bank pre-noise obedience, the frozen M1 QA
+bar on its native instrument (`results/m1_qa.json`): VOT +0.714, SCH
++0.450, MOD +0.765, CRW +0.361, PRC +0.488, HAB +0.464 — **median 0.4761 <
+0.5**. Stopped at that finding per the ruling: no noise tuning, no
+transmission computation, no further spend. The orchestrator's
+reliability-discount hypothesis from the comparison stage is hereby
+recorded as WRONG: full-bank aggregation did not lift the median; the
+renderer's obedience genuinely sits just under the bar on four dimensions
+(SCH, CRW, PRC, HAB), with CRW weakest at 0.361. An honest bar miss,
+surfaced at the gate where it occurred.
+
 **Pre-declaration (written before any obedience-comparison data existed):**
 the comparison's Arm A (reasoning-off, the frozen answering regime) will
 additionally be used for an **exploratory early-read of card transmission**
