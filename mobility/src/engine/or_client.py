@@ -83,17 +83,21 @@ class ORClient:
     # -- public ------------------------------------------------------------
 
     def call(self, system: str, user: str, *, temperature: float,
-             max_tokens: int, reasoning_on: bool, seed_key: str) -> dict:
+             max_tokens: int, reasoning_on: bool, seed_key: str,
+             reasoning_budget: int | None = None) -> dict:
         """One completion, cache-first. ``seed_key`` disambiguates repeats.
 
-        Returns {text, prompt_tokens, completion_tokens, reasoning_tokens,
-        cost_usd, cached, finish}. Raises after the backoff schedule is
-        exhausted -- the caller's sweep is resumable, so a crash loses nothing.
+        ``reasoning_budget`` bounds the thinking-token spend when reasoning is
+        on (operational knob; reasoning itself stays on). Returns {text,
+        prompt_tokens, completion_tokens, reasoning_tokens, cost_usd, cached,
+        finish}. Raises after the backoff schedule is exhausted -- the
+        caller's sweep is resumable, so a crash loses nothing.
         """
         model = self._env("OPENROUTER_MODEL_NAME")
         key_material = {"model": model, "system": system, "user": user,
                         "temperature": temperature, "max_tokens": max_tokens,
-                        "reasoning_on": reasoning_on, "seed_key": seed_key}
+                        "reasoning_on": reasoning_on, "seed_key": seed_key,
+                        "reasoning_budget": reasoning_budget}
         cache_path = self._cache_path(key_material)
         if cache_path.is_file():
             self.cache_hits += 1
@@ -111,6 +115,8 @@ class ORClient:
         }
         if not reasoning_on:
             payload["reasoning"] = {"enabled": False}
+        elif reasoning_budget:
+            payload["reasoning"] = {"max_tokens": int(reasoning_budget)}
 
         last: tuple[int, dict | str] = (-1, "not attempted")
         for attempt, wait_s in enumerate((0,) + BACKOFF_S):

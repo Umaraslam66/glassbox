@@ -181,14 +181,16 @@ def _checker_user(profile: dict, descriptors: list[str], draft: str) -> str:
 
 def render_card(client: ORClient, pid: str, profile: dict,
                 descriptors: list[str], temperature: float,
-                max_tokens: int) -> dict:
+                max_tokens: int, reasoning_budget: int | None = None) -> dict:
     draft = client.call(_WRITER_SYSTEM, _writer_user(profile, descriptors),
                         temperature=temperature, max_tokens=max_tokens,
-                        reasoning_on=True, seed_key=f"{pid}:pass1")
+                        reasoning_on=True, seed_key=f"{pid}:pass1",
+                        reasoning_budget=reasoning_budget)
     checked = client.call(_CHECKER_SYSTEM,
                           _checker_user(profile, descriptors, draft["text"]),
                           temperature=temperature, max_tokens=max_tokens,
-                          reasoning_on=True, seed_key=f"{pid}:pass2")
+                          reasoning_on=True, seed_key=f"{pid}:pass2",
+                          reasoning_budget=reasoning_budget)
     card = checked["text"]
     leaks = leak_reasons(card)
     repaired = False
@@ -199,7 +201,8 @@ def render_card(client: ORClient, pid: str, profile: dict,
             + "\n\nThe draft violates these rules, fix them: "
             + "; ".join(leaks),
             temperature=temperature, max_tokens=max_tokens,
-            reasoning_on=True, seed_key=f"{pid}:repair")
+            reasoning_on=True, seed_key=f"{pid}:repair",
+            reasoning_budget=reasoning_budget)
         card = repair["text"]
         leaks = leak_reasons(card)
         repaired = True
@@ -233,7 +236,8 @@ def mint_cards(config_path: Path) -> dict:
     def work(pid: str) -> None:
         row = phi[ids.index(pid)]
         record = render_card(client, pid, profiles[pid], descriptors_for(row),
-                             float(config["temperature"]), int(config["max_tokens"]))
+                             float(config["temperature"]), int(config["max_tokens"]),
+                             reasoning_budget=config.get("reasoning_budget"))
         (card_dir / f"{pid}.json").write_text(json.dumps(record), encoding="utf-8")
 
     with ThreadPoolExecutor(max_workers=int(config["concurrency"])) as pool:

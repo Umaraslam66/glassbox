@@ -7,5 +7,6 @@
   "concurrency": 6,
   "passes": "write + self-check (reasoning ON, frozen regime), mechanical leak check with one repair pass",
   "population": "phi_m1.npz, seed 3105, prereg 57bfcfb",
-  "notes": "Stage M1 proper step 1. Full cards and prompts stay vault-side; only public profiles (age band, occupation type, household, area type; sampled independently of phi, seed 3150) are emitted system-side. Concurrency raised 3->6 mid-run (run is cached+resumable; backoff client absorbs upstream 429s); reasoning stays ON per frozen regime \u2014 the effort knob was tested and barely changes qwen reasoning spend."
+  "notes": "Stage M1 proper step 1. Full cards and prompts stay vault-side; only public profiles (age band, occupation type, household, area type; sampled independently of phi, seed 3150) are emitted system-side. Concurrency raised 3->6 mid-run (run is cached+resumable; backoff client absorbs upstream 429s); reasoning stays ON per frozen regime \u2014 the effort knob was tested and barely changes qwen reasoning spend. Reasoning budget 512 tokens per call adopted after a timing probe (unbounded qwen reasoning spent ~5k tokens and ~40s per call; 512 gives 9s with equal card quality; 1024 degraded into truncation). The 34 cards rendered unbounded were discarded (~USD 0.05, logged) and all 400 re-rendered uniformly.",
+  "reasoning_budget": 512
 }
