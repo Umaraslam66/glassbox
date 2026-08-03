@@ -11,7 +11,10 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 
 | 2026-08-03 | Ruling-6 live smoke of the committed pilot tool (`mobility/tools/m0_pilot.py --small` path via `GLASSBOX_M0_SMOKE=1`) | OpenRouter qwen3.7-flash + Gemini flash-lite | 14 + 4 | small run; shape check only | ≈$0.002 |
 
-**Stage M0 total: ≈ $0.0155.** No compute used (Leonardo in maintenance).
+| 2026-08-03 | M1 population mint (6 seeded attempts, laptop CPU seconds) | none — pure NumPy | 0 API requests | — | $0.00 |
+
+**Stage M0 total: ≈ $0.0155. Stage M1 so far: $0.00.** No compute used
+(Leonardo in maintenance).
 
 Notes recorded at run time:
 

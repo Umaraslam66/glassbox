@@ -1,0 +1,12 @@
+{
+  "experiment": "m1_mint",
+  "date": "2026-08-03",
+  "seed": 3105,
+  "n": 400,
+  "prereg_commit": "57bfcfb",
+  "code": [
+    "mobility/src/travelers/sampler.py",
+    "mobility/src/eval/mint.py"
+  ],
+  "notes": "Stage M1 free step: population mint only. No cards, no answers, no API spend. Seed policy per frozen prereg section 2: on tolerance failure remint with the next sequential seed (3101, ...), every attempt logged. Reserved seeds 2141/2142 (obedience comparison) untouched. Wobble parameters are minted at the noise-layer stage with their own recorded seed; independence from phi makes later minting statistically identical. ATTEMPT LOG: seed 3100 failed mint tolerances (VOT realized SD 1.0341 > 1.02, all other checks pass) -> remint with 3101 per frozen policy. FURTHER ATTEMPTS: seed 3102: failed corr_within_tolerance,sds_ok; seed 3103: failed corr_within_tolerance,designed_zeros_ok,sds_ok; seed 3104: failed corr_within_tolerance,designed_zeros_ok; seed 3105: PASS."
+}

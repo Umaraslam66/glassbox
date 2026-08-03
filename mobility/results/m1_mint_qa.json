@@ -1,0 +1,191 @@
+{
+  "dims": [
+    "VOT",
+    "SCH",
+    "MOD",
+    "CRW",
+    "PRC",
+    "HAB"
+  ],
+  "realized_corr": [
+    [
+      1.0,
+      0.262,
+      0.1727,
+      0.2592,
+      -0.0036,
+      -0.1363
+    ],
+    [
+      0.262,
+      1.0,
+      0.132,
+      0.1359,
+      -0.1641,
+      0.3055
+    ],
+    [
+      0.1727,
+      0.132,
+      1.0,
+      0.2495,
+      -0.1722,
+      0.2905
+    ],
+    [
+      0.2592,
+      0.1359,
+      0.2495,
+      1.0,
+      -0.0213,
+      0.0851
+    ],
+    [
+      -0.0036,
+      -0.1641,
+      -0.1722,
+      -0.0213,
+      1.0,
+      0.0066
+    ],
+    [
+      -0.1363,
+      0.3055,
+      0.2905,
+      0.0851,
+      0.0066,
+      1.0
+    ]
+  ],
+  "planted_corr": [
+    [
+      1.0,
+      0.25,
+      0.2,
+      0.3,
+      0.0,
+      -0.1
+    ],
+    [
+      0.25,
+      1.0,
+      0.1,
+      0.1,
+      -0.15,
+      0.35
+    ],
+    [
+      0.2,
+      0.1,
+      1.0,
+      0.25,
+      -0.2,
+      0.3
+    ],
+    [
+      0.3,
+      0.1,
+      0.25,
+      1.0,
+      0.0,
+      0.1
+    ],
+    [
+      0.0,
+      -0.15,
+      -0.2,
+      0.0,
+      1.0,
+      0.05
+    ],
+    [
+      -0.1,
+      0.35,
+      0.3,
+      0.1,
+      0.05,
+      1.0
+    ]
+  ],
+  "max_abs_corr_dev": 0.0445,
+  "designed_zeros_realized": {
+    "VOT-PRC": -0.0036,
+    "CRW-PRC": -0.0213
+  },
+  "marginals": {
+    "VOT": {
+      "mean": -0.081,
+      "sd": 0.9778,
+      "clip_share": 0.035
+    },
+    "SCH": {
+      "mean": -0.0168,
+      "sd": 0.9553,
+      "clip_share": 0.0475
+    },
+    "MOD": {
+      "mean": 0.0588,
+      "sd": 0.9122,
+      "clip_share": 0.0425
+    },
+    "CRW": {
+      "mean": -0.099,
+      "sd": 0.9547,
+      "clip_share": 0.0575
+    },
+    "PRC": {
+      "mean": -0.0583,
+      "sd": 0.918,
+      "clip_share": 0.0475
+    },
+    "HAB": {
+      "mean": 0.077,
+      "sd": 0.9592,
+      "clip_share": 0.0575
+    }
+  },
+  "vot_eur_per_hour": {
+    "median": 11.71,
+    "p5": 4.82,
+    "p95": 26.83,
+    "min": 3.99,
+    "max": 36.05,
+    "anchor": "12*exp(0.55*phi), median target 12, construction range [4.0, 36.1]"
+  },
+  "diversity_phi_level": {
+    "participation_ratio_realized_corr": 5.107,
+    "pairwise_distance_min": 0.4438,
+    "pairwise_distance_median": 3.097,
+    "note": "choice-based diversity bars (pairwise agreement, choice-matrix participation ratio) require answers and are graded at Gate M1 proper"
+  },
+  "tolerances": {
+    "max_abs_corr_dev": 0.1,
+    "designed_zero_abs_max": 0.1,
+    "mean_abs_max": 0.1,
+    "sd_range": [
+      0.9,
+      1.02
+    ],
+    "clip_share_max": 0.07,
+    "vot_median_range_eur_h": [
+      10.8,
+      13.2
+    ]
+  },
+  "checks": {
+    "corr_within_tolerance": true,
+    "designed_zeros_ok": true,
+    "means_ok": true,
+    "sds_ok": true,
+    "clip_ok": true,
+    "vot_median_ok": true,
+    "no_duplicates": true
+  },
+  "all_checks_pass": true,
+  "experiment": "m1_mint",
+  "seed": 3105,
+  "n": 400,
+  "date": "2026-08-03",
+  "prereg_commit": "57bfcfb",
+  "deposited": true
+}

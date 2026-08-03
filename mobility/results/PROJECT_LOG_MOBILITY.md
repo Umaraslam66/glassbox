@@ -130,5 +130,25 @@ at that commit: parent Wall test 10 passed; mobility suite 8 passed +
 726 passed. Bars never move from here.
 
 **Stage M1 free steps (no card rendering, no scenario answering, zero API
-spend).** Population minted per the frozen design: see the entry below and
-`results/m1_mint_qa.json` for every number.
+spend).** Population minted per the frozen design. The pure sampler lives in
+`src/travelers/sampler.py` (public design constants, no paths); the
+grader-side mint (`src/eval/mint.py`, the vault's only writer) deposits φ
+and grades the realized draw against the frozen §2 mint tolerances, emitting
+aggregates only to `results/m1_mint_qa.json` — the source of truth for every
+number below.
+
+**Mint attempt log (frozen sequential-seed policy):** seed 3100 failed
+(VOT SD 1.0341 > 1.02), 3101 failed (HAB SD 1.0209), 3102 failed
+(corr dev + SD), 3103 failed (corr dev + designed zero + SD), 3104 failed
+(corr dev + designed zero), **3105 PASSED all seven checks and was
+deposited** (400 travelers, `phi_m1.npz` in the vault, prereg commit 57bfcfb
+stamped inside). The [0.90, 1.02] SD band proved the binding tolerance —
+joint pass rate ≈ 1 in 6 draws — which is the tolerance doing its job, not a
+defect; all attempts recorded here and in `experiments/m1_mint.json`.
+
+**Headline QA of the accepted draw (convenience copies; file wins):** max
+absolute correlation deviation from planted 0.0445; designed zeros realized
+at VOT–PRC −0.004 and CRW–PRC −0.021; VOT median €11.71/h (p5 €4.82,
+p95 €26.83); φ-level participation ratio 5.11; minimum pairwise traveler
+distance 0.44 (no duplicates). Choice-based diversity bars are graded at
+Gate M1 proper, after rendering is authorized.
