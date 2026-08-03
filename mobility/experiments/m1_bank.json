@@ -1,0 +1,6 @@
+{
+  "experiment": "m1_bank",
+  "date": "2026-08-03",
+  "seed": 3200,
+  "notes": "Stage M1 proper step 4 (run before the obedience comparison because the frozen prereg draws its 24 scenarios from the audited bank). Design views (primaries, scores, tags) to the vault; public text+attributes to mobility/data/bank/scenarios.json. Audit = mechanical checks + Gemini flash-lite blind classification of public text only."
+}

@@ -1,0 +1,94 @@
+{
+  "experiment": "m1_bank",
+  "date": "2026-08-03",
+  "seed": 3200,
+  "n_scenarios": 140,
+  "mechanical_audit": {
+    "n_problems": 0,
+    "problems": []
+  },
+  "blind_audit": {
+    "per_block": {
+      "mode": {
+        "n": 50,
+        "agree": 33,
+        "misses": [
+          "mode_mod_01: designed MOD read as None",
+          "mode_mod_03: designed MOD read as None",
+          "mode_mod_04: designed MOD read as None",
+          "mode_mod_05: designed MOD read as None",
+          "mode_mod_06: designed MOD read as None",
+          "mode_mod_07: designed MOD read as None",
+          "mode_mod_08: designed MOD read as None",
+          "mode_mod_09: designed MOD read as None",
+          "mode_mod_10: designed MOD read as PRC",
+          "mode_mod_11: designed MOD read as VOT",
+          "mode_crw_00: designed CRW read as PRC",
+          "mode_crw_01: designed CRW read as MOD",
+          "mode_crw_02: designed CRW read as MOD",
+          "mode_prc_01: designed PRC read as MOD",
+          "mode_prc_07: designed PRC read as MOD",
+          "mode_prc_08: designed PRC read as MOD",
+          "mode_prc_09: designed PRC read as MOD"
+        ],
+        "agreement": 0.66
+      },
+      "dep_time": {
+        "n": 30,
+        "agree": 30,
+        "misses": [],
+        "agreement": 1.0
+      },
+      "route": {
+        "n": 25,
+        "agree": 13,
+        "misses": [
+          "route_vot_00: designed VOT read as SCH",
+          "route_vot_01: designed VOT read as SCH",
+          "route_vot_02: designed VOT read as SCH",
+          "route_vot_04: designed VOT read as SCH",
+          "route_vot_05: designed VOT read as SCH",
+          "route_vot_06: designed VOT read as SCH",
+          "route_vot_07: designed VOT read as SCH",
+          "route_vot_08: designed VOT read as SCH",
+          "route_vot_09: designed VOT read as SCH",
+          "route_vot_10: designed VOT read as SCH",
+          "route_vot_11: designed VOT read as SCH",
+          "route_vot_12: designed VOT read as SCH"
+        ],
+        "agreement": 0.52
+      },
+      "policy": {
+        "n": 25,
+        "agree": 19,
+        "misses": [
+          "policy_mod_00: designed MOD read as PRC",
+          "policy_mod_01: designed MOD read as PRC",
+          "policy_mod_02: designed MOD read as PRC",
+          "policy_mod_03: designed MOD read as PRC",
+          "policy_mod_04: designed MOD read as PRC",
+          "policy_mod_05: designed MOD read as PRC"
+        ],
+        "agreement": 0.76
+      },
+      "distractor": {
+        "n": 10,
+        "agree": 6,
+        "misses": [
+          "distr_01: designed None read as HAB",
+          "distr_04: designed None read as HAB",
+          "distr_07: designed None read as HAB",
+          "distr_09: designed None read as HAB"
+        ],
+        "agreement": 0.6
+      }
+    },
+    "overall_agreement": 0.721
+  },
+  "config": {
+    "experiment": "m1_bank",
+    "date": "2026-08-03",
+    "seed": 3200,
+    "notes": "Stage M1 proper step 4 (run before the obedience comparison because the frozen prereg draws its 24 scenarios from the audited bank). Design views (primaries, scores, tags) to the vault; public text+attributes to mobility/data/bank/scenarios.json. Audit = mechanical checks + Gemini flash-lite blind classification of public text only."
+  }
+}
