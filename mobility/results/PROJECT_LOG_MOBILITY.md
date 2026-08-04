@@ -1062,3 +1062,53 @@ skip; both wall tests green. Stage M5 spend $0.00; grand total ≈ $2.34.
 Nothing pushed; repo local per standing rule.
 
 **GATE M5: HARD STOP.** Report and summary await the owner's review.
+
+## 2026-08-04 — Gate M5-final: Viewer V2 (the living corridor) built and verified; Rulings 36–37 NOT ON RECORD — stopped on that portion
+
+**Viewer V2, full visual rebuild per the directive.** A stylized top-down
+corridor world on canvas: origin neighbourhood, destination district,
+route A crossing a river bridge that visibly pinches (guard-wall
+narrowing), route B arcing as the ring road; night-to-dawn ambiance (CSS
+dawn layer keyed to the clock); vehicles as glowing comet dots with
+persistence trails, amber on A, cyan on B. **Every moving element is
+interpolated from the recorded five fields only**: each traveler drives
+free-flow to their queue-join point, spends exactly their recorded delay
+creeping to the pinch (queue length ∝ delay), releases, and arrives at
+their recorded arrival minute; arrivals pool as light in the district.
+Experience: morning replay with scrubbing and live clock; twenty-mornings
+autoplay with the per-day learning caption ("day N · k travelers have
+tried the ring road", computed from the log); 4-beat story mode with
+data-driven captions and the t0287 spotlight (ringed, labeled, others
+dimmed); share mode (clean 16:9, title + stat strip, day chip hidden);
+"p" = PNG frame (canvas composite), "r" = 10-second WebM via native
+MediaRecorder (no dependencies). The numbers panes (histogram + day-1
+outline, S-sparkline with the exploratory day-2 annotation, inspector
+with the ratchet shortlist) moved below the fold, kept.
+
+**Performance, measured:** the first build used canvas shadowBlur per dot
+and starved the renderer; rebuilt on pre-rendered glow sprites with
+additive compositing and destination-out trail fade — **measured 0.38 ms
+per frame (≈2,600 fps headroom) at 1600×900 with 300 travelers**; the
+day-loop clamp now also survives occluded-window rAF throttling. Verified
+live in-browser; frames judged and re-taken (bloom softened once, share
+chip collision fixed once) before finals.
+
+**Final frames committed:** `results/v2_day1_jam.jpg` (the day-1 queue
+burning to the pinch), `v2_day20_spread.jpg` (free flow + cyan ring-road
+cohort), `v2_beat_ratchet.jpg` (05:34, t0287 alone, ringed and labeled),
+`v2_share_mode.jpg` (clean 16:9 share frame), `v2_numbers.jpg` (the
+below-fold numbers section). Truth-leakage check re-run at build end:
+6,000 rows, fields exactly the system-side allowlist, **PASS**.
+
+**Rulings 36–37: STOPPED, not executed.** The directive says to apply
+them "exactly as previously ordered", but no such order exists in this
+session, in this log (the ruling trail ends at 35), in the report, or in
+cross-session memory. The three summary corrections (Ruling 36) cannot be
+known without the ruling text, and inventing them would violate the
+study's own discipline. Prepared WITHOUT acting, read-only, toward Ruling
+37's stated intent: remote = github.com/Umaraslam66/glassbox; the
+would-be push is 29 local commits on main (85aabbf scaffold → the Gate
+M5-final commit); exclusion scan clean — no .env/secret/key-named files
+tracked, zero tracked files under mobility/data/, PRD_MOBILITY.md
+untracked per Ruling 5, both wall tests green. NOTHING PUSHED. Awaiting
+the owner's verbatim Ruling 36 corrections and Ruling 37 specification.

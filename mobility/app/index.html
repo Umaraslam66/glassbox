@@ -8,24 +8,27 @@
 </head>
 <body>
 <!--
-  Stage M4 simulation viewer — final craft pass (Gate M4 review directive).
-  Single page, no backend, no dependencies; works from a static file open.
-  Reads the SYSTEM-SIDE trajectory log only: pid, day, route, dep_min,
-  travel_min, arrive_min. No planted parameters, no cards, ever.
+  Stage M4 viewer V2 — the living-corridor rebuild (Gate M5-final directive).
+  Single page, no backend, no dependencies; static-file open works.
+  Every moving element is driven by the recorded SYSTEM-SIDE log only:
+  {pid, day, route, dep_min, travel_min, arrive_min}. Queue positions are
+  interpolated from each traveler's own recorded departure and travel time;
+  nothing is invented. No planted parameters, no cards, ever.
 
   Run:  cd mobility/app && python -m http.server 8000
-        open http://localhost:8000, then load (or drag anywhere)
+        open http://localhost:8000, load (or drag anywhere)
         ../data/runs/m4_full/trajectories.jsonl
-  Keys: left / right arrows scrub the day, space replays the morning.
+  Keys: space play/pause · arrows scrub the day · p PNG frame ·
+        r 10-second WebM capture (native MediaRecorder, no libraries)
 -->
-<header>
+<header id="header">
   <div class="title-block">
     <h1>Twenty mornings</h1>
-    <p class="strap">300 LLM travelers · two routes · one bottleneck · 20 mornings</p>
+    <p class="strap">300 LLM travelers · two routes · one bottleneck</p>
   </div>
   <div class="stats" id="stats" hidden>
     <div class="stat"><span class="num" id="stat-peak">–</span>
-      <span class="lbl">peak 15-min share, day 1 → 20</span></div>
+      <span class="lbl">peak share, day 1 → 20</span></div>
     <div class="stat"><span class="num" id="stat-b">–</span>
       <span class="lbl">on the ring road by day 20</span></div>
     <div class="stat"><span class="num" id="stat-travel">–</span>
@@ -39,60 +42,68 @@
 <p id="status" class="status">drop a trajectory log anywhere on this page</p>
 
 <main hidden id="main">
-  <div class="day-strip">
-    <button id="play" class="play" title="replay this morning (space)">&#9654;</button>
-    <input type="range" id="day-slider" min="1" max="20" value="1">
-    <span id="day-label" class="badge day-badge">day 1</span>
-    <span id="clock" class="badge clock">—</span>
-    <label class="ghost-toggle"><input type="checkbox" id="ghost-toggle" checked>
-      day-1 ghost</label>
-  </div>
-
-  <section class="pane" id="day-pane">
-    <h2>One morning, replayed</h2>
-    <canvas id="day-canvas" width="1400" height="360"></canvas>
-    <p class="caption">Each dot is one traveler finishing the commute —
-      <span class="a">amber on route A</span>, through the bottleneck (the pinch),
-      <span class="b">cyan on route B</span>, the longer steady ring road.
-      Bigger, brighter dots sat longer in the queue. On day&nbsp;1 everyone
-      crowds route&nbsp;A; press play to watch the morning unfold.
-      <span class="hint">Click a dot to inspect that traveler below.</span></p>
+  <section id="world">
+    <div id="map-frame">
+      <canvas id="map-canvas" width="1600" height="900"></canvas>
+      <div id="dawn"></div>
+      <canvas id="anim-canvas" width="1600" height="900"></canvas>
+      <div id="overlay">
+        <span id="clock" class="clock">06:00</span>
+        <span id="day-chip" class="day-chip">day 1</span>
+        <p id="caption" class="caption-line"></p>
+        <div id="share-title" hidden>
+          <h2>Twenty mornings</h2>
+          <p>300 LLM travelers learn a congested corridor ·
+             GLASSBOX-Mobility</p>
+        </div>
+      </div>
+    </div>
+    <div id="controls">
+      <button id="play" class="btn" title="play/pause (space)">&#9654;</button>
+      <input type="range" id="time-scrub" min="0" max="1000" value="0">
+      <input type="range" id="day-slider" min="1" max="20" value="1"
+             title="day (arrow keys)">
+      <button id="mornings" class="btn wide" title="autoplay all twenty days">
+        twenty mornings</button>
+      <button id="story" class="btn wide">story</button>
+      <button id="story-next" class="btn" hidden>&#8594;</button>
+      <button id="share" class="btn wide" title="clean 16:9 frame">share</button>
+      <span id="capture-note" class="hint"></span>
+    </div>
   </section>
 
-  <section class="pane" id="hist-pane">
-    <h2>The peak, spreading</h2>
-    <div class="pane-head-row">
-      <span class="badge" id="peak-share">peak share –</span>
-      <span class="hint">shaded band: the day's busiest 15 arrival minutes</span>
+  <section id="numbers">
+    <h2 class="numbers-title">The numbers</h2>
+    <div class="pane">
+      <div class="pane-head-row">
+        <h3>The peak, spreading</h3>
+        <span class="badge" id="peak-share">peak share –</span>
+      </div>
+      <canvas id="hist-canvas" width="1400" height="200"></canvas>
+      <canvas id="spark-canvas" width="1400" height="96"></canvas>
+      <p class="caption">Bars: that morning's departures (faint outline:
+        day 1). Line: the frozen peak measure, day by day — it starts at the
+        bottleneck's ceiling, jumps when the ring road is discovered, then
+        falls as the peak genuinely spreads.</p>
     </div>
-    <canvas id="hist-canvas" width="1400" height="240"></canvas>
-    <canvas id="spark-canvas" width="1400" height="110"></canvas>
-    <p class="caption">Bars are that morning's departures; the faint outline is
-      day&nbsp;1. The line below tracks the frozen peak measure day by day: it
-      starts at the bottleneck's ceiling (the day-1 queue meters arrivals),
-      jumps when travelers discover the ring road, then falls steadily as the
-      peak genuinely spreads.</p>
-  </section>
-
-  <section class="pane" id="inspector-pane">
-    <h2>One traveler</h2>
-    <div class="pane-head-row">
-      <select id="traveler-select"></select>
-      <span class="badge" id="traveler-summary"></span>
-      <span class="chips" id="notable-chips"></span>
+    <div class="pane">
+      <div class="pane-head-row">
+        <h3>One traveler</h3>
+        <select id="traveler-select"></select>
+        <span class="badge" id="traveler-summary"></span>
+        <span class="chips" id="notable-chips"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="traveler-table">
+          <thead><tr><th>day</th><th>route</th><th>left</th><th>drive</th>
+            <th>arrived</th><th>vs day before</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="caption">Public trajectory only. The <em>notable</em> chips
+        surface the seven travelers who kept leaving 15 minutes earlier,
+        morning after morning, and the busiest route-switchers.</p>
     </div>
-    <canvas id="traveler-canvas" width="1400" height="170"></canvas>
-    <div class="table-wrap">
-      <table id="traveler-table">
-        <thead><tr><th>day</th><th>route</th><th>left</th><th>drive</th>
-          <th>arrived</th><th>vs day before</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <p class="caption">Public trajectory only — departures, routes, drive
-      times. The <em>notable</em> shortlist surfaces the seven travelers who
-      kept leaving 15 minutes earlier, morning after morning, and the busiest
-      route-switchers.</p>
   </section>
 </main>
 
