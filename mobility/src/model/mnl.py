@@ -104,8 +104,12 @@ def _fit_newton(Xs: np.ndarray, chosen: np.ndarray, mask: np.ndarray,
 
 
 def traveler_arrays(design: dict, answers: dict[str, str],
-                    fit_sids: list[str]) -> tuple | None:
-    """Stack one traveler's answered, informative training scenarios."""
+                    fit_sids: list[str], min_scenarios: int = 20) -> tuple | None:
+    """Stack one traveler's answered, informative training scenarios.
+
+    min_scenarios guards the unregularized-ish M2 fits; short-survey MAP
+    fits (M3) pass 1 because their proper prior carries identification.
+    """
     rows = []
     for sid in fit_sids:
         ans = answers.get(sid)
@@ -113,7 +117,7 @@ def traveler_arrays(design: dict, answers: dict[str, str],
         if ans is None or not d["informative"] or ans not in d["keys"]:
             continue
         rows.append((d["X"], d["keys"].index(ans)))
-    if len(rows) < 20:
+    if len(rows) < min_scenarios:
         return None
     o_max = max(x.shape[0] for x, _ in rows)
     S = len(rows)

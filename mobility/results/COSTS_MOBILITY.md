@@ -31,6 +31,7 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 
 | 2026-08-03 | M1 QA close-out (Ruling 20): transmission, noise tuning, diversity, test-retest — all off cached sweep-r2 answers, laptop CPU only | none — pure NumPy | 0 API requests | — | $0.00 |
 | 2026-08-04 | M2 structural recovery (frozen pipeline + mandated tripwire hunt + diagnostics): 400 MNL fits + 80k bootstrap refits, laptop CPU | none — pure NumPy | 0 API requests | — | $0.00 |
+| 2026-08-04 | M3 calibration + elasticities (short-survey EB fits over the K grid, 104k noise-layer p_true samples, Ruling-26 comparison), laptop CPU. LLM-profile baseline NOT run (would be ~10.4k Gemini calls ≈ $0.8, awaiting authorization) | none — pure NumPy | 0 API requests | — | $0.00 |
 
 **Stage M0 total: ≈ $0.0155. Stage M1 so far: ≈ $1.79. Grand total ≈ $1.81.**
 No compute used (Leonardo in maintenance).

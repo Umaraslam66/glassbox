@@ -1,0 +1,458 @@
+{
+  "experiment": "m3_calibration",
+  "date": "2026-08-04",
+  "config": {
+    "experiment": "m3_calibration",
+    "date": "2026-08-04",
+    "authorized_by": "Gate M2 review: Rulings 24-26 + Stage M3 authorization",
+    "prereg_commit": "57bfcfb",
+    "inputs": {
+      "noised_answers": "data/runs/m1/answers_noised.jsonl (official round 0, ratified params)",
+      "splits": "experiments/m2_splits.json (frozen, seed 3210, reused per frozen section 5)",
+      "profiles": "data/profiles.json (public profile, designed signal-free per section 2)",
+      "m2_normalization_constants": {
+        "prc_b0": 0.21121096372170123,
+        "hab_mean": 3.9886112024486247,
+        "hab_sd": 5.037342415307932,
+        "note": "frozen at the M2 main fit; reused verbatim for every M3 phi_hat map"
+      }
+    },
+    "short_survey": {
+      "k_confirmatory": 12,
+      "k_grid": [
+        4,
+        8,
+        12,
+        24,
+        48,
+        104
+      ],
+      "draw": "seed 3230; one seeded stratified permutation of the 104 training non-distractor scenarios (block-proportional interleave); nested prefixes give every K; the K=12 prefix realizes mode 5 / dep 3 / route 2 / policy 2; same scenarios for every traveler; no adaptive selection",
+      "prior": "Gaussian moments (mean, covariance + 1e-6 jitter) of the M2 EB-MAP (shrinkage_refit) coefficients over training travelers",
+      "posterior": "per-traveler MAP on the K noised round-0 answers; Laplace covariance = inverse negative Hessian at the MAP",
+      "profile_role": "unconditional prior (profile is designed signal-free); profile-group prior-mean deltas reported as the design check; profile-only baseline computed"
+    },
+    "bars_frozen": {
+      "brier_lift": {
+        "bar": ">= 25% Brier improvement over the population-marginal baseline on held-out choice prediction, K = 12 + profile",
+        "cells": "held-out travelers x held-out non-distractor scenarios (26)",
+        "p_true": "50 seeded applications of the ratified noise layer, rounds 100-149, to the recorded pre-noise answers (frozen section 5, parent convention)",
+        "score": "BS = mean over cells of sum_o (p_hat_o - p_true_o)^2",
+        "baseline": "training-traveler round-0 shares per scenario",
+        "knn_beside": "k = 20 nearest training travelers by exact-match agreement on the same K=12 answers; predicted shares = neighbours' round-0 shares"
+      },
+      "ece": {
+        "bar": "<= 0.05",
+        "convention": "pooled option-level cells (p_hat_o vs realized round-0 choice indicator), 10 equal-width bins"
+      },
+      "coverage": {
+        "bar": "pooled 60-75% at K = 12",
+        "sigma": "200 seeded Laplace draws (seed 3240) through the frozen anchor maps with the M2 normalization constants verbatim",
+        "decay": "coverage per K over the k_grid, watched and reported (a finding, never a failure)"
+      }
+    },
+    "baseline_not_run": "LLM-given-public-profile-only (frozen baseline 4) requires ~10.4k Gemini calls (~$0.8); NOT run under the zero-spend authorization; surfaced at the gate per the stop-first rule",
+    "elasticities_reported": {
+      "role": "REPORTED, no bar; the section 6 by-construction caveat verbatim in every table",
+      "data": "round-0 noised choices, all 400 travelers (aggregate realism, non-confirmatory)",
+      "families": {
+        "parking_driving_cost": "15 policy_prc scenarios, drive cost 5.58-11.65 EUR, transit alternative fixed; arc elasticity (midpoint formula) of population car share between cheapest and dearest; log-log OLS slope across all 15 as robustness",
+        "toll_take_up": "4 policy_vot scenarios vs toll level, same formulas",
+        "employer_subsidy": "6 policy_mod scenarios: uptake share vs time penalty; no price variation, no elasticity"
+      },
+      "published_ranges_cited": {
+        "parking_car_cost": "-0.1 to -0.4 (Goodwin, Dargay & Hanly 2004; Vaca & Kuzmyak 2005; Litman synthesis)",
+        "toll_demand": "-0.1 to -0.45 (Odeck & Brathen 2008 review)",
+        "transit_fare": "-0.2 to -0.5 (TRL 2004; Litman) \u2014 recorded for the gap note only"
+      },
+      "gap": "the design table's transit fare-change probe was never built into the bank; the fare-elasticity comparison cannot be computed and is reported as missing"
+    },
+    "aggregate_vs_individual": {
+      "cells": "held-out non-distractor scenario x option",
+      "predictors": "K=12 short-survey models of held-out travelers (mean predicted probability); M2 full-data models as context; population-marginal reference",
+      "target": "held-out travelers' observed round-0 shares",
+      "metrics": "MAE in share points and Pearson r over cells, beside the individual recovery medians"
+    },
+    "ruling26_exploratory": {
+      "label": "EXPLORATORY - declared at M2-close (Ruling 26); cannot overturn frozen verdicts",
+      "estimators": [
+        "frozen MNL as run at M2 (numbers from results/m2_recovery.json, not refit)",
+        "designed-score tendency index (grader-side oracle reference, from results/m2_diagnostics.json)",
+        "regularized variant: identical frozen utility and fit, ridge lambda = 1.0 (single pre-declared value); its PRC/HAB normalizations recomputed on training travelers"
+      ],
+      "metrics": "held-out per-dimension r + median; VOT median real-unit error for the two MNLs"
+    },
+    "cost": "zero API calls; pure NumPy off cached material"
+  },
+  "profile_design_check": {
+    "max_group_prior_mean_delta_sd_units": {
+      "age_band": 0.223,
+      "occupation_type": 0.249,
+      "household": 0.182,
+      "area_type": 0.16
+    },
+    "note": "profile is designed signal-free; posterior uses the unconditional prior (pre-declared)"
+  },
+  "k12_scenarios": [
+    "mode_prc_00",
+    "dep_sch_13",
+    "policy_prc_01",
+    "route_hab_02",
+    "mode_hab_00",
+    "dep_sch_19",
+    "mode_prc_05",
+    "policy_prc_13",
+    "route_vot_07",
+    "mode_hab_02",
+    "dep_sch_14",
+    "mode_vot_09"
+  ],
+  "brier_lift": {
+    "bar": ">= 25% Brier improvement over the population-marginal baseline",
+    "brier": {
+      "model": 0.1796,
+      "marginal": 0.193,
+      "knn": 0.1278,
+      "profile": 0.2205
+    },
+    "n_cells": 2080,
+    "lift_vs_marginal": 0.0696,
+    "pass": false,
+    "knn_lift_reported": 0.3378,
+    "profile_only_lift_reported": -0.1422,
+    "llm_profile_baseline": "LLM-given-public-profile-only (frozen baseline 4) requires ~10.4k Gemini calls (~$0.8); NOT run under the zero-spend authorization; surfaced at the gate per the stop-first rule"
+  },
+  "ece": {
+    "bar": "<= 0.05 (10 equal-width bins)",
+    "ece": 0.0473,
+    "pass": true,
+    "n_cells": 4320,
+    "bins": [
+      {
+        "bin": "[0.0,0.1)",
+        "n": 719,
+        "confidence": 0.0367,
+        "accuracy": 0.1029
+      },
+      {
+        "bin": "[0.1,0.2)",
+        "n": 320,
+        "confidence": 0.144,
+        "accuracy": 0.1938
+      },
+      {
+        "bin": "[0.2,0.3)",
+        "n": 255,
+        "confidence": 0.2462,
+        "accuracy": 0.2353
+      },
+      {
+        "bin": "[0.3,0.4)",
+        "n": 379,
+        "confidence": 0.3519,
+        "accuracy": 0.4037
+      },
+      {
+        "bin": "[0.4,0.5)",
+        "n": 567,
+        "confidence": 0.4529,
+        "accuracy": 0.4127
+      },
+      {
+        "bin": "[0.5,0.6)",
+        "n": 572,
+        "confidence": 0.5471,
+        "accuracy": 0.5804
+      },
+      {
+        "bin": "[0.6,0.7)",
+        "n": 376,
+        "confidence": 0.6479,
+        "accuracy": 0.5771
+      },
+      {
+        "bin": "[0.7,0.8)",
+        "n": 258,
+        "confidence": 0.7539,
+        "accuracy": 0.7519
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "n": 318,
+        "confidence": 0.8558,
+        "accuracy": 0.7987
+      },
+      {
+        "bin": "[0.9,1.0)",
+        "n": 556,
+        "confidence": 0.9557,
+        "accuracy": 0.8993
+      }
+    ]
+  },
+  "coverage": {
+    "bar": "pooled 60-75% at K = 12 (1 Laplace-draw SD, held-out x 6 dims)",
+    "at_k12": {
+      "K": 12,
+      "pooled_coverage": 0.3042,
+      "median_r": 0.318,
+      "per_dimension_coverage": {
+        "VOT": 0.3375,
+        "SCH": 0.1875,
+        "MOD": 0.0,
+        "CRW": 0.4375,
+        "PRC": 0.675,
+        "HAB": 0.1875
+      }
+    },
+    "pass": false,
+    "decay_curve": [
+      {
+        "K": 4,
+        "pooled_coverage": 0.3333,
+        "median_r": NaN,
+        "per_dimension_coverage": {
+          "VOT": 0.3625,
+          "SCH": 0.1625,
+          "MOD": 0.0,
+          "CRW": 0.325,
+          "PRC": 0.9,
+          "HAB": 0.25
+        }
+      },
+      {
+        "K": 8,
+        "pooled_coverage": 0.2958,
+        "median_r": 0.199,
+        "per_dimension_coverage": {
+          "VOT": 0.275,
+          "SCH": 0.2,
+          "MOD": 0.0,
+          "CRW": 0.4,
+          "PRC": 0.6625,
+          "HAB": 0.2375
+        }
+      },
+      {
+        "K": 12,
+        "pooled_coverage": 0.3042,
+        "median_r": 0.318,
+        "per_dimension_coverage": {
+          "VOT": 0.3375,
+          "SCH": 0.1875,
+          "MOD": 0.0,
+          "CRW": 0.4375,
+          "PRC": 0.675,
+          "HAB": 0.1875
+        }
+      },
+      {
+        "K": 24,
+        "pooled_coverage": 0.2146,
+        "median_r": 0.3712,
+        "per_dimension_coverage": {
+          "VOT": 0.2,
+          "SCH": 0.1125,
+          "MOD": 0.0125,
+          "CRW": 0.2875,
+          "PRC": 0.5125,
+          "HAB": 0.1625
+        }
+      },
+      {
+        "K": 48,
+        "pooled_coverage": 0.1958,
+        "median_r": 0.3977,
+        "per_dimension_coverage": {
+          "VOT": 0.2875,
+          "SCH": 0.1375,
+          "MOD": 0.0,
+          "CRW": 0.1875,
+          "PRC": 0.3875,
+          "HAB": 0.175
+        }
+      },
+      {
+        "K": 104,
+        "pooled_coverage": 0.1437,
+        "median_r": 0.3976,
+        "per_dimension_coverage": {
+          "VOT": 0.1625,
+          "SCH": 0.125,
+          "MOD": 0.0625,
+          "CRW": 0.0625,
+          "PRC": 0.2875,
+          "HAB": 0.1625
+        }
+      }
+    ],
+    "note": "decay watched and reported per the frozen bar; a finding, never a failure"
+  },
+  "elasticities_reported": {
+    "caveat": "By-construction caveat (frozen section 6, verbatim): the population's planted VOT/PRC distributions partly determine these numbers; the comparison is a realism check, never recovery evidence.",
+    "role": "REPORTED realism check; no bar (frozen section 6)",
+    "data": "round-0 noised choices, all 400 travelers (non-confirmatory aggregate)",
+    "parking_driving_cost": {
+      "curve_cost_vs_car_share": [
+        [
+          5.58,
+          0.3392
+        ],
+        [
+          6.35,
+          0.375
+        ],
+        [
+          6.4,
+          0.3618
+        ],
+        [
+          8.36,
+          0.3609
+        ],
+        [
+          8.44,
+          0.355
+        ],
+        [
+          8.89,
+          0.3509
+        ],
+        [
+          9.02,
+          0.3584
+        ],
+        [
+          9.22,
+          0.386
+        ],
+        [
+          9.24,
+          0.3459
+        ],
+        [
+          10.02,
+          0.3083
+        ],
+        [
+          10.08,
+          0.37
+        ],
+        [
+          10.32,
+          0.3484
+        ],
+        [
+          10.6,
+          0.294
+        ],
+        [
+          11.4,
+          0.2889
+        ],
+        [
+          11.65,
+          0.3175
+        ]
+      ],
+      "arc_elasticity_min_to_max": -0.094,
+      "log_log_ols_slope": -0.201,
+      "published_range": "-0.1 to -0.4 (Goodwin, Dargay & Hanly 2004; Vaca & Kuzmyak 2005; Litman)"
+    },
+    "toll_take_up": {
+      "curve_toll_vs_take_up": [
+        [
+          3.21,
+          16,
+          0.2025
+        ],
+        [
+          3.22,
+          19,
+          0.1925
+        ],
+        [
+          4.37,
+          16,
+          0.1925
+        ],
+        [
+          4.73,
+          21,
+          0.19
+        ]
+      ],
+      "arc_elasticity_min_to_max_toll": -0.166,
+      "published_range": "-0.1 to -0.45 (Odeck & Brathen 2008 review)",
+      "note": "time savings co-vary 16-21 min across the 4 scenarios (price per saved minute 0.20-0.23 EUR); stated per the pre-declaration"
+    },
+    "employer_subsidy_uptake": {
+      "uptake_by_time_penalty": {
+        "+2 min": 0.5075,
+        "+3 min": 0.4863,
+        "+5 min": 0.4637
+      },
+      "note": "no price variation in this family; no elasticity"
+    },
+    "transit_fare_gap": "the design table's fare-change probe was never built into the bank; the fare elasticity vs the published -0.2 to -0.5 range cannot be computed and is reported as missing"
+  },
+  "aggregate_vs_individual": {
+    "aggregate_share_prediction": {
+      "k12_short_survey": {
+        "mae_share_points": 9.4,
+        "pearson_r": 0.887
+      },
+      "m2_full_data_context": {
+        "mae_share_points": 8.22,
+        "pearson_r": 0.92
+      },
+      "population_marginal_reference": {
+        "mae_share_points": 5.15,
+        "pearson_r": 0.9773
+      }
+    },
+    "individual_recovery_context": {
+      "m2_frozen_median_r": 0.4267,
+      "k12_median_r": 0.318
+    },
+    "reading": "the parent's aggregate-easy/individual-hard question, answered for mobility"
+  },
+  "ruling26_exploratory_comparison": {
+    "label": "EXPLORATORY - declared at M2-close (Ruling 26); cannot overturn frozen verdicts",
+    "held_out_r": {
+      "frozen_mnl_m2": {
+        "VOT": 0.4472,
+        "SCH": 0.4063,
+        "MOD": 0.3198,
+        "CRW": 0.6029,
+        "PRC": 0.2851,
+        "HAB": 0.5905
+      },
+      "designed_score_index_oracle": {
+        "VOT": 0.6127,
+        "SCH": 0.4916,
+        "MOD": 0.709,
+        "CRW": 0.5864,
+        "PRC": 0.5432,
+        "HAB": 0.6553
+      },
+      "regularized_mnl_lambda_1.0": {
+        "VOT": 0.3524,
+        "SCH": 0.4165,
+        "MOD": 0.6151,
+        "CRW": 0.5975,
+        "PRC": 0.241,
+        "HAB": 0.6086
+      }
+    },
+    "median_r": {
+      "frozen_mnl_m2": 0.4267,
+      "designed_score_index_oracle": 0.5996,
+      "regularized_mnl_lambda_1.0": 0.507
+    },
+    "vot_median_error": {
+      "frozen_mnl_m2": 1.1218,
+      "regularized_mnl_lambda_1.0": 1.6639
+    }
+  }
+}

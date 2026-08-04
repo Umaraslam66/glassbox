@@ -658,3 +658,70 @@ before implementation (full machine-readable detail in
   the population-marginal reference and the same cells from the M2
   full-data models (context); presented against the individual recovery
   medians as the parent's aggregate-easy/individual-hard answer.
+
+## 2026-08-04 — GATE M3 RUN: lift FAIL, ECE PASS (first bar to pass), coverage FAIL with textbook decay
+
+Source of truth: `results/m3_calibration.json`. Zero API spend. All
+choices per the pre-declaration committed at 40d3a2a; the K = 12 draw
+realized the declared 5/3/2/2 block composition (scenario IDs in the file).
+
+**Frozen bars, verbatim (held-out travelers, K = 12 + profile):**
+- **Brier lift ≥ 25% over population-marginal: FAIL — +7.0%** (Brier 0.1796
+  vs 0.1930). Reported beside it per the frozen baseline list: **k-NN
+  +33.8%** (0.1278) — the behavioral-similarity baseline clears the level
+  the structural estimator misses by a wide margin; profile-only −14.2%
+  (worse than zero-information, consistent with the designed signal-free
+  profile; group prior-mean deltas 0.16–0.25 SD confirm the design).
+- **ECE ≤ 0.05: PASS — 0.0473.** The first frozen bar the study passes in
+  M2–M3: the model's choice probabilities are close to honest even though
+  its parameters are not recoverable (Ruling 25a extended: believable,
+  probabilistically calibrated, still not estimable).
+- **Coverage 60–75%: FAIL — 30.4%** at K = 12. **The parent's
+  coverage-decay phenomenon reappears, textbook:** pooled coverage falls
+  monotonically as evidence grows — 33.3% (K=4) → 30.4% (12) → 21.5% (24)
+  → 19.6% (48) → 14.4% (104) — while median r rises 0.20 → 0.40. Watched
+  and reported per the frozen bar: a finding, not a failure. Footnotes:
+  MOD coverage is 0.0 at every K — a pure location offset (fitted ASC_car
+  sits ~+5 utility units above the ±1.5 anchor scale, so the anchor map is
+  systematically shifted; correlation unaffected); at K = 4 the prefix
+  contains no crowding-bearing scenario, φ̂_CRW equals the prior constant
+  for every traveler, its r is undefined and the median shows NaN.
+- The frozen **LLM-given-profile-only baseline was NOT run** — it needs
+  ~10.4k Gemini calls (≈$0.8); surfaced here per the stop-first rule.
+
+**Elasticities (REPORTED, no bar; §6 by-construction caveat verbatim in
+the results file; round-0, all 400):**
+- Parking/driving cost (15-scenario demand curve, €5.58–€11.65): arc
+  −0.094 (marginally below the published −0.1..−0.4); log-log OLS −0.201
+  (inside). Car share falls 0.34 → 0.29–0.32 across the curve.
+- Toll take-up (4 scenarios): arc −0.166 (inside −0.1..−0.45), but the
+  curve is nearly flat (0.190–0.203) and time savings co-vary 16–21 min —
+  stated as pre-declared; a weak-response reading is the honest one.
+- Employer subsidy uptake: 50.8% → 48.6% → 46.4% at +2/+3/+5 min — the
+  right ordering.
+- **Transit fare gap:** the design table's fare-change probe was never
+  built into the bank; the fare-elasticity comparison is reported missing.
+- Headline: aggregate price response sits at the inelastic edge of the
+  published ranges while individual recovery fails — GATSim-style surface
+  realism without internal validity, now quantified.
+
+**Aggregate vs individual (the parent's question, answered):** the
+population-marginal reference predicts held-out share cells best (MAE 5.2
+points, r 0.977); the K = 12 models (9.4, 0.887) and even the M2 full-data
+models (8.2, 0.920) track aggregates decently while individual recovery
+stands at median r 0.43 (M2) / 0.32 (K = 12). Aggregates are easy —
+marginals alone nearly saturate them; individuals are hard.
+
+**Ruling-26 exploratory comparison (EXPLORATORY — declared at M2-close;
+cannot overturn frozen verdicts).** Held-out median r: frozen MNL 0.427;
+regularized MNL (λ = 1.0) 0.507; designed-score oracle 0.600. The λ = 1.0
+variant tames the ASC blow-ups (MOD 0.32 → 0.62) but WORSENS real-unit VOT
+error (112% → 166%: shrinking β_cost toward 0 inflates the ratio). Neither
+MNL approaches the oracle → specification misfit, not estimation variance,
+is the binding constraint. VOT per-dimension table in the results file.
+
+**Tests at gate:** parent 726 passed; mobility 21 passed + 1 expected
+skip; both wall tests green. Cost $0.00; grand total unchanged ≈ $1.81.
+
+**GATE M3: HARD STOP.** Lift FAIL, ECE PASS, coverage FAIL (decay
+reported). Awaiting the owner's rulings.
