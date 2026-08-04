@@ -1,0 +1,76 @@
+{
+  "experiment": "m3_calibration",
+  "date": "2026-08-04",
+  "authorized_by": "Gate M2 review: Rulings 24-26 + Stage M3 authorization",
+  "prereg_commit": "57bfcfb",
+  "inputs": {
+    "noised_answers": "data/runs/m1/answers_noised.jsonl (official round 0, ratified params)",
+    "splits": "experiments/m2_splits.json (frozen, seed 3210, reused per frozen section 5)",
+    "profiles": "data/profiles.json (public profile, designed signal-free per section 2)",
+    "m2_normalization_constants": {
+      "prc_b0": 0.21121096372170123,
+      "hab_mean": 3.9886112024486247,
+      "hab_sd": 5.037342415307932,
+      "note": "frozen at the M2 main fit; reused verbatim for every M3 phi_hat map"
+    }
+  },
+  "short_survey": {
+    "k_confirmatory": 12,
+    "k_grid": [4, 8, 12, 24, 48, 104],
+    "draw": "seed 3230; one seeded stratified permutation of the 104 training non-distractor scenarios (block-proportional interleave); nested prefixes give every K; the K=12 prefix realizes mode 5 / dep 3 / route 2 / policy 2; same scenarios for every traveler; no adaptive selection",
+    "prior": "Gaussian moments (mean, covariance + 1e-6 jitter) of the M2 EB-MAP (shrinkage_refit) coefficients over training travelers",
+    "posterior": "per-traveler MAP on the K noised round-0 answers; Laplace covariance = inverse negative Hessian at the MAP",
+    "profile_role": "unconditional prior (profile is designed signal-free); profile-group prior-mean deltas reported as the design check; profile-only baseline computed"
+  },
+  "bars_frozen": {
+    "brier_lift": {
+      "bar": ">= 25% Brier improvement over the population-marginal baseline on held-out choice prediction, K = 12 + profile",
+      "cells": "held-out travelers x held-out non-distractor scenarios (26)",
+      "p_true": "50 seeded applications of the ratified noise layer, rounds 100-149, to the recorded pre-noise answers (frozen section 5, parent convention)",
+      "score": "BS = mean over cells of sum_o (p_hat_o - p_true_o)^2",
+      "baseline": "training-traveler round-0 shares per scenario",
+      "knn_beside": "k = 20 nearest training travelers by exact-match agreement on the same K=12 answers; predicted shares = neighbours' round-0 shares"
+    },
+    "ece": {
+      "bar": "<= 0.05",
+      "convention": "pooled option-level cells (p_hat_o vs realized round-0 choice indicator), 10 equal-width bins"
+    },
+    "coverage": {
+      "bar": "pooled 60-75% at K = 12",
+      "sigma": "200 seeded Laplace draws (seed 3240) through the frozen anchor maps with the M2 normalization constants verbatim",
+      "decay": "coverage per K over the k_grid, watched and reported (a finding, never a failure)"
+    }
+  },
+  "baseline_not_run": "LLM-given-public-profile-only (frozen baseline 4) requires ~10.4k Gemini calls (~$0.8); NOT run under the zero-spend authorization; surfaced at the gate per the stop-first rule",
+  "elasticities_reported": {
+    "role": "REPORTED, no bar; the section 6 by-construction caveat verbatim in every table",
+    "data": "round-0 noised choices, all 400 travelers (aggregate realism, non-confirmatory)",
+    "families": {
+      "parking_driving_cost": "15 policy_prc scenarios, drive cost 5.58-11.65 EUR, transit alternative fixed; arc elasticity (midpoint formula) of population car share between cheapest and dearest; log-log OLS slope across all 15 as robustness",
+      "toll_take_up": "4 policy_vot scenarios vs toll level, same formulas",
+      "employer_subsidy": "6 policy_mod scenarios: uptake share vs time penalty; no price variation, no elasticity"
+    },
+    "published_ranges_cited": {
+      "parking_car_cost": "-0.1 to -0.4 (Goodwin, Dargay & Hanly 2004; Vaca & Kuzmyak 2005; Litman synthesis)",
+      "toll_demand": "-0.1 to -0.45 (Odeck & Brathen 2008 review)",
+      "transit_fare": "-0.2 to -0.5 (TRL 2004; Litman) — recorded for the gap note only"
+    },
+    "gap": "the design table's transit fare-change probe was never built into the bank; the fare-elasticity comparison cannot be computed and is reported as missing"
+  },
+  "aggregate_vs_individual": {
+    "cells": "held-out non-distractor scenario x option",
+    "predictors": "K=12 short-survey models of held-out travelers (mean predicted probability); M2 full-data models as context; population-marginal reference",
+    "target": "held-out travelers' observed round-0 shares",
+    "metrics": "MAE in share points and Pearson r over cells, beside the individual recovery medians"
+  },
+  "ruling26_exploratory": {
+    "label": "EXPLORATORY - declared at M2-close (Ruling 26); cannot overturn frozen verdicts",
+    "estimators": [
+      "frozen MNL as run at M2 (numbers from results/m2_recovery.json, not refit)",
+      "designed-score tendency index (grader-side oracle reference, from results/m2_diagnostics.json)",
+      "regularized variant: identical frozen utility and fit, ridge lambda = 1.0 (single pre-declared value); its PRC/HAB normalizations recomputed on training travelers"
+    ],
+    "metrics": "held-out per-dimension r + median; VOT median real-unit error for the two MNLs"
+  },
+  "cost": "zero API calls; pure NumPy off cached material"
+}

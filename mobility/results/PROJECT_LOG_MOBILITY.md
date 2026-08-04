@@ -562,3 +562,99 @@ stage; grand total unchanged ≈ $1.81.
 
 **GATE M2: HARD STOP.** All five frozen bars failed. Nothing proceeds
 without the owner's ruling.
+
+## 2026-08-04 — Gate M2 reviewed: Rulings 24–26, Stage M3 authorized
+
+**Ruling 24 (M2 verdicts recorded verbatim).** All five frozen bars FAIL as
+tabled in the entry above; the 25% line fails as reported-only. The
+decomposition table is the primary presentation. Ruling 23 attribution
+confirmed: SCH/CRW/HAB predominantly ceiling-inherited; VOT/MOD/PRC carry
+estimator overhead beyond the ceiling (+80.5 points on VOT). No
+re-estimation, no estimator modification, no post-hoc rescue of any bar.
+
+**Ruling 25 (findings registered; report framing fixed now).**
+(a) believable-but-not-estimable: choice prediction 0.80 vs 0.71 zero-info
+alongside failed parameter recovery; (b) persona-everywhere: 9/10
+distractors correlate with planted traits, max 0.383 — no scenario is
+behaviorally neutral for LLM travelers; (c) near-deterministic rendering
+starves MLE (301/400 ridge-limited, 184/400 positive time coefficients,
+degenerate ratios half of held-out). Tripwire hunt verdict accepted: real
+renderer leakage, not a Wall incident, not artifact.
+
+**Ruling 26 (exploratory estimator comparison) — EXACT SPECS, written here
+BEFORE any comparison fit runs.** Three estimators on identical inputs (the
+official noised round-0 choices on the frozen training scenarios), graded
+on the same held-out travelers with the same frozen anchor maps:
+1. The frozen per-traveler MNL exactly as run at M2 (ridge 1e-4) — numbers
+   taken from `results/m2_recovery.json`, not refit.
+2. The designed-score tendency index exactly as in
+   `results/m2_diagnostics.json` (grader-side oracle reference — it knows
+   the designed loadings; stated in every table).
+3. ONE regularized MNL variant: identical frozen 7-term utility, identical
+   Newton fit, ridge lambda = 1.0 on all 7 coefficients — the single
+   pre-declared value, chosen here without any new fit having run; its
+   PRC/HAB map normalizations recomputed on training travelers under the
+   variant (declared).
+Metrics: held-out per-dimension r + median; VOT median real-unit error for
+(1) and (3). Every table carries the label "EXPLORATORY — declared at
+M2-close (Ruling 26); cannot overturn frozen verdicts." If any spec above
+proved insufficient to run without further choices, the comparison would
+not run.
+
+**Stage M3 authorized** (calibration + elasticity realism; zero new API
+calls; any spend-needing step is stop-first). Pre-declarations, recorded
+before implementation (full machine-readable detail in
+`experiments/m3_calibration.json`):
+- **Short survey (frozen §5):** K = 12 fixed scenarios + public profile,
+  hierarchical shrinkage toward the population fit. Operationalized:
+  Gaussian prior = moments of the M2 EB-MAP coefficients over training
+  travelers (+1e-6 jitter); per-traveler MAP on the K noised answers;
+  Laplace posterior at the MAP. The K scenarios: seed 3230, one fixed
+  stratified draw from training scenarios (mode 5, dep 3, route 2,
+  policy 2), same for every traveler; the decay grid K ∈ {4, 8, 12, 24,
+  48, 104} uses nested prefixes of one seeded stratified permutation
+  (confirmatory bars at K = 12 only). The public profile is designed
+  signal-free (§2), so the posterior uses the unconditional prior; the
+  profile enters through the profile-only baseline, and profile-group
+  prior-mean deltas are reported as the design check.
+- **Brier lift (frozen bar ≥ 25%):** cells = held-out travelers × held-out
+  non-distractor scenarios (26); p_true per frozen §5 = 50 seeded
+  applications of the ratified noise layer (rounds 100–149) to the recorded
+  pre-noise answers; BS = mean over cells of Σ_o (p̂_o − p_true_o)²;
+  baseline = training-traveler round-0 shares. k-NN reported beside it
+  (k = 20, neighbours by agreement on the same K = 12 answers).
+  Profile-only baseline: training shares within the 4-field profile group
+  (≥10 members, else drop area_type, else age×occupation, else population).
+  The frozen LLM-profile baseline is NOT run — it needs ~$0.8 of Gemini
+  spend; surfaced at the gate under the stop-first rule.
+- **ECE (frozen bar ≤ 0.05):** pooled option-level cells, predicted p̂_o vs
+  the realized round-0 choice indicator, 10 equal-width bins.
+- **Coverage (frozen bar 60–75%):** 200 seeded Laplace draws (seed 3240)
+  pushed through the frozen anchor maps with the M2 normalization constants
+  verbatim (b0 0.21121096372170123, HAB mean 3.9886112024486247, sd
+  5.037342415307932); |φ̂ − φ| ≤ 1σ pooled over held-out × 6 dims; the
+  decay curve over the K grid is watched and reported (a finding, never a
+  failure).
+- **Elasticities (REPORTED, no bar; §6 caveat verbatim in every table):**
+  round-0 noised choices, all 400 travelers (aggregate realism, not a
+  confirmatory quantity). Families from the built bank: (i) parking/driving
+  cost — the 15 policy_prc scenarios (drive cost €5.58–€11.65, transit
+  alternative fixed): arc elasticity of population car share between the
+  cheapest and dearest scenarios (midpoint formula), log-log OLS slope
+  across all 15 as robustness; (ii) toll take-up — the 4 policy_vot
+  scenarios vs toll level, same formulas; (iii) employer transit subsidy —
+  the 6 policy_mod scenarios reported as uptake share vs time penalty
+  (no price variation → no elasticity). GAP, stated plainly: the design
+  table's transit fare-change probe was never built into the bank, so the
+  literature fare-elasticity comparison cannot be computed. Published
+  reference ranges, cited in the results file: parking/car-cost elasticity
+  −0.1 to −0.4 (Goodwin et al. 2004; Vaca & Kuzmyak 2005; Litman
+  synthesis); toll demand −0.1 to −0.45 (Odeck & Bråthen 2008 review);
+  transit fare −0.2 to −0.5 (TRL 2004/Litman) recorded for the gap note.
+- **Aggregate-vs-individual contrast:** per held-out scenario, predicted
+  population option shares from the K = 12 models of held-out travelers
+  (mean predicted probability) vs those travelers' observed round-0 shares
+  — MAE in share points and Pearson r over scenario-option cells, beside
+  the population-marginal reference and the same cells from the M2
+  full-data models (context); presented against the individual recovery
+  medians as the parent's aggregate-easy/individual-hard answer.
