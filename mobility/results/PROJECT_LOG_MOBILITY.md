@@ -438,3 +438,56 @@ This close-out: $0.00 (pure NumPy off the cache). Grand total unchanged
 Transmission reported (median 0.609). Noise parameters a = 1.2, b = 4.0
 await ratification. Awaiting the owner's ruling on the diversity (a) miss
 and the go/no-go for Stage M2.
+
+## 2026-08-04 — Gate M1-close reviewed: Rulings 21–23, Stage M2 authorized
+
+**Ruling 21 (diversity bar a).** Recorded as FAIL, verbatim, per the frozen
+definition. The diagnostic (single pair t0009/t0361, planted distance 2.34,
+pre-noise 31 pairs → 1 post-noise) stands beside it as context, not
+mitigation. The population is NOT modified — no traveler removal, re-roll,
+or re-render after seeing answers. M1 closes with this bar failed and all
+others passed.
+
+**Ruling 22 (noise parameters RATIFIED).** a = 1.2, b = 4.0, wobble seed
+3160, achieved pooled retest 0.7981. Observation logged: a sits at the top
+of the pre-recorded grid. The SCH obedience-raise mechanism note
+(0.478 → 0.555 via flip restoration) stays on the record as observed
+mechanism, no action.
+
+**Ruling 23 (M2 ceiling pre-declaration), owner's verbatim sentence,
+recorded before any M2 estimation ran:** "M2 recovery bars are expected to
+miss on dimensions where measured transmission < 0.75; these misses, if
+they occur, are ceiling-inherited findings. The frozen decomposition
+(prereg §5, disattenuation formulas) will attribute each result to card
+transmission vs estimator. Declared at M1-close, before any M2 estimation
+ran." Bars unchanged. No further card rounds (Ruling 19g stands).
+
+**Stage M2 authorized:** ratified noise layer applied to the cached sweep-r2
+answers (seeded, logged); frozen M2 estimation pipeline (per-traveler
+conditional logit, held-out split per prereg, no estimator changes); all
+frozen M2 bars computed with the decomposition/disattenuation analysis
+alongside. Zero new API calls expected; any needed spend is a stop-first
+event. STOP at Gate M2.
+
+**M2 pre-declarations, recorded and committed BEFORE any estimation ran**
+(full detail in `experiments/m2_recovery.json`; conveniences here):
+(1) Frozen splits seed 3210 — 80/400 travelers and 28/140 scenarios held
+out, stratified by block, written once to `experiments/m2_splits.json` and
+reused through M4. (2) The frozen 7-term utility is fit VERBATIM. Declared
+specification gap: the Ruling-10 PRC scenarios carry a 'friction' attribute
+that the utility (frozen before that redesign) has no term for; no term is
+added; the gap is a declared candidate source of PRC estimator overhead.
+(3) φ̂ maps = exact inversions of the frozen §2 anchors (VOT ln(V̂/12)/0.55,
+SCH log of the late/early ratio on the 1–8× anchor, MOD ASC_car/0.75, CRW
+the linear 1.0–2.2 multiplier inversion, PRC log of the ×0.4–2.5 cost
+scaling normalized by the training-median). HAB's frozen anchor names no
+numeric range, so φ̂_HAB is standardized on training travelers — the one
+map without an anchored scale, declared here. Winsorization bounds and sign
+guards are enumerated in the config; counts get reported. (4) Bootstrap
+B = 200, seed 3220, resampling each traveler's training scenarios (frozen
+§5); coverage per the parent's pooled-cells convention. (5) The 'alongside'
+latent comparison fit is operationalized as empirical-Bayes MAP shrinkage +
+PCA + orthogonal Procrustes on training travelers only (no scipy in the
+repo; carries no bar). (6) Ridge λ = 1e-4 as a numerical existence guard,
+reported not tuned. (7) The distractor tripwire uses all 10 distractors ×
+all 400 travelers on the noised choices, A=+1/B=−1.

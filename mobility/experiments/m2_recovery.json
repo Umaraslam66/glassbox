@@ -1,0 +1,65 @@
+{
+  "experiment": "m2_recovery",
+  "date": "2026-08-04",
+  "authorized_by": "Gate M1-close review: Rulings 21-23 + Stage M2 authorization",
+  "prereg_commit": "57bfcfb",
+  "inputs": {
+    "noised_answers": "data/runs/m1/answers_noised.jsonl (official round 0; noise a=1.2 b=4.0 wobble seed 3160 noise seed 3190, RATIFIED Ruling 22; integrity re-derivation asserted at run start)",
+    "bank": "data/bank/scenarios.json (attributes exactly as shown to travelers)",
+    "transmission_rho_hat": {
+      "source": "results/m1_qa_r2_full.json (confirmatory, frozen section 5 estimator)",
+      "VOT": 0.6696, "SCH": 0.4861, "MOD": 0.7332,
+      "CRW": 0.6337, "PRC": 0.516, "HAB": 0.5845
+    }
+  },
+  "splits": {
+    "seed": 3210,
+    "rule": "frozen section 5: 20% of travelers (80/400) and 20% of scenarios held out; scenario split stratified by block (mode 10/50, dep_time 6/30, route 5/25, policy 5/25, distractor 2/10); created once, recorded in experiments/m2_splits.json, reused for all confirmatory results M2-M4; driver refuses to regenerate if the file exists"
+  },
+  "estimator": {
+    "spec": "frozen section 5 verbatim: V = b_time*time + b_cost*cost + b_crw*(crowding x in-vehicle time) + ASC_car + ASC_transit + b_late*P(late)*delay + b_switch*(non-habitual option); per-traveler conditional logit (McFadden MNL) over the training scenarios",
+    "regressors": {
+      "time": "time_min for mode/route/policy options; slack_min for dep_time options (the early-buffer minutes are the block's time price per the frozen design table)",
+      "cost": "cost_eur",
+      "crw": "crowding_level x time_min (0 where no crowding attribute is shown)",
+      "asc_car": "1 if option mode == car",
+      "asc_transit": "1 if option mode == transit (bike/walk = base)",
+      "late": "p_late x late_min for dep_time; p_late x (time_max - time_min) for route options carrying p_late; 0 elsewhere",
+      "switch": "1 - habitual where the habitual attribute is shown, else 0"
+    },
+    "declared_specification_gap": "the 10 mode_prc scenarios carry a 'friction' attribute (Ruling 10 redesign, post-freeze); the frozen utility has no friction term and is fit verbatim without one. Consequence declared before fitting: the constant friction penalty is unmodelled and attenuates/biases b_cost for friction-averse travelers; if PRC recovery misses, this specification gap is a declared candidate source of estimator overhead in the decomposition.",
+    "distractors": "carry no attributes, contribute no likelihood information, excluded from fitting (they still feed the tripwire)",
+    "numerical_guard": "ridge lambda 1e-4 on all 7 coefficients for strict concavity and existence under separation; reported, not tuned",
+    "fit": "Newton-Raphson on the penalized log-likelihood, convergence |grad| < 1e-6, max 60 iterations"
+  },
+  "phi_hat_maps": {
+    "declared": "exact inversions of the frozen section 2 structural anchors, declared before any fit; Pearson r is unaffected by the affine parts, the maps matter for coverage and the real-unit VOT error",
+    "VOT": "VOT_hat = 60*b_time/b_cost EUR/h; phi_hat = ln(VOT_hat_w/12)/0.55 with VOT_hat_w = VOT_hat winsorized to [0.5, 200] EUR/h (guard den = min(b_cost, -1e-9)); e_raw uses the UNwinsorized ratio, degenerate-sign counts reported",
+    "SCH": "ratio_hat = b_late/b_time (anchor beta_late/beta_early 1-8x; the early side is priced by b_time on slack minutes), sign guards min(., -1e-9), winsorized [0.25, 32]; phi_hat = ln(ratio_hat/2.828427)/0.519860",
+    "MOD": "phi_hat = asc_car/0.75 (anchor +/-1.5 utility units on car at phi +/-2)",
+    "CRW": "m_hat = 1 + 3*b_crw/b_time (anchor: multiplier on in-vehicle time, linear 1.6 + 0.3*phi, worst level = 3), winsorized [0.5, 4]; phi_hat = (m_hat - 1.6)/0.3",
+    "PRC": "c = -b_cost winsorized [1e-3, 10]; b0 = median of c over TRAINING travelers (system-side normalization, computed once); phi_hat = ln(c/b0)/0.458145 (anchor x0.4-x2.5 log-symmetric)",
+    "HAB": "s = -b_switch; phi_hat = (s - mean_train(s))/sd_train(s). The frozen HAB anchor states no numeric range ('switching penalty in utility units'), so the scale is set by training-population standardization - declared here, before fitting; Pearson r unaffected",
+    "final_winsor": "every phi_hat clipped to [-4, 4], clip counts per dimension reported",
+    "normalization_constants": "b0 and the HAB mean/sd come from the main fit on training travelers and are FROZEN for all bootstrap replicates"
+  },
+  "uncertainty": {
+    "bootstrap": "per-traveler, resampling that traveler's answered training scenarios with replacement (frozen section 5), B = 200, seed 3220, warm-started from the main fit",
+    "coverage": "parent convention (src/eval/recovery.py blur_honesty): pooled over held-out-traveler x dimension cells, |phi_hat - phi| <= 1 bootstrap SD, band 60-75%, per-dimension breakdown and variance-ratio diagnostics reported"
+  },
+  "bars_frozen": {
+    "per_dimension_recovery": "Pearson r(phi_hat_d, phi_d) >= 0.75 on held-out travelers, all 6 dimensions",
+    "vot_real_units": "median |VOT_hat - VOT|/VOT <= 0.35 on held-out travelers (frozen); 0.25 retained as a REPORTED threshold, never a gate condition",
+    "coverage": "pooled 60-75%",
+    "separability": "|r(phi_hat_VOT, phi_hat_PRC)| <= 0.15 on held-out travelers",
+    "distractor_tripwire": "every distractor scenario's choices (A=+1, B=-1, noised round 0, all 400 travelers) correlate with every phi_hat dimension at |r| <= 0.15"
+  },
+  "decomposition": {
+    "declared_primary_presentation": "frozen section 5/6: e_raw; e_ceiling = exp(0.55*0.6745*sqrt(1-rho_VOT^2))-1 with rho_VOT = 0.6696; estimator overhead = e_raw - e_ceiling; disattenuated r_d = r(phi_hat_d, phi_d)/rho_d capped at 1 for all six dimensions; the correction removes the ceiling's systematic component only"
+  },
+  "comparison_fit": {
+    "role": "frozen section 5 'alongside' fit - REPORTED, carries no bar",
+    "operationalization": "mixed-logit-with-shrinkage operationalized as empirical-Bayes MAP: Gaussian prior from the training travelers' per-traveler estimates (mean + covariance, 1e-6 jitter), MAP refit of all travelers; coefficients z-scored on training moments; PCA fit on training travelers, 6 components; orthogonal Procrustes aligned on TRAINING travelers' planted phi only (grader-side); per-dimension r reported on held-out travelers. Declared before fitting; simulated-ML mixed logit is not used (no scipy dependency in the repo)"
+  },
+  "cost": "zero API calls; pure NumPy off the official noised world"
+}
