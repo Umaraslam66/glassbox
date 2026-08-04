@@ -1,0 +1,238 @@
+{
+  "experiment": "m4_bars",
+  "date": "2026-08-04",
+  "run": "m4_full",
+  "ruling32_footnote": "Memo (a)'s peak-spreading attainability argument assumed a single bottleneck; the ratified two-route world adds an escape path. Any peak-spreading result is interpreted under the two-route config, and the report notes this config difference from memo (a).",
+  "peak_spreading": {
+    "bar": "S20 <= 0.80 * S1 (per-day sliding 15-min maximum share)",
+    "S1": 0.2633,
+    "S20": 0.2933,
+    "S20_over_S1": 1.1139,
+    "trajectory": [
+      0.2633,
+      0.3867,
+      0.3733,
+      0.3667,
+      0.3467,
+      0.3333,
+      0.3333,
+      0.3267,
+      0.3133,
+      0.3167,
+      0.3133,
+      0.3133,
+      0.3167,
+      0.31,
+      0.3,
+      0.3,
+      0.2933,
+      0.29,
+      0.2933,
+      0.2933
+    ],
+    "pass": false
+  },
+  "coherence_hab": {
+    "bar": "Spearman r(W_i, HAB_i) <= -0.3 (frozen W_i, Ruling 8)",
+    "spearman_r": -0.1882,
+    "pass": false,
+    "disattenuated_r": -0.3219,
+    "rho_hat_m1": 0.5845,
+    "W_mean": 0.0207,
+    "quartiles": [
+      {
+        "trait_quartile": 1,
+        "n": 75,
+        "index_mean": 0.0337
+      },
+      {
+        "trait_quartile": 2,
+        "n": 75,
+        "index_mean": 0.0225
+      },
+      {
+        "trait_quartile": 3,
+        "n": 75,
+        "index_mean": 0.0147
+      },
+      {
+        "trait_quartile": 4,
+        "n": 75,
+        "index_mean": 0.0119
+      }
+    ]
+  },
+  "coherence_sch": {
+    "bar": "Spearman r(X_i, SCH_i) <= -0.3 (frozen X_i, Ruling 8, b = 5)",
+    "spearman_r": -0.3613,
+    "pass": true,
+    "disattenuated_r": -0.7433,
+    "rho_hat_m1": 0.4861,
+    "X_mean": 0.2321,
+    "quartiles": [
+      {
+        "trait_quartile": 1,
+        "n": 75,
+        "index_mean": 0.4449
+      },
+      {
+        "trait_quartile": 2,
+        "n": 75,
+        "index_mean": 0.2702
+      },
+      {
+        "trait_quartile": 3,
+        "n": 75,
+        "index_mean": 0.094
+      },
+      {
+        "trait_quartile": 4,
+        "n": 75,
+        "index_mean": 0.1193
+      }
+    ]
+  },
+  "ruling30_predeclaration": "The M4 coherence bars (|r| >= 0.3) are at elevated risk of ceiling-inherited misses given measured transmission; if they miss, the frozen decomposition attributes card vs dynamics.",
+  "day_context": [
+    {
+      "day": 1,
+      "peak_share": 0.2633,
+      "route_A_share": 1.0,
+      "max_queue_delay_min": 14.79,
+      "mean_travel_min": 24.63
+    },
+    {
+      "day": 2,
+      "peak_share": 0.3867,
+      "route_A_share": 0.807,
+      "max_queue_delay_min": 5.92,
+      "mean_travel_min": 21.38
+    },
+    {
+      "day": 3,
+      "peak_share": 0.3733,
+      "route_A_share": 0.763,
+      "max_queue_delay_min": 4.25,
+      "mean_travel_min": 21.1
+    },
+    {
+      "day": 4,
+      "peak_share": 0.3667,
+      "route_A_share": 0.75,
+      "max_queue_delay_min": 4.29,
+      "mean_travel_min": 21.02
+    },
+    {
+      "day": 5,
+      "peak_share": 0.3467,
+      "route_A_share": 0.767,
+      "max_queue_delay_min": 3.03,
+      "mean_travel_min": 20.45
+    },
+    {
+      "day": 6,
+      "peak_share": 0.3333,
+      "route_A_share": 0.77,
+      "max_queue_delay_min": 2.95,
+      "mean_travel_min": 20.36
+    },
+    {
+      "day": 7,
+      "peak_share": 0.3333,
+      "route_A_share": 0.777,
+      "max_queue_delay_min": 3.64,
+      "mean_travel_min": 20.45
+    },
+    {
+      "day": 8,
+      "peak_share": 0.3267,
+      "route_A_share": 0.787,
+      "max_queue_delay_min": 3.56,
+      "mean_travel_min": 20.44
+    },
+    {
+      "day": 9,
+      "peak_share": 0.3133,
+      "route_A_share": 0.793,
+      "max_queue_delay_min": 2.42,
+      "mean_travel_min": 20.06
+    },
+    {
+      "day": 10,
+      "peak_share": 0.3167,
+      "route_A_share": 0.793,
+      "max_queue_delay_min": 2.12,
+      "mean_travel_min": 19.97
+    },
+    {
+      "day": 11,
+      "peak_share": 0.3133,
+      "route_A_share": 0.793,
+      "max_queue_delay_min": 2.12,
+      "mean_travel_min": 19.97
+    },
+    {
+      "day": 12,
+      "peak_share": 0.3133,
+      "route_A_share": 0.797,
+      "max_queue_delay_min": 1.55,
+      "mean_travel_min": 19.85
+    },
+    {
+      "day": 13,
+      "peak_share": 0.3167,
+      "route_A_share": 0.797,
+      "max_queue_delay_min": 1.73,
+      "mean_travel_min": 19.9
+    },
+    {
+      "day": 14,
+      "peak_share": 0.31,
+      "route_A_share": 0.8,
+      "max_queue_delay_min": 2.04,
+      "mean_travel_min": 19.9
+    },
+    {
+      "day": 15,
+      "peak_share": 0.3,
+      "route_A_share": 0.8,
+      "max_queue_delay_min": 1.38,
+      "mean_travel_min": 19.8
+    },
+    {
+      "day": 16,
+      "peak_share": 0.3,
+      "route_A_share": 0.817,
+      "max_queue_delay_min": 1.73,
+      "mean_travel_min": 19.68
+    },
+    {
+      "day": 17,
+      "peak_share": 0.2933,
+      "route_A_share": 0.817,
+      "max_queue_delay_min": 1.81,
+      "mean_travel_min": 19.73
+    },
+    {
+      "day": 18,
+      "peak_share": 0.29,
+      "route_A_share": 0.823,
+      "max_queue_delay_min": 1.78,
+      "mean_travel_min": 19.69
+    },
+    {
+      "day": 19,
+      "peak_share": 0.2933,
+      "route_A_share": 0.823,
+      "max_queue_delay_min": 1.95,
+      "mean_travel_min": 19.7
+    },
+    {
+      "day": 20,
+      "peak_share": 0.2933,
+      "route_A_share": 0.827,
+      "max_queue_delay_min": 2.14,
+      "mean_travel_min": 19.68
+    }
+  ]
+}

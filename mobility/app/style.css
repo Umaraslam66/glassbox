@@ -1,13 +1,14 @@
-/* M4 viewer scaffold — minimal, elegant baseline; real polish after the
-   full run (PRD section 8: one page, one purpose, no dashboard clutter). */
+/* GLASSBOX-Mobility M4 viewer — one page, one purpose (PRD section 8). */
 
 :root {
-  --bg: #101014;
-  --pane: #17171d;
-  --ink: #e8e6e1;
-  --muted: #8a8894;
+  --bg: #0e0e12;
+  --pane: #16161c;
+  --edge: #24242c;
+  --ink: #eceae4;
+  --muted: #8f8d99;
   --route-a: #e4b363;
   --route-b: #6ea8bf;
+  --late: #d0685f;
 }
 
 * { box-sizing: border-box; margin: 0; }
@@ -15,38 +16,107 @@
 body {
   background: var(--bg);
   color: var(--ink);
-  font: 15px/1.5 "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  padding: 2rem clamp(1rem, 6vw, 4rem);
+  font: 15px/1.55 "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  padding: 2.25rem clamp(1rem, 6vw, 4.5rem) 4rem;
 }
 
-header { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
-h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.01em; }
-.sub { color: var(--muted); }
-#status { color: var(--muted); margin-left: auto; }
+header { display: flex; align-items: flex-end; gap: 1.25rem; flex-wrap: wrap; }
+h1 {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.sub { color: var(--muted); margin-top: 0.15rem; }
+#status { color: var(--muted); margin-left: auto; font-size: 0.9rem; }
 
 .load {
-  border: 1px solid var(--muted);
-  border-radius: 6px;
-  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--edge);
+  background: var(--pane);
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
   cursor: pointer;
+  transition: border-color 0.2s;
 }
+.load:hover { border-color: var(--route-a); }
 .load input { display: none; }
 
-main { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
+main { display: grid; gap: 1.5rem; margin-top: 1.75rem; }
+main[hidden] { display: none; }
 
 .pane {
   background: var(--pane);
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  padding: 1.1rem 1.4rem 1.2rem;
 }
-.pane h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
-.hint { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+.pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+.pane h2 { font-size: 1.05rem; font-weight: 600; }
 
-canvas { width: 100%; height: auto; background: var(--bg); border-radius: 6px; }
+.controls { display: flex; gap: 0.6rem; align-items: center; }
+.badge {
+  background: var(--bg);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.clock { min-width: 4.2em; text-align: center; color: var(--ink); }
 
-.controls { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.5rem; }
-input[type="range"] { accent-color: var(--route-a); }
+.play {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  width: 2rem; height: 1.7rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.play:hover { border-color: var(--route-a); }
 
-table { border-collapse: collapse; margin-top: 0.75rem; width: 100%; }
-th, td { text-align: left; padding: 0.25rem 0.75rem 0.25rem 0; color: var(--ink); }
-th { color: var(--muted); font-weight: 500; }
+input[type="range"] { accent-color: var(--route-a); vertical-align: middle; }
+select {
+  background: var(--bg); color: var(--ink);
+  border: 1px solid var(--edge); border-radius: 6px;
+  padding: 0.2rem 0.5rem; font: inherit;
+}
+
+canvas { width: 100%; height: auto; display: block; border-radius: 8px; }
+#spark-canvas { margin-top: 0.4rem; }
+
+.legend {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.6rem;
+  display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+}
+.dot {
+  display: inline-block; width: 0.65em; height: 0.65em;
+  border-radius: 50%; margin-right: 0.35em;
+}
+.dot.a { background: var(--route-a); }
+.dot.b { background: var(--route-b); }
+.note { color: var(--muted); }
+
+.table-wrap { overflow-x: auto; margin-top: 0.6rem; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 0.3rem 1rem 0.3rem 0; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--edge); }
+td.switch { color: var(--route-b); }
+td.late { color: var(--late); }
+
+body.dragging::after {
+  content: "drop the trajectory log";
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(14, 14, 18, 0.85);
+  font-size: 1.4rem; color: var(--route-a);
+}

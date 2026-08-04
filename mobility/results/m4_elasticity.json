@@ -1,0 +1,135 @@
+{
+  "experiment": "m4_elasticity",
+  "date": "2026-08-04",
+  "caveat": "By-construction caveat (frozen section 6, verbatim): the population's planted VOT/PRC distributions partly determine these numbers; the interesting quantity is the distortion LLM mediation introduces relative to the structurally implied elasticities.",
+  "role": "REPORTED beside published ranges; no bar",
+  "arms": {
+    "cost_plus10": {
+      "n_scenarios": 40,
+      "n_calls": 12000,
+      "invalid": 3,
+      "baseline": {
+        "mode_shares_mode_mod": {
+          "bike": 0.0825,
+          "car": 0.3237,
+          "transit": 0.5938
+        },
+        "option_A_share_by_subblock": {
+          "mode_hab": 0.8067,
+          "mode_mod": 0.3237,
+          "mode_prc": 0.3691,
+          "mode_vot": 0.303
+        }
+      },
+      "changed": {
+        "mode_shares_mode_mod": {
+          "bike": 0.0856,
+          "car": 0.3095,
+          "transit": 0.6049
+        },
+        "option_A_share_by_subblock": {
+          "mode_hab": 0.7658,
+          "mode_mod": 0.3095,
+          "mode_prc": 0.3983,
+          "mode_vot": 0.3061
+        }
+      }
+    },
+    "fare_minus20": {
+      "n_scenarios": 36,
+      "n_calls": 10800,
+      "invalid": 3,
+      "baseline": {
+        "mode_shares_mode_mod": {
+          "bike": 0.0825,
+          "car": 0.3237,
+          "transit": 0.5938
+        },
+        "option_A_share_by_subblock": {
+          "mode_mod": 0.3237,
+          "mode_prc": 0.3691,
+          "mode_vot": 0.303
+        }
+      },
+      "changed": {
+        "mode_shares_mode_mod": {
+          "bike": 0.0673,
+          "car": 0.2941,
+          "transit": 0.6386
+        },
+        "option_A_share_by_subblock": {
+          "mode_mod": 0.2941,
+          "mode_prc": 0.3623,
+          "mode_vot": 0.3155
+        }
+      }
+    },
+    "cordon": {
+      "n_scenarios": 12,
+      "n_calls": 3600,
+      "invalid": 3,
+      "baseline": {
+        "mode_shares_mode_mod": {
+          "bike": 0.0825,
+          "car": 0.3237,
+          "transit": 0.5938
+        },
+        "option_A_share_by_subblock": {
+          "mode_mod": 0.3237
+        }
+      },
+      "changed": {
+        "mode_shares_mode_mod": {
+          "bike": 0.1037,
+          "car": 0.2916,
+          "transit": 0.6047
+        },
+        "option_A_share_by_subblock": {
+          "mode_mod": 0.2916
+        }
+      }
+    }
+  },
+  "elasticities": {
+    "cost_plus10": {
+      "car_share": [
+        0.3237,
+        0.3095
+      ],
+      "transit_share": [
+        0.5938,
+        0.6049
+      ],
+      "arc_car": -0.471,
+      "arc_transit": 0.194,
+      "published_car_cost": "-0.1 to -0.4 (Goodwin, Dargay & Hanly 2004)"
+    },
+    "fare_minus20": {
+      "transit_share": [
+        0.5938,
+        0.6386
+      ],
+      "arc_transit_fare": -0.327,
+      "published_fare": "-0.2 to -0.5 (TRL 2004; Litman) \u2014 supplies the fare number Ruling 28 recorded as missing statically"
+    },
+    "cordon": {
+      "car_share": [
+        0.3237,
+        0.2916
+      ],
+      "car_share_reduction_pct": -9.9,
+      "arc_car_vs_cordon": -0.186,
+      "published_reduction": "-10% to -35% car trips (London/Stockholm program evaluations)"
+    }
+  },
+  "client": {
+    "calls_made": 26400,
+    "cache_hits": 0,
+    "retries": 2899,
+    "cost_usd": 0.2784,
+    "prompt_tokens": 9260040,
+    "completion_tokens": 26400,
+    "reasoning_tokens": 0
+  },
+  "wall_to_wall_usd": 0.3896
+}

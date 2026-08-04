@@ -36,7 +36,10 @@ Compute (Leonardo core-hours) joins when the cluster returns from maintenance.
 | 2026-08-04 | M4 world mint + capacity calibration (design-time, planted params only) | none — pure NumPy | 0 API requests | — | $0.00 |
 | 2026-08-04 | M4 PILOT 50 × 3 days (mechanics only): 100 day-loop calls, reasoning-off | OpenRouter qwen3.7-flash | 100 calls | 60k prompt / 100 completion, 0 reasoning | $0.0018 |
 
-**Stage M0 total: ≈ $0.0155. Stages M1–M3: ≈ $1.93. Grand total ≈ $1.95.**
+| 2026-08-04 | M4 FULL day-loop 300 × 20 (Ruling 33): 5,700 calls, days serial; per-day cost/retries in the summary; days 12–14 rode an upstream 429 wave on backoff | OpenRouter qwen3.7-flash | 5,700 calls | 3.72M prompt / 5.7k completion, 0 reasoning | $0.1112 |
+| 2026-08-04 | M4 elasticity experiments (three frozen re-asks, 300 travelers × 88 variant scenarios) | OpenRouter qwen3.7-flash | 26,400 calls | 9.26M prompt / 26.4k completion, 0 reasoning | $0.2784 |
+
+**Stage M0 total: ≈ $0.0155. Stages M1–M3: ≈ $1.93. Stage M4: ≈ $0.39. Grand total ≈ $2.34.**
 No compute used (Leonardo in maintenance).
 
 Notes recorded at run time:

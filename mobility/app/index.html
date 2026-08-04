@@ -3,48 +3,82 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GLASSBOX-Mobility — simulation viewer</title>
+<title>GLASSBOX-Mobility — twenty mornings</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <!--
-  Stage M4 simulation viewer — SCAFFOLD (structure only; polish after the
-  full run, per the Gate M3-close authorization). Single page, no backend.
-  Reads the system-side trajectory log (pid, day, route, dep_min,
+  Stage M4 simulation viewer. Single page, no backend, no dependencies.
+  Reads the SYSTEM-SIDE trajectory log only (pid, day, route, dep_min,
   travel_min, arrive_min) — never planted parameters, never cards.
+
+  Run:  cd mobility/app && python -m http.server 8000
+        open http://localhost:8000  and load
+        ../data/runs/m4_full/trajectories.jsonl
+        (or drag the file anywhere onto the page)
 -->
 <header>
-  <h1>GLASSBOX-Mobility</h1>
-  <p class="sub">day-loop simulation viewer</p>
+  <div>
+    <h1>Twenty mornings</h1>
+    <p class="sub">300 LLM travelers, two routes, one bottleneck</p>
+  </div>
   <label class="load">
     load trajectories.jsonl
     <input type="file" id="file" accept=".jsonl,.json">
   </label>
-  <span id="status">no run loaded</span>
+  <span id="status">drop a trajectory log anywhere on this page</span>
 </header>
 
-<main>
-  <section id="day-view" class="pane">
-    <h2>One day <span class="hint">departures &rarr; arrivals on both routes</span></h2>
-    <div class="controls">
-      <label>day <input type="range" id="day-slider" min="1" max="1" value="1"></label>
-      <span id="day-label">–</span>
+<main hidden id="main">
+  <section class="pane" id="day-pane">
+    <div class="pane-head">
+      <h2>One morning, replayed</h2>
+      <div class="controls">
+        <button id="day-play" class="play" title="replay">&#9654;</button>
+        <label>day <input type="range" id="day-slider" min="1" max="20" value="1"></label>
+        <span id="day-label" class="badge">day 1</span>
+        <span id="clock" class="badge clock">07:30</span>
+      </div>
     </div>
-    <canvas id="day-canvas" width="900" height="220"></canvas>
+    <canvas id="day-canvas" width="1200" height="300"></canvas>
+    <p class="legend">
+      <span class="dot a"></span> route A — through the bottleneck
+      <span class="dot b"></span> route B — the steady ring road
+      <span class="note" id="day-note"></span>
+    </p>
   </section>
 
-  <section id="evolution" class="pane">
-    <h2>Twenty days <span class="hint">departure-time histogram, the peak-spreading exhibit</span></h2>
-    <canvas id="hist-canvas" width="900" height="220"></canvas>
+  <section class="pane" id="hist-pane">
+    <div class="pane-head">
+      <h2>The peak, spreading</h2>
+      <div class="controls">
+        <button id="hist-play" class="play" title="play days">&#9654;</button>
+        <span class="badge" id="hist-day">day 1</span>
+        <span class="badge" id="peak-share">peak share –</span>
+      </div>
+    </div>
+    <canvas id="hist-canvas" width="1200" height="240"></canvas>
+    <canvas id="spark-canvas" width="1200" height="80"></canvas>
+    <p class="legend"><span class="note">bars: departures that morning ·
+      lower line: the day's maximum 15-minute arrival share, day 1 → 20</span></p>
   </section>
 
-  <section id="inspector" class="pane">
-    <h2>Traveler <span class="hint">public trajectory only</span></h2>
-    <select id="traveler-select"><option>–</option></select>
-    <table id="traveler-table">
-      <thead><tr><th>day</th><th>route</th><th>left</th><th>drive</th><th>arrived</th></tr></thead>
-      <tbody></tbody>
-    </table>
+  <section class="pane" id="inspector-pane">
+    <div class="pane-head">
+      <h2>One traveler</h2>
+      <div class="controls">
+        <select id="traveler-select"></select>
+        <span class="badge" id="traveler-summary"></span>
+      </div>
+    </div>
+    <canvas id="traveler-canvas" width="1200" height="120"></canvas>
+    <div class="table-wrap">
+      <table id="traveler-table">
+        <thead><tr><th>day</th><th>route</th><th>left</th><th>drive</th>
+          <th>arrived</th><th>vs day before</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 </main>
 
