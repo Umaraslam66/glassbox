@@ -1340,3 +1340,13 @@ check ALL PASS. Zero study-API spend; grand total ≈ $2.34.
 
 **GATE V3: HARD STOP.** Committed, NOT pushed. Second push plan
 produced and awaiting the owner's word.
+
+## 2026-08-04 — Ruling 44: Gate V3 accepted, second push executed, STUDY CLOSED
+
+Gate V3 reviewed; all Ruling 41–43 verifications accepted. **Ruling 44
+(owner's explicit word): second push authorized and executed** — the
+V3 commit and this closing entry, main → origin/main at
+github.com/Umaraslam66/glassbox. The study is closed. The one open
+item is outside the repo: the owner's live browser check of the
+viewer's 60 fps feel (headless proxy numbers in the Gate V3 entry).
+Grand total ≈ $2.34; every ruling 1–44 on this record.
