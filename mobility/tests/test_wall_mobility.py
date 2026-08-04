@@ -64,7 +64,7 @@ VAULT_EXEMPT_FILES = (("mobility", "tests", "test_wall_mobility.py"),)
 #: Additionally allowed to spell a truth-directory path: the parent's grader
 #: and the parent's frozen tests, which name the parent's own truth directory
 #: and are policed by the parent wall test.
-PATH_EXEMPT_DIRS = VAULT_EXEMPT_DIRS + (("src", "eval"), ("tests",))
+PATH_EXEMPT_DIRS = VAULT_EXEMPT_DIRS + (("glassbox", "src", "eval"), ("glassbox", "tests"))
 PATH_EXEMPT_FILES = VAULT_EXEMPT_FILES
 
 #: Assembled from pieces so this file does not contain the literal it forbids.

@@ -61,26 +61,26 @@ from pathlib import Path
 
 import pytest
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 #: Directories never walked.
 SKIP_DIRS = {".venv", "venv", ".git", "__pycache__", ".pytest_cache", "node_modules", "build", "dist"}
 
 #: Paths (relative to the repo root) allowed to reference the truth store.
-EXEMPT_DIRS = (("src", "eval"),)
-EXEMPT_FILES = (("tests", "test_wall.py"), ("tests", "test_truth_store.py"))
+EXEMPT_DIRS = (("glassbox", "src", "eval"),)
+EXEMPT_FILES = (("glassbox", "tests", "test_wall.py"), ("glassbox", "tests", "test_truth_store.py"))
 
 MODULE_NAME = "truth_store"
 
 #: Paths allowed to mention logprobs: the grader and the persona side.
-LOGPROB_EXEMPT_DIRS = (("src", "eval"), ("src", "personas"))
-LOGPROB_EXEMPT_FILES = (("tests", "test_wall.py"), ("tests", "test_noise_layer.py"))
+LOGPROB_EXEMPT_DIRS = (("glassbox", "src", "eval"), ("glassbox", "src", "personas"))
+LOGPROB_EXEMPT_FILES = (("glassbox", "tests", "test_wall.py"), ("glassbox", "tests", "test_noise_layer.py"))
 
 #: Matched case-insensitively, so "logprob", "logprobs" and "LogProbs" all hit.
 LOGPROB_NEEDLE = "logprob"
 
 #: Where run artifacts live, and what may never be found there.
-RUNS_DIR = ("data", "runs")
+RUNS_DIR = ("glassbox", "data", "runs")
 
 #: Filename patterns that mean "raw material", matched case-insensitively.
 #: Responder prompts carry the persona card; completions carry the answer-token
@@ -199,7 +199,7 @@ def test_repo_has_python_files_to_check() -> None:
 
 def test_truth_store_lives_behind_the_wall() -> None:
     """Guard against the accessor being moved, which would make the test vacuous."""
-    accessor = REPO_ROOT / "src" / "eval" / f"{MODULE_NAME}.py"
+    accessor = REPO_ROOT / "glassbox" / "src" / "eval" / f"{MODULE_NAME}.py"
     assert accessor.is_file(), f"expected the truth-store accessor at {accessor}"
 
 
@@ -229,7 +229,7 @@ def test_no_module_outside_eval_touches_the_truth_store() -> None:
 
 def test_the_noise_layer_really_does_mention_logprobs() -> None:
     """Guard against the logprob check passing because the word changed."""
-    layer = REPO_ROOT / "src" / "personas" / "noise_layer.py"
+    layer = REPO_ROOT / "glassbox" / "src" / "personas" / "noise_layer.py"
     assert layer.is_file(), f"expected the noise layer at {layer}"
     assert LOGPROB_NEEDLE in layer.read_text(encoding="utf-8").lower(), (
         f"the noise layer no longer contains {LOGPROB_NEEDLE!r}, so the check "

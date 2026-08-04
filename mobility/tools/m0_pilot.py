@@ -34,8 +34,9 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+for _entry in (REPO_ROOT, REPO_ROOT / "glassbox"):
+    if str(_entry) not in sys.path:
+        sys.path.insert(0, str(_entry))
 
 from src.llm_client import load_dotenv_if_present  # noqa: E402  (parent utility, imported unchanged)
 
