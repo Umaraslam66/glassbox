@@ -1218,3 +1218,45 @@ every frame was re-verified against the extract before acceptance.
 **Zero study-API spend this session** (all rendering local; grand
 total unchanged ≈ $2.34). **STOPPED at Gate M5-final-2:** awaiting the
 owner's direction pick for V3 and the explicit push order.
+
+## 2026-08-04 — Gate M5-final-2 reviewed: Rulings 40–43 received
+
+**Ruling 40 (tooling amendment RECORDED).** The concept-phase use of
+parallel design subagents is an owner-authorized amendment for VISUAL
+WORK ONLY — zero study-API spend, every frame number verified against
+the trajectory log in-session before acceptance. The solo rule stands
+unchanged for all study and analysis work. Brief-correction note, on
+the record: the session brief circulated t0287's final departure as
+~05:56; the recorded value is 03:56 (departure drift −245 min); all
+three concept directions computed from the data and rendered the
+correct value.
+
+**Ruling 41 (repo restructure APPROVED; parent read-only lifted for
+one structural commit only).** Two top-level studies — `glassbox/`
+(parent) and `mobility/` — root reduced to README (rewritten landing
+page), LICENSE, .gitignore, .claude/, shared pytest config. One
+commit, pure `git mv`; only import/path/config fixes allowed, every
+edited file listed, wall-test diffs shown verbatim; full verification
+at the new HEAD (parent suite identical at 726, mobility 28 +
+expected skips, both wall tests green, both PRDs absent from all
+commits, untracked material still untracked, exclusion scan re-run on
+changed blobs). Any failed check stops everything before pushing.
+
+**Ruling 42 (push AUTHORIZED, conditional).** If every Ruling-41
+check is green: `git push origin main`, full range through the
+restructure commit — the owner's explicit word, recorded here.
+
+**Ruling 43 (V3 direction DECIDED: the composite).** A = interactive
+living-town viewer (hero); B = the traveler dossier as its inspector
+layer; C = the mural set shipped as high-res posters in
+`results/posters/`. Build rules: headless iteration per Ruling 38;
+subagents per Ruling 40; every element data-driven with the
+provenance footer everywhere; no invented content; no new study-API
+calls; the concept round's B2 casting deviation gets corrected or its
+caption rewritten to what the featured traveler's log supports; a
+tracked published dataset under `mobility/app/data/` with exactly the
+viewer's fields (trajectories, public profiles, card text — planted
+parameters EXCLUDED, proven by a field-level check); 60fps target,
+scrub + play, guided story beats, share mode, static-file open.
+Finals + screenshots committed; second push plan produced; SECOND
+PUSH ONLY ON THE OWNER'S WORD.
