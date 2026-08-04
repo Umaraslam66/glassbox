@@ -3,110 +3,133 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GLASSBOX-Mobility — twenty mornings</title>
+<title>GLASSBOX-Mobility — twenty mornings in one town</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <!--
-  Stage M4 viewer V2 — the living-corridor rebuild (Gate M5-final directive).
-  Single page, no backend, no dependencies; static-file open works.
-  Every moving element is driven by the recorded SYSTEM-SIDE log only:
-  {pid, day, route, dep_min, travel_min, arrive_min}. Queue positions are
-  interpolated from each traveler's own recorded departure and travel time;
-  nothing is invented. No planted parameters, no cards, ever.
+  Viewer V3 — the living miniature town + the traveler dossier.
 
-  Run:  cd mobility/app && python -m http.server 8000
-        open http://localhost:8000, load (or drag anywhere)
-        ../data/runs/m4_full/trajectories.jsonl
-  Keys: space play/pause · arrows scrub the day · p PNG frame ·
-        r 10-second WebM capture (native MediaRecorder, no libraries)
+  Everything on screen is computed at load time from the three published files
+  in app/data/ : trajectories.jsonl, profiles.json, cards.jsonl. There are no
+  hard-coded results anywhere in this app; if you swap the data files, every
+  number, caption, house, window and car changes with them.
+
+  Runs three ways, no server needed:
+    · double-click index.html            (file:// — uses data-bundle.js)
+    · python3 -m http.server 8000        (http:// — uses fetch)
+    · node scratch harness               (town.js loads in node too)
+
+  Keys:  space play/pause · ← → scrub the clock · ↑ ↓ change day
+         s story mode · n next beat · p export a PNG · esc close the dossier
 -->
-<header id="header">
-  <div class="title-block">
-    <h1>Twenty mornings</h1>
-    <p class="strap">300 LLM travelers · two routes · one bottleneck</p>
-  </div>
-  <div class="stats" id="stats" hidden>
-    <div class="stat"><span class="num" id="stat-peak">–</span>
-      <span class="lbl">peak share, day 1 → 20</span></div>
-    <div class="stat"><span class="num" id="stat-b">–</span>
-      <span class="lbl">on the ring road by day 20</span></div>
-    <div class="stat"><span class="num" id="stat-travel">–</span>
-      <span class="lbl">mean drive, day 1 → 20</span></div>
-  </div>
-  <label class="load">
-    load trajectories.jsonl
-    <input type="file" id="file" accept=".jsonl,.json">
-  </label>
-</header>
-<p id="status" class="status">drop a trajectory log anywhere on this page</p>
 
-<main hidden id="main">
-  <section id="world">
-    <div id="map-frame">
-      <canvas id="map-canvas" width="1600" height="900"></canvas>
-      <div id="dawn"></div>
-      <canvas id="anim-canvas" width="1600" height="900"></canvas>
-      <div id="overlay">
-        <span id="clock" class="clock">06:00</span>
-        <span id="day-chip" class="day-chip">day 1</span>
-        <p id="caption" class="caption-line"></p>
-        <div id="share-title" hidden>
-          <h2>Twenty mornings</h2>
-          <p>300 LLM travelers learn a congested corridor ·
-             GLASSBOX-Mobility</p>
-        </div>
-      </div>
+<header id="masthead">
+  <div class="title-block">
+    <p class="eyebrow">GLASSBOX · MOBILITY</p>
+    <h1>Twenty mornings in one town</h1>
+    <p class="strap" id="strap">300 travelers · two routes · one bridge</p>
+  </div>
+  <div class="head-stats" id="head-stats"></div>
+</header>
+
+<p id="status" class="status">building the town…</p>
+
+<main id="main" hidden>
+  <section id="stage">
+    <div id="frame">
+      <canvas id="town" width="1600" height="900"></canvas>
+      <div id="hint" class="hint-bubble">click a house or a car</div>
     </div>
+
     <div id="controls">
-      <button id="play" class="btn" title="play/pause (space)">&#9654;</button>
-      <input type="range" id="time-scrub" min="0" max="1000" value="0">
-      <input type="range" id="day-slider" min="1" max="20" value="1"
-             title="day (arrow keys)">
-      <button id="mornings" class="btn wide" title="autoplay all twenty days">
-        twenty mornings</button>
-      <button id="story" class="btn wide">story</button>
-      <button id="story-next" class="btn" hidden>&#8594;</button>
+      <button id="play" class="btn" title="play / pause (space)">&#9654;</button>
+      <label class="ctl">
+        <span class="ctl-lbl">clock</span>
+        <input type="range" id="time-scrub" min="0" max="1000" value="0">
+      </label>
+      <label class="ctl narrow">
+        <span class="ctl-lbl">day <b id="day-read">1</b></span>
+        <input type="range" id="day-slider" min="1" max="20" value="1">
+      </label>
+      <label class="ctl auto">
+        <span class="ctl-lbl">speed</span>
+        <select id="speed">
+          <option value="0.5">0.5&times;</option>
+          <option value="1" selected>1&times;</option>
+          <option value="2">2&times;</option>
+          <option value="4">4&times;</option>
+        </select>
+      </label>
+      <button id="all-days" class="btn wide" title="play all twenty mornings">twenty mornings</button>
+      <button id="story" class="btn wide" title="guided story (s)">story</button>
+      <button id="prev-beat" class="btn" hidden title="previous beat">&#8592;</button>
+      <button id="next-beat" class="btn" hidden title="next beat (n)">&#8594;</button>
       <button id="share" class="btn wide" title="clean 16:9 frame">share</button>
-      <span id="capture-note" class="hint"></span>
+      <button id="png" class="btn" title="export PNG (p)">PNG</button>
     </div>
+    <p class="beat-line" id="beat-line" hidden></p>
   </section>
 
   <section id="numbers">
-    <h2 class="numbers-title">The numbers</h2>
+    <h2 class="section-title">The numbers</h2>
+
     <div class="pane">
-      <div class="pane-head-row">
-        <h3>The peak, spreading</h3>
-        <span class="badge" id="peak-share">peak share –</span>
+      <div class="pane-head">
+        <h3>Departures, spreading</h3>
+        <span class="badge" id="hist-badge"></span>
       </div>
-      <canvas id="hist-canvas" width="1400" height="200"></canvas>
-      <canvas id="spark-canvas" width="1400" height="96"></canvas>
-      <p class="caption">Bars: that morning's departures (faint outline:
-        day 1). Line: the frozen peak measure, day by day — it starts at the
-        bottleneck's ceiling, jumps when the ring road is discovered, then
-        falls as the peak genuinely spreads.</p>
+      <canvas id="hist-canvas" width="1400" height="220"></canvas>
+      <p class="pane-caption">Bars: this morning's departures. Faint outline:
+        day 1, for comparison. Both are the recorded <code>dep_min</code>
+        values, binned; nothing is smoothed.</p>
     </div>
+
     <div class="pane">
-      <div class="pane-head-row">
-        <h3>One traveler</h3>
+      <div class="pane-head">
+        <h3>The peak, day by day</h3>
+        <span class="badge" id="peak-badge"></span>
+      </div>
+      <canvas id="spark-canvas" width="1400" height="180"></canvas>
+      <p class="pane-caption">The frozen peak measure — the share of the 300
+        arriving inside the busiest 15-minute window — for each of the twenty
+        mornings. It starts pinned at the bridge's ceiling, jumps when the ring
+        road is found, then falls as the peak genuinely spreads. The change
+        measured from day&nbsp;2 rather than day&nbsp;1 is
+        <strong>exploratory</strong>: it was not the pre-registered comparison,
+        and it is reported here only as an annotation.</p>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <h3>One traveler, twenty mornings</h3>
         <select id="traveler-select"></select>
         <span class="badge" id="traveler-summary"></span>
         <span class="chips" id="notable-chips"></span>
       </div>
       <div class="table-wrap">
         <table id="traveler-table">
-          <thead><tr><th>day</th><th>route</th><th>left</th><th>drive</th>
-            <th>arrived</th><th>vs day before</th></tr></thead>
+          <thead><tr>
+            <th>day</th><th>route</th><th>left</th><th>drive</th>
+            <th>queued</th><th>arrived</th><th>vs the morning before</th>
+          </tr></thead>
           <tbody></tbody>
         </table>
       </div>
-      <p class="caption">Public trajectory only. The <em>notable</em> chips
-        surface the seven travelers who kept leaving 15 minutes earlier,
-        morning after morning, and the busiest route-switchers.</p>
+      <p class="pane-caption">Straight out of the trajectory log. The
+        <em>notable</em> chips are computed too: the travelers who keep leaving
+        earlier morning after morning, and the busiest route-switchers.</p>
     </div>
   </section>
 </main>
 
+<footer id="provenance">
+  <p id="provenance-text"></p>
+  <p class="prov-files" id="provenance-files"></p>
+</footer>
+
+<script src="data-bundle.js"></script>
+<script src="town.js"></script>
 <script src="viewer.js"></script>
 </body>
 </html>

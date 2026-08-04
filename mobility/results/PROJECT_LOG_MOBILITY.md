@@ -1260,3 +1260,83 @@ parameters EXCLUDED, proven by a field-level check); 60fps target,
 scrub + play, guided story beats, share mode, static-file open.
 Finals + screenshots committed; second push plan produced; SECOND
 PUSH ONLY ON THE OWNER'S WORD.
+
+## 2026-08-04 — Rulings 41–42 executed (restructure + FIRST PUSH), Ruling 43 built: GATE V3
+
+**Restructure (Ruling 41) committed and verified.** Parent study moved
+to `glassbox/` by pure `git mv` (142 R100 renames); root reduced to
+the rewritten landing README, LICENSE, .gitignore, .claude/, shared
+pytest.ini. Every content-edited file, complete list:
+`glassbox/tests/test_wall.py` (8 path-constant substitutions — the
+test re-anchored to the true repo root so its repo-wide logprob and
+truth-path bans still cover mobility, which Ruling 4's config
+mechanism depends on), `mobility/tests/test_wall_mobility.py` (parent
+grader exemption tuples gained the `glassbox/` prefix),
+root `pytest.ini`, `mobility/pytest.ini`, `mobility/tools/m0_pilot.py`
+(sys.path bootstrap only), `.gitignore` (npz pattern re-pointed),
+root `README.md` (new landing page; the old README moved
+byte-identical to `glassbox/README.md`). Verification at the new
+HEAD: parent suite 726 passed — identical count; mobility 28 + 1
+expected skip; both wall tests green; both PRDs absent from all 34
+range commits (tree-by-tree); `.env`, npz, LEONARDO docs,
+`glassbox/data/`, `graphify-out/` untracked; exclusion scan clean.
+
+**FIRST PUSH executed (Ruling 42, owner's explicit word):**
+`98e2976..d61e531 main -> main`, 34 commits, live at
+github.com/Umaraslam66/glassbox.
+
+**Ruling 43 built — V3 composite (this commit).**
+- **Published dataset** `mobility/app/data/` (tracked; re-included in
+  `mobility/.gitignore` so the change stays inside mobility/):
+  trajectories.jsonl (byte-identical to the run log, sha256 8059c84d…),
+  profiles.json (300 public profiles), cards.jsonl (pid + name + the
+  real Stage-M1 card text, each byte-equal to its leak-checked
+  original). **Field-level leakage check: ALL 8 CHECKS PASS** — exact
+  field allowlists on all three files, banned planted-truth keys
+  (phi/wobble/PAT/loadings/…) absent at every depth, scalar-only
+  values, 300-pid consistency. The app works from a public clone with
+  no untracked files.
+- **The viewer** (`mobility/app/`): shared renderer `town.js` (no DOM
+  dependency — the same module renders in the browser and in the node
+  verification harness, per Ruling 38), rewritten `viewer.js` /
+  `index.html` / `style.css`, `make_bundle.mjs` +
+  generated `data-bundle.js` (file:// fallback; embeds the three
+  published files as exact bytes with a sha256 manifest — verified
+  independently byte-identical). Living-town hero scene; five guided
+  story beats (jam → discovery → Hans's switchback → the ratchet →
+  spread); click-a-house/car dossier (monogram, profile, verbatim
+  card excerpt with adjacency note, computed data-diary, 20-square
+  route ribbon); day scrub/play/speed/keyboard; share mode; PNG
+  export. EVERY displayed number is computed from the three data
+  files at load time — no literal results in the app.
+- **Honesty details:** the bridge tag shows observed throughput from
+  the log (5.3/min day 1) — the study's 5.25/min capacity is not
+  derivable from the published fields and is not displayed; derived
+  durations round at the data's own precision (Hans 14.7 min, joint
+  4th of day 1, computed with tie-aware ranking); casting fix per
+  Ruling 43c — the discovery beat features the actual first three
+  onto the ring road (t0116/t0190/t0366 by recorded departure) and
+  Hans's beat claims only what his log supports. Provenance footer on
+  every frame, in share/export output, and as page HTML.
+- **Performance (headless proxy, node-canvas CPU rasterization,
+  1920×1080):** busiest static frame 13.8 ms mean (p95 14.2) after a
+  sprite mip-ladder + cached light/chrome rebuild; playback 23.4 ms;
+  day-20 5.3 ms. Browser GPU compositing has substantial headroom on
+  the 60 fps target; measured in-browser numbers await any live
+  session the owner runs.
+- **Posters (finisher set)** in `results/posters/`: mural_full.png
+  3000×4384, mural_act1.png and mural_earlyrisers.png 3840×2160 —
+  re-rendered at scale from the approved concept pipeline with a
+  byte-for-byte K=1 control against the approved renders; the only
+  content change is the slug line (concept IDs dropped), proven by a
+  pixel-region diff confined to the slug bounding box.
+- **Screenshots:** `results/v3_*.jpg` — the five beats, mid-scrub,
+  share mode, and the open dossier, all rendered headlessly by the
+  harness through the shared renderer.
+
+**Tests at this commit:** parent 726; mobility 28 + 1 expected skip;
+both wall tests green (the app is JS — no new Python); 43d leakage
+check ALL PASS. Zero study-API spend; grand total ≈ $2.34.
+
+**GATE V3: HARD STOP.** Committed, NOT pushed. Second push plan
+produced and awaiting the owner's word.

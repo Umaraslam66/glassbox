@@ -1,3 +1,8 @@
 # Internal build spec: kept locally, never committed (Gate M0 Ruling 5,
 # matching the parent PRD.md treatment).
 /PRD_MOBILITY.md
+
+# Published viewer dataset (Ruling 43d): system-side fields + card text only.
+# Re-includes what the root data/ exclusion would hide; this directory is tracked.
+!app/data/
+!app/data/**

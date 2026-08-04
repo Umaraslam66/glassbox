@@ -1,0 +1,2102 @@
+[
+ {
+  "pid": "t0000",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0001",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0002",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0003",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0004",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0005",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0006",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0008",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0009",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0010",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0011",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0013",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0014",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0015",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0017",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0018",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0019",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0020",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0021",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0022",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0024",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0025",
+  "age_band": "25-34",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0026",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0028",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0030",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0032",
+  "age_band": "55-64",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0034",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0035",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0036",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0037",
+  "age_band": "25-34",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0038",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0039",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0040",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0041",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0042",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0043",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0045",
+  "age_band": "55-64",
+  "occupation_type": "retail and service",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0047",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0048",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0049",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0050",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0051",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0052",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0053",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0054",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0055",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0057",
+  "age_band": "55-64",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0058",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0059",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0060",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0061",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0063",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0068",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0069",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0071",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0072",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0074",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0075",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0076",
+  "age_band": "25-34",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0077",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0078",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0079",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0081",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0082",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0083",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0084",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0085",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0086",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0087",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0088",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0090",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0092",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0094",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0095",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0096",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0097",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0098",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0101",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0102",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0103",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0104",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0106",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0107",
+  "age_band": "25-34",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0109",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0110",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0111",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0112",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0113",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0115",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0116",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0117",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0119",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0120",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0121",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0122",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0123",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0124",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0125",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0126",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0128",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0130",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0131",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0132",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0133",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0134",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0136",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0138",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0139",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0140",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0142",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0143",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0144",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0145",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0146",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0147",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0148",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0149",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0150",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0151",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0152",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0153",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0154",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0155",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0156",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0157",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0158",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0160",
+  "age_band": "55-64",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0161",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0162",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0165",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0167",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0168",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0171",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0172",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0173",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0175",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0176",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0177",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0179",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0180",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0181",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0182",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0185",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0187",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0188",
+  "age_band": "55-64",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0190",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0193",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0194",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0195",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0197",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0199",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0200",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0202",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0204",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0205",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0206",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0208",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0210",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0211",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0213",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0214",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0219",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0222",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0223",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0224",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0226",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0227",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0229",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0230",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0231",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0232",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0234",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0236",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0237",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0239",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0240",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0241",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0242",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0243",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0244",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0245",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0246",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0249",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0250",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0251",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0252",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0253",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0254",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0256",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0257",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0258",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0259",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0260",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0261",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0262",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0263",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0266",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0267",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0268",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0269",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0270",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0272",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0273",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0274",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0275",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0276",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0277",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0279",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0281",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0282",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0284",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0285",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0286",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0287",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0288",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0289",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0290",
+  "age_band": "55-64",
+  "occupation_type": "retail and service",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0291",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0292",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0293",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0294",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0295",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0296",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0297",
+  "age_band": "55-64",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0298",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0299",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0304",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0305",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0306",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0307",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0308",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0309",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0311",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0312",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0313",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0314",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0316",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0319",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0320",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0321",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0322",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0323",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0324",
+  "age_band": "25-34",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0325",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0326",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0327",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0328",
+  "age_band": "25-34",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0329",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0331",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0332",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0333",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0334",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0335",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0336",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0337",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0340",
+  "age_band": "35-44",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0341",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0343",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "single",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0344",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0345",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0346",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0347",
+  "age_band": "35-44",
+  "occupation_type": "retail and service",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0348",
+  "age_band": "45-54",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0349",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0352",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0354",
+  "age_band": "55-64",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0356",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0357",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0358",
+  "age_band": "55-64",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0359",
+  "age_band": "35-44",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0360",
+  "age_band": "25-34",
+  "occupation_type": "office administration",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0365",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0366",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0367",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0368",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0369",
+  "age_band": "25-34",
+  "occupation_type": "healthcare",
+  "household": "single parent",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0370",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0371",
+  "age_band": "45-54",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0372",
+  "age_band": "35-44",
+  "occupation_type": "education",
+  "household": "couple",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0373",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0374",
+  "age_band": "35-44",
+  "occupation_type": "healthcare",
+  "household": "shared flat",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0375",
+  "age_band": "35-44",
+  "occupation_type": "office administration",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0376",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0377",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0378",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "single",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0379",
+  "age_band": "25-34",
+  "occupation_type": "education",
+  "household": "shared flat",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0382",
+  "age_band": "55-64",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0383",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0384",
+  "age_band": "25-34",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0385",
+  "age_band": "25-34",
+  "occupation_type": "logistics and manual",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0387",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0388",
+  "age_band": "45-54",
+  "occupation_type": "logistics and manual",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0389",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0390",
+  "age_band": "45-54",
+  "occupation_type": "education",
+  "household": "couple with children",
+  "area_type": "suburb"
+ },
+ {
+  "pid": "t0391",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0393",
+  "age_band": "45-54",
+  "occupation_type": "healthcare",
+  "household": "couple with children",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0394",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "single parent",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0395",
+  "age_band": "45-54",
+  "occupation_type": "self-employed",
+  "household": "single",
+  "area_type": "small town"
+ },
+ {
+  "pid": "t0397",
+  "age_band": "25-34",
+  "occupation_type": "retail and service",
+  "household": "couple with children",
+  "area_type": "inner city"
+ },
+ {
+  "pid": "t0399",
+  "age_band": "55-64",
+  "occupation_type": "self-employed",
+  "household": "shared flat",
+  "area_type": "small town"
+ }
+]
