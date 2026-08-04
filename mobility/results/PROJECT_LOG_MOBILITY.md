@@ -725,3 +725,89 @@ skip; both wall tests green. Cost $0.00; grand total unchanged ≈ $1.81.
 
 **GATE M3: HARD STOP.** Lift FAIL, ECE PASS, coverage FAIL (decay
 reported). Awaiting the owner's rulings.
+
+## 2026-08-04 — Gate M3 reviewed: Rulings 27–30, Stage M4 pilot authorized
+
+**Ruling 27 (M3 verdicts recorded verbatim).** Lift FAIL (+7.0% vs 25%),
+ECE PASS (0.0473 — the study's first passing frozen bar), coverage FAIL
+(30.4%) with the coverage-decay phenomenon reproduced (33.3% → 14.4%
+monotone). Findings registered for the report: (a) coverage-decay
+generalizes across domains; (b) k-NN +33.8% vs structural +7.0% —
+behavioral similarity beats structural estimation ~5×; (c) profile-only
+−14.2% confirms the negative control; (d) aggregate-easy/individual-hard
+quantified (marginals r 0.977 vs individual 0.32–0.43). Ruling-26
+comparison recorded as labeled exploratory: regularization helps
+correlations, worsens real-unit VOT — specification misfit is binding.
+The two footnotes (MOD location offset; K=4 CRW undefined) logged.
+
+**Ruling 28 (transit-fare gap).** Recorded as a pre-existing design
+omission, reported as a limitation verbatim. No new scenarios, no
+backfill, no re-sweep. The elasticity table ships with the by-construction
+caveat and this gap noted.
+
+**Ruling 29 (frozen LLM-profile baseline AUTHORIZED, cap $1.00).**
+Operationalization, declared before any call: Gemini flash-lite
+(system-side role, family split intact), temperature 0, one call per
+(unique held-out profile, held-out non-distractor scenario) — predictions
+keyed by profile, so identical profiles share a cached call; the prompt
+shows ONLY the public profile fields and the scenario text as shown to
+travelers and asks for choice shares ("A=0.xx B=0.yy ..."); parse
+failures fall back to uniform and are counted; scored with the identical
+Brier cells and p_true as the other baselines; result appended to the M3
+record beside the frozen baseline list. Cache in
+`data/runs/m3_llm_profile/`; cumulative cost tracked against the $1.00
+cap; persistent errors are a stop event.
+
+**Ruling 30 (M4 ceiling pre-declaration), owner's verbatim sentence,
+recorded before any M4 compute:** "The M4 coherence bars (|r| ≥ 0.3) are
+at elevated risk of ceiling-inherited misses given measured transmission;
+if they miss, the frozen decomposition attributes card vs dynamics.
+Peak-spreading depends on incentive response, which M2/M3
+choice-prediction results (0.80) suggest is present. Declared at M3
+close, before any M4 compute." Bars unchanged.
+
+**M4 world pre-declaration (before any simulated day, before the pilot).**
+- **Network reconciliation, stated for the owner's veto at the pilot
+  gate:** memo (a) argues peak spreading on one Vickrey bottleneck; the
+  frozen W_i index counts mode-or-route switches and memo (b) reasons
+  explicitly about "travelers who start on the better route" — a
+  one-route world would make W_i identically zero and the HAB coherence
+  bar uncomputable. The world therefore has TWO routes into the CBD
+  (PRD §5's first-listed option): route A, free-flow 18 min through one
+  Vickrey bottleneck (capacity calibrated per memo a); route B, steady
+  26 min, never congested. Single mode (car): W_i reduces to its route
+  term, exactly as the frozen formula allows.
+- **Population:** 300 of the 400 travelers, seeded draw (seed 3250);
+  preferred arrival times PAT ~ N(08:30, 12 min), seed 3260, clipped to
+  [07:30, 09:30]; PATs are planted truth (vault), each traveler sees only
+  their own in prompts.
+- **Day 1 (mechanical, per memo a):** everyone on route A, departing
+  PAT − 18 min. No LLM call.
+- **Days 2..20 (LLM):** frozen answering config (qwen3.7-flash,
+  reasoning-off, T 0.7, cached, resumable). Menu of 10 single-letter
+  options: A–E = route A departing {−15, −5, 0, +5, +15} min relative to
+  yesterday's departure; F–J = route B, same shifts; the same-route
+  same-time option is labeled "as yesterday". Prompt = card + own PAT +
+  own experienced memory of the last 3 days (route, departure, realized
+  travel time, early/late vs PAT) + the menu. No forecasts shown; agents
+  adjust from experienced times only (PRD §5).
+- **Bottleneck mechanics:** deterministic point queue — sorted A-route
+  departures served at capacity s veh/min, travel = 18 + queue delay;
+  route B constant 26. τ_{t−1}(d) for X_i = linear interpolation between
+  the previous day's observed (departure → travel) pairs on the chosen
+  route, flat beyond the observed range; route B is constant by
+  construction. W_i and X_i exactly as frozen (§5, Ruling 8; b = 5 min).
+- **Capacity calibration (design-time, planted parameters only, before
+  any agent runs, per memo a):** choose s so the day-1 naive profile's
+  maximum queue delay lands in [12, 18] min (target 15); the calibration
+  curve and chosen s are logged to
+  `results/m4_capacity_calibration.json` before the pilot.
+- **PILOT (authorized): 50 travelers × 3 days** — the first 50 positions
+  of the seeded 300-draw; day 1 mechanical + 2 LLM days = 100 calls.
+  Mechanics only: per-day cost, retry behavior, loop end-to-end, index
+  computation. NO bar grading on pilot data. Full-run cost and wall-clock
+  extrapolated from measured pilot numbers.
+- **Viewer scaffold:** zero-API frontend structure in `mobility/app/`,
+  reading the system-side trajectory log (pid, day, route, departure,
+  travel, arrival — never φ, never cards); polish deferred to after the
+  full run.
