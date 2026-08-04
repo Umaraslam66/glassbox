@@ -1,0 +1,14 @@
+{
+  "experiment": "m4_full",
+  "date": "2026-08-04",
+  "authorized_by": "Ruling 33 (full run) after Rulings 31-32; two-route world ratified",
+  "prereg_commit": "57bfcfb",
+  "n_travelers": 300,
+  "n_days": 20,
+  "temperature": 0.7,
+  "concurrency": 8,
+  "memory_days": 3,
+  "cards_run": "m1_cards_r2",
+  "regime": "reasoning-off (frozen answering config), cached, resumable",
+  "notes": "Ruling 33 rules in force: no config change after day 1 starts; failures resume from cache; no grading before day 20 completes; per-day cost + 429 behavior logged; $1.00 wall-to-wall cap. Capacity 5.25/min from results/m4_capacity_calibration.json; seeds 3250/3260; menu and world per 4f1b741."
+}

@@ -861,3 +861,70 @@ $0.1421 (Ruling 29) + $0.0018 (pilot) → grand total ≈ $1.95.
 
 **GATE M4-PILOT: HARD STOP.** Awaiting the owner's go for the full
 300 × 20 run (and the two-route reconciliation stands open to veto).
+
+## 2026-08-04 — Gate M4-pilot reviewed: Rulings 31–33, full run authorized
+
+**Ruling 31 (LLM-profile baseline registered).** −66.7% (Brier 0.3217 vs
+marginal 0.1930) appended to the frozen baseline list. Finding registered:
+the negative control holds twice over — an LLM given a signal-free profile
+invents structure and predicts worse than zero information. Report-grade.
+
+**Ruling 32 (two-route world APPROVED).** Ratified for the full run;
+grounds: the frozen W_i formula and HAB coherence bar require route choice
+to be computable; declared pre-run at 4f1b741; memo (b) reasons about
+route switching. Owner's footnote, recorded verbatim: "Memo (a)'s
+peak-spreading attainability argument assumed a single bottleneck; the
+ratified two-route world adds an escape path. Any peak-spreading result is
+interpreted under the two-route config, and the report notes this config
+difference from memo (a)."
+
+**Ruling 33 (full run authorized).** 300 × 20 days, frozen config
+(capacity 5.25 veh/min, seeds 3250/3260, memory 3 days, qwen
+reasoning-off, days serial, travelers parallel). Rules in force: (a) no
+parameter/prompt/capacity/config change once day 1 starts; failures resume
+from cache, never restart modified; (b) no grading, no peeking-driven
+adjustment during the run — bars only after day 20; (c) per-day cost and
+429 behavior logged; budget cap $1.00 wall-to-wall, trajectory above it is
+a stop event. Bars afterward exactly as frozen; then the pre-registered
+elasticity experiments; then viewer polish (system-side log only).
+
+**M4 elasticity experiments — operationalization pre-declared BEFORE any
+run (frozen §5: 'the same population re-asked under changed attributes
+with everything else fixed'):**
+- **Instrument:** the mode-choice block. A price change a text-reading
+  agent cannot see cannot move it, so each experiment's scenario set is
+  the mode scenarios whose relevant money amounts render in the text
+  (every cost renders as 'EUR x.xx' via the generator's fixed format;
+  variants are built by exact string substitution of those formatted
+  values, attrs updated to match — same numbers, same wording otherwise).
+  mode_crw shows no money and is excluded by this rule.
+- **Experiment 1, uniform travel cost +10%:** all visible cost_eur ×1.10;
+  set = mode_vot (14) + mode_mod (12) + mode_prc (10) + mode_hab (4) = 40
+  scenarios.
+- **Experiment 2, transit fare −20%:** transit fares ×0.80; set =
+  mode_vot (both options; transit by construction) + mode_mod (tram
+  option) + mode_prc (both) = 36 scenarios; mode_hab excluded (mode
+  unstated in text).
+- **Experiment 3, cordon charge:** +EUR 4.00 (the §3 design-table €2–6
+  midpoint) on every car option; set = mode_mod (12); text: 'EUR x.xx
+  fuel and parking' → 'EUR y.yy fuel, parking and the new EUR 4.00 city
+  charge'.
+- **Population:** the 300 M4 travelers. **Both arms pre-noise** (fresh
+  answers are pre-noise; baseline = their cached sweep-r2 pre-noise
+  answers on the same scenarios) — the comparison measures the renderer's
+  response, and the trait-independent noise layer would only blur an
+  aggregate. Frozen answering config, one round, no distributions
+  requested (not needed; declared).
+- **Metrics:** aggregate option/mode shares in both arms; arc elasticity
+  e = (ΔQ/Q̄)/(ΔP/P̄) with midpoint denominators (exp1 ΔP/P̄ = 0.0952 on
+  all costs, car and transit shares both reported; exp2 −0.2222 on fares,
+  transit share; exp3 per-scenario car-cost change averaged for the
+  midpoint, car share, plus the plain % car-share reduction beside the
+  congestion-charging literature). Published references: fare −0.2..−0.5
+  (TRL 2004/Litman — this experiment now supplies the fare number whose
+  static probe Ruling 28 recorded as missing); car cost −0.1..−0.4
+  (Goodwin et al. 2004); congestion-charge car-trip reduction −10..−35%
+  (London/Stockholm program evaluations). Every table carries the frozen
+  §6 by-construction caveat.
+- **Estimated spend:** (40+36+12) × 300 = 26,400 calls ≈ $0.28; with the
+  day-loop ≈ $0.40 wall-to-wall against the $1.00 cap.

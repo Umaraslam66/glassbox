@@ -111,9 +111,13 @@ def main(config_path: Path) -> dict:
     trajectories: list[dict] = []
     invalid_answers = 0
     day_wallclock: list[float] = []
+    day_cost_usd: list[float] = []
+    day_retries: list[int] = []
 
     for day in range(1, n_days + 1):
         t0 = time.time()
+        cost_before = client.stats()["cost_usd"]
+        retries_before = client.stats()["retries"]
         if day > 1:
             menu_cache = {p: build_menu(state[p]["route"], state[p]["dep"])
                           for p in pids}
@@ -162,6 +166,8 @@ def main(config_path: Path) -> dict:
                                  "travel_min": round(travel[p], 2),
                                  "arrive_min": round(arrive, 2)})
         day_wallclock.append(round(time.time() - t0, 1))
+        day_cost_usd.append(round(client.stats()["cost_usd"] - cost_before, 5))
+        day_retries.append(client.stats()["retries"] - retries_before)
 
     with (sys_dir / "trajectories.jsonl").open("w", encoding="utf-8") as fh:
         for row in trajectories:
@@ -177,6 +183,8 @@ def main(config_path: Path) -> dict:
         "llm_calls_expected": len(pids) * (n_days - 1),
         "invalid_answers_defaulted": invalid_answers,
         "day_wallclock_s": day_wallclock,
+        "day_cost_usd": day_cost_usd,
+        "day_retries": day_retries,
         "client": stats,
         "note": "pilot is mechanics-only per the pre-declaration: no bar "
                 "grading on pilot data",
