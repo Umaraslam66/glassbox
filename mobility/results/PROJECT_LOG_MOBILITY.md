@@ -994,3 +994,71 @@ skip; both wall tests green. Stage M4 spend $0.3896; grand total ≈ $2.34.
 **GATE M4: HARD STOP.** Peak FAIL (mechanism recorded), HAB FAIL
 (ceiling-inherited per Ruling 30), SCH PASS; elasticity table shipped
 with caveat. Awaiting the owner's rulings and the M5 report go.
+
+## 2026-08-04 — Gate M4 reviewed: Rulings 34–35, viewer craft pass + Stage M5 authorized
+
+**Ruling 34 (M4 verdicts verbatim).** Peak spreading FAIL (S1 0.2633 →
+S20 0.2933 vs frozen anchor); r(W,HAB) −0.188 FAIL, ceiling-inherited per
+Ruling 30 (disattenuated −0.322 clears); r(X,SCH) −0.361 PASS
+(disattenuated −0.743). The mechanistic peak analysis (day-1 anchor
+measured the saturated queue; monotone −24.3% fall from day 2) is
+recorded as exploratory context under Ruling 32's footnote — NEVER a
+re-grade; the frozen bar stays FAILED. Elasticities recorded with the
+verbatim caveat; the fare number fills Ruling 28's gap as a dynamic-probe
+result, labeled as such (the static-bank gap remains a limitation).
+
+**Ruling 35 (findings registered).** (a) SCH asymmetry — weakest in
+static transmission (0.486), strongest in dynamics (clean coherence
+pass): repeated consequential days elicit what one-shot scenarios cannot;
+(b) the metering artifact — day-1 anchors in congested systems measure
+capacity, not behavior (methods lesson for the harness); (c) the ratchet
+tail — 7/300 travelers drifted to extreme early departures: LLM persona
+caricature under repetition; (d) aggregate realism holds statically AND
+dynamically while individual recovery fails — the study's headline
+contrast, complete at every level.
+
+**Authorized:** the one budgeted viewer craft pass (presentation layer
+only, zero API, truth-leakage check stated in the report) and Stage M5
+(REPORT_MOBILITY.md + plain-language summary, zero API, nothing pushed).
+
+## 2026-08-04 — GATE M5: viewer craft pass done, report + summary drafted
+
+**Viewer (final).** All seven directives implemented: designed dark theme
+(44px display title, tabular numerals, 8px grid, amber/cyan kept
+everywhere); morning replay with delay-proportional dot glow, the
+bottleneck drawn as a lane pinch, live clock + time cursor, day-1 ghost
+toggle; histogram with permanent day-1 outline, translucent busiest-15-min
+band, animated peak numeral, S-sparkline with S1 reference and the day-2
+rebase annotation labeled exploratory; inspector with click-a-dot
+selection, per-day delay sparkbars, and a notable-trajectories shortlist
+(the 7 early-ratchet travelers by the pre-06:30 criterion + top
+switchers); one plain-language caption per pane; keyboard scrubbing
+(arrows/space), rAF playback, static-file open works. Verified live
+in-browser against the full-run log; screenshots committed:
+`results/viewer_pane1_day1.jpg`, `viewer_pane1_day20.jpg`,
+`viewer_pane2_peak.jpg`, `viewer_pane3_inspector.jpg`.
+
+**Truth-leakage check (directive 7): PASS.** The viewer's data file
+(`data/runs/m4_full/trajectories.jsonl`, 6,000 rows) contains exactly the
+system-side fields {pid, day, route, dep_min, travel_min, arrive_min} and
+nothing else; route values are public labels; planted parameters, PATs,
+wobble and card text are not representable in the schema.
+
+**Stage M5 documents drafted.** `results/REPORT_MOBILITY.md` (scoreboard
+first, 10 fails before 6 passes, verbatim frozen bars, both decomposition
+tables, findings from Rulings 25/27/31/35, limitations incl. the fare gap,
+the diversity single-pair fail and the Ruling-32 footnote, costs, seeds,
+commit hashes) and `RESEARCH_SUMMARY_MOBILITY.md` (plain-language; the
+believable-calibrated-aggregate-realistic-individually-unmeasurable
+headline; parent parallels drawn explicitly).
+
+**Verdict-transcription spot-check:** 28 scoreboard numbers checked
+against their result files programmatically — 27 exact string matches, 1
+rounding (transmission median 0.6091 reported as 0.609), plus JSON-level
+equality asserts on every bar value: all passed.
+
+**Tests at gate:** parent 726 passed; mobility 28 passed + 1 expected
+skip; both wall tests green. Stage M5 spend $0.00; grand total ≈ $2.34.
+Nothing pushed; repo local per standing rule.
+
+**GATE M5: HARD STOP.** Report and summary await the owner's review.

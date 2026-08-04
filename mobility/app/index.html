@@ -8,70 +8,80 @@
 </head>
 <body>
 <!--
-  Stage M4 simulation viewer. Single page, no backend, no dependencies.
-  Reads the SYSTEM-SIDE trajectory log only (pid, day, route, dep_min,
-  travel_min, arrive_min) — never planted parameters, never cards.
+  Stage M4 simulation viewer — final craft pass (Gate M4 review directive).
+  Single page, no backend, no dependencies; works from a static file open.
+  Reads the SYSTEM-SIDE trajectory log only: pid, day, route, dep_min,
+  travel_min, arrive_min. No planted parameters, no cards, ever.
 
   Run:  cd mobility/app && python -m http.server 8000
-        open http://localhost:8000  and load
+        open http://localhost:8000, then load (or drag anywhere)
         ../data/runs/m4_full/trajectories.jsonl
-        (or drag the file anywhere onto the page)
+  Keys: left / right arrows scrub the day, space replays the morning.
 -->
 <header>
-  <div>
+  <div class="title-block">
     <h1>Twenty mornings</h1>
-    <p class="sub">300 LLM travelers, two routes, one bottleneck</p>
+    <p class="strap">300 LLM travelers · two routes · one bottleneck · 20 mornings</p>
+  </div>
+  <div class="stats" id="stats" hidden>
+    <div class="stat"><span class="num" id="stat-peak">–</span>
+      <span class="lbl">peak 15-min share, day 1 → 20</span></div>
+    <div class="stat"><span class="num" id="stat-b">–</span>
+      <span class="lbl">on the ring road by day 20</span></div>
+    <div class="stat"><span class="num" id="stat-travel">–</span>
+      <span class="lbl">mean drive, day 1 → 20</span></div>
   </div>
   <label class="load">
     load trajectories.jsonl
     <input type="file" id="file" accept=".jsonl,.json">
   </label>
-  <span id="status">drop a trajectory log anywhere on this page</span>
 </header>
+<p id="status" class="status">drop a trajectory log anywhere on this page</p>
 
 <main hidden id="main">
+  <div class="day-strip">
+    <button id="play" class="play" title="replay this morning (space)">&#9654;</button>
+    <input type="range" id="day-slider" min="1" max="20" value="1">
+    <span id="day-label" class="badge day-badge">day 1</span>
+    <span id="clock" class="badge clock">—</span>
+    <label class="ghost-toggle"><input type="checkbox" id="ghost-toggle" checked>
+      day-1 ghost</label>
+  </div>
+
   <section class="pane" id="day-pane">
-    <div class="pane-head">
-      <h2>One morning, replayed</h2>
-      <div class="controls">
-        <button id="day-play" class="play" title="replay">&#9654;</button>
-        <label>day <input type="range" id="day-slider" min="1" max="20" value="1"></label>
-        <span id="day-label" class="badge">day 1</span>
-        <span id="clock" class="badge clock">07:30</span>
-      </div>
-    </div>
-    <canvas id="day-canvas" width="1200" height="300"></canvas>
-    <p class="legend">
-      <span class="dot a"></span> route A — through the bottleneck
-      <span class="dot b"></span> route B — the steady ring road
-      <span class="note" id="day-note"></span>
-    </p>
+    <h2>One morning, replayed</h2>
+    <canvas id="day-canvas" width="1400" height="360"></canvas>
+    <p class="caption">Each dot is one traveler finishing the commute —
+      <span class="a">amber on route A</span>, through the bottleneck (the pinch),
+      <span class="b">cyan on route B</span>, the longer steady ring road.
+      Bigger, brighter dots sat longer in the queue. On day&nbsp;1 everyone
+      crowds route&nbsp;A; press play to watch the morning unfold.
+      <span class="hint">Click a dot to inspect that traveler below.</span></p>
   </section>
 
   <section class="pane" id="hist-pane">
-    <div class="pane-head">
-      <h2>The peak, spreading</h2>
-      <div class="controls">
-        <button id="hist-play" class="play" title="play days">&#9654;</button>
-        <span class="badge" id="hist-day">day 1</span>
-        <span class="badge" id="peak-share">peak share –</span>
-      </div>
+    <h2>The peak, spreading</h2>
+    <div class="pane-head-row">
+      <span class="badge" id="peak-share">peak share –</span>
+      <span class="hint">shaded band: the day's busiest 15 arrival minutes</span>
     </div>
-    <canvas id="hist-canvas" width="1200" height="240"></canvas>
-    <canvas id="spark-canvas" width="1200" height="80"></canvas>
-    <p class="legend"><span class="note">bars: departures that morning ·
-      lower line: the day's maximum 15-minute arrival share, day 1 → 20</span></p>
+    <canvas id="hist-canvas" width="1400" height="240"></canvas>
+    <canvas id="spark-canvas" width="1400" height="110"></canvas>
+    <p class="caption">Bars are that morning's departures; the faint outline is
+      day&nbsp;1. The line below tracks the frozen peak measure day by day: it
+      starts at the bottleneck's ceiling (the day-1 queue meters arrivals),
+      jumps when travelers discover the ring road, then falls steadily as the
+      peak genuinely spreads.</p>
   </section>
 
   <section class="pane" id="inspector-pane">
-    <div class="pane-head">
-      <h2>One traveler</h2>
-      <div class="controls">
-        <select id="traveler-select"></select>
-        <span class="badge" id="traveler-summary"></span>
-      </div>
+    <h2>One traveler</h2>
+    <div class="pane-head-row">
+      <select id="traveler-select"></select>
+      <span class="badge" id="traveler-summary"></span>
+      <span class="chips" id="notable-chips"></span>
     </div>
-    <canvas id="traveler-canvas" width="1200" height="120"></canvas>
+    <canvas id="traveler-canvas" width="1400" height="170"></canvas>
     <div class="table-wrap">
       <table id="traveler-table">
         <thead><tr><th>day</th><th>route</th><th>left</th><th>drive</th>
@@ -79,6 +89,10 @@
         <tbody></tbody>
       </table>
     </div>
+    <p class="caption">Public trajectory only — departures, routes, drive
+      times. The <em>notable</em> shortlist surfaces the seven travelers who
+      kept leaving 15 minutes earlier, morning after morning, and the busiest
+      route-switchers.</p>
   </section>
 </main>
 

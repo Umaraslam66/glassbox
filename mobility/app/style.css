@@ -1,14 +1,17 @@
-/* GLASSBOX-Mobility M4 viewer — one page, one purpose (PRD section 8). */
+/* GLASSBOX-Mobility M4 viewer — final craft pass.
+   8px spacing grid; type scale 13 / 15 / 17 / 22 / 44; tabular numerals on
+   every stat; route A amber, route B cyan, everywhere and only. */
 
 :root {
-  --bg: #0e0e12;
-  --pane: #16161c;
-  --edge: #24242c;
-  --ink: #eceae4;
-  --muted: #8f8d99;
-  --route-a: #e4b363;
-  --route-b: #6ea8bf;
-  --late: #d0685f;
+  --bg: #0d0d11;
+  --pane: #15151b;
+  --edge: #23232b;
+  --ink: #edebe5;
+  --muted: #8e8c98;
+  --faint: #55535e;
+  --route-a: #e6b366;
+  --route-b: #6fb3cc;
+  --band: rgba(230, 179, 102, 0.10);
 }
 
 * { box-sizing: border-box; margin: 0; }
@@ -17,106 +20,162 @@ body {
   background: var(--bg);
   color: var(--ink);
   font: 15px/1.55 "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  padding: 2.25rem clamp(1rem, 6vw, 4.5rem) 4rem;
+  padding: 40px clamp(16px, 6vw, 72px) 64px;
 }
 
-header { display: flex; align-items: flex-end; gap: 1.25rem; flex-wrap: wrap; }
+/* ---- header --------------------------------------------------------- */
+
+header {
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+}
 h1 {
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
-  font-weight: 600;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+}
+.strap {
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 8px;
   letter-spacing: 0.01em;
 }
-.sub { color: var(--muted); margin-top: 0.15rem; }
-#status { color: var(--muted); margin-left: auto; font-size: 0.9rem; }
+.stats { display: flex; gap: 32px; margin-left: auto; }
+.stat { display: flex; flex-direction: column; }
+.num {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--route-a);
+}
+.lbl { color: var(--muted); font-size: 13px; }
 
 .load {
   border: 1px solid var(--edge);
   background: var(--pane);
   border-radius: 8px;
-  padding: 0.4rem 0.9rem;
+  padding: 8px 16px;
   cursor: pointer;
+  white-space: nowrap;
   transition: border-color 0.2s;
 }
 .load:hover { border-color: var(--route-a); }
 .load input { display: none; }
+.status { color: var(--muted); margin-top: 8px; font-size: 13px; }
 
-main { display: grid; gap: 1.5rem; margin-top: 1.75rem; }
+/* ---- day strip (shared control) ------------------------------------- */
+
+.day-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg);
+  padding: 16px 0;
+}
+.day-strip input[type="range"] { flex: 1; accent-color: var(--route-a); }
+.badge {
+  background: var(--pane);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.day-badge { color: var(--ink); min-width: 64px; text-align: center; }
+.clock { min-width: 64px; text-align: center; color: var(--ink); }
+.ghost-toggle { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.ghost-toggle input { accent-color: var(--route-a); }
+
+.play {
+  background: var(--pane);
+  color: var(--ink);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  width: 40px; height: 28px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.play:hover { border-color: var(--route-a); }
+
+/* ---- panes ---------------------------------------------------------- */
+
+main { display: grid; gap: 24px; margin-top: 8px; }
 main[hidden] { display: none; }
 
 .pane {
   background: var(--pane);
   border: 1px solid var(--edge);
   border-radius: 12px;
-  padding: 1.1rem 1.4rem 1.2rem;
+  padding: 24px;
 }
-.pane-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.8rem;
+.pane h2 { font-size: 17px; font-weight: 600; margin-bottom: 16px; }
+.pane-head-row {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 8px;
 }
-.pane h2 { font-size: 1.05rem; font-weight: 600; }
+.hint { color: var(--faint); font-size: 13px; }
 
-.controls { display: flex; gap: 0.6rem; align-items: center; }
-.badge {
-  background: var(--bg);
-  border: 1px solid var(--edge);
-  border-radius: 6px;
-  padding: 0.1rem 0.6rem;
-  font-size: 0.85rem;
+canvas {
+  width: 100%; height: auto; display: block;
+  background: var(--bg); border-radius: 8px;
+}
+#spark-canvas { margin-top: 8px; }
+
+.caption {
   color: var(--muted);
-  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  margin-top: 16px;
+  max-width: 72ch;
 }
-.clock { min-width: 4.2em; text-align: center; color: var(--ink); }
+.caption .a { color: var(--route-a); }
+.caption .b { color: var(--route-b); }
 
-.play {
-  background: var(--bg);
-  color: var(--ink);
-  border: 1px solid var(--edge);
-  border-radius: 6px;
-  width: 2rem; height: 1.7rem;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-.play:hover { border-color: var(--route-a); }
+/* ---- inspector ------------------------------------------------------ */
 
-input[type="range"] { accent-color: var(--route-a); vertical-align: middle; }
 select {
   background: var(--bg); color: var(--ink);
   border: 1px solid var(--edge); border-radius: 6px;
-  padding: 0.2rem 0.5rem; font: inherit;
+  padding: 4px 8px; font: inherit; font-size: 13px;
 }
-
-canvas { width: 100%; height: auto; display: block; border-radius: 8px; }
-#spark-canvas { margin-top: 0.4rem; }
-
-.legend {
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  background: var(--bg);
+  border: 1px solid var(--edge);
+  border-radius: 999px;
   color: var(--muted);
-  font-size: 0.85rem;
-  margin-top: 0.6rem;
-  display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+  font-size: 13px;
+  padding: 2px 12px;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s, color 0.15s;
 }
-.dot {
-  display: inline-block; width: 0.65em; height: 0.65em;
-  border-radius: 50%; margin-right: 0.35em;
-}
-.dot.a { background: var(--route-a); }
-.dot.b { background: var(--route-b); }
-.note { color: var(--muted); }
+.chip:hover, .chip.active { border-color: var(--route-a); color: var(--ink); }
 
-.table-wrap { overflow-x: auto; margin-top: 0.6rem; }
-table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
-th, td { text-align: left; padding: 0.3rem 1rem 0.3rem 0; white-space: nowrap; }
-th { color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--edge); }
+.table-wrap { overflow-x: auto; margin-top: 16px; max-height: 320px; overflow-y: auto; }
+table {
+  border-collapse: collapse; width: 100%;
+  font-variant-numeric: tabular-nums; font-size: 13px;
+}
+th, td { text-align: left; padding: 4px 16px 4px 0; white-space: nowrap; }
+th {
+  color: var(--muted); font-weight: 500;
+  border-bottom: 1px solid var(--edge);
+  position: sticky; top: 0; background: var(--pane);
+}
 td.switch { color: var(--route-b); }
-td.late { color: var(--late); }
 
 body.dragging::after {
   content: "drop the trajectory log";
   position: fixed; inset: 0;
   display: grid; place-items: center;
-  background: rgba(14, 14, 18, 0.85);
-  font-size: 1.4rem; color: var(--route-a);
+  background: rgba(13, 13, 17, 0.88);
+  font-size: 22px; color: var(--route-a);
 }
