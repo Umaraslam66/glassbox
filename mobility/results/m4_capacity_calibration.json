@@ -1,0 +1,158 @@
+{
+  "experiment": "m4_capacity_calibration",
+  "date": "2026-08-04",
+  "rule": "memo (a): capacity chosen at design time, from planted parameters only, before any agent runs, so the day-1 naive profile (route A, depart PAT - 18) yields max queue delay in [12, 18] min, target 15",
+  "seeds": {
+    "traveler_draw": 3250,
+    "pat": 3260
+  },
+  "population": {
+    "n": 300,
+    "pat_mean_clock": "08:30",
+    "pat_sd_min": 12.0,
+    "pat_clip": [
+      "07:30",
+      "09:30"
+    ]
+  },
+  "chosen_capacity_per_min": 5.25,
+  "achieved_day1_max_delay_min": 14.79,
+  "band": [
+    12.0,
+    18.0
+  ],
+  "curve": [
+    {
+      "capacity_per_min": 2.0,
+      "day1_max_delay_min": 93.63
+    },
+    {
+      "capacity_per_min": 2.25,
+      "day1_max_delay_min": 78.59
+    },
+    {
+      "capacity_per_min": 2.5,
+      "day1_max_delay_min": 66.81
+    },
+    {
+      "capacity_per_min": 2.75,
+      "day1_max_delay_min": 57.25
+    },
+    {
+      "capacity_per_min": 3.0,
+      "day1_max_delay_min": 49.73
+    },
+    {
+      "capacity_per_min": 3.25,
+      "day1_max_delay_min": 43.45
+    },
+    {
+      "capacity_per_min": 3.5,
+      "day1_max_delay_min": 38.07
+    },
+    {
+      "capacity_per_min": 3.75,
+      "day1_max_delay_min": 33.4
+    },
+    {
+      "capacity_per_min": 4.0,
+      "day1_max_delay_min": 29.32
+    },
+    {
+      "capacity_per_min": 4.25,
+      "day1_max_delay_min": 25.71
+    },
+    {
+      "capacity_per_min": 4.5,
+      "day1_max_delay_min": 22.51
+    },
+    {
+      "capacity_per_min": 4.75,
+      "day1_max_delay_min": 19.65
+    },
+    {
+      "capacity_per_min": 5.0,
+      "day1_max_delay_min": 17.07
+    },
+    {
+      "capacity_per_min": 5.25,
+      "day1_max_delay_min": 14.79
+    },
+    {
+      "capacity_per_min": 5.5,
+      "day1_max_delay_min": 12.84
+    },
+    {
+      "capacity_per_min": 5.75,
+      "day1_max_delay_min": 11.3
+    },
+    {
+      "capacity_per_min": 6.0,
+      "day1_max_delay_min": 10.01
+    },
+    {
+      "capacity_per_min": 6.25,
+      "day1_max_delay_min": 8.83
+    },
+    {
+      "capacity_per_min": 6.5,
+      "day1_max_delay_min": 7.77
+    },
+    {
+      "capacity_per_min": 6.75,
+      "day1_max_delay_min": 6.78
+    },
+    {
+      "capacity_per_min": 7.0,
+      "day1_max_delay_min": 5.87
+    },
+    {
+      "capacity_per_min": 7.25,
+      "day1_max_delay_min": 5.01
+    },
+    {
+      "capacity_per_min": 7.5,
+      "day1_max_delay_min": 4.22
+    },
+    {
+      "capacity_per_min": 7.75,
+      "day1_max_delay_min": 3.47
+    },
+    {
+      "capacity_per_min": 8.0,
+      "day1_max_delay_min": 2.78
+    },
+    {
+      "capacity_per_min": 8.25,
+      "day1_max_delay_min": 2.13
+    },
+    {
+      "capacity_per_min": 8.5,
+      "day1_max_delay_min": 1.61
+    },
+    {
+      "capacity_per_min": 8.75,
+      "day1_max_delay_min": 1.44
+    },
+    {
+      "capacity_per_min": 9.0,
+      "day1_max_delay_min": 1.27
+    },
+    {
+      "capacity_per_min": 9.25,
+      "day1_max_delay_min": 1.12
+    },
+    {
+      "capacity_per_min": 9.5,
+      "day1_max_delay_min": 0.97
+    },
+    {
+      "capacity_per_min": 9.75,
+      "day1_max_delay_min": 0.83
+    },
+    {
+      "capacity_per_min": 10.0,
+      "day1_max_delay_min": 0.7
+    }
+  ]
+}

@@ -811,3 +811,53 @@ close, before any M4 compute." Bars unchanged.
   reading the system-side trajectory log (pid, day, route, departure,
   travel, arrival — never φ, never cards); polish deferred to after the
   full run.
+
+## 2026-08-04 — Ruling 29 executed + Gate M4-pilot: mechanics clean end to end
+
+**Ruling-29 baseline result (appended to `results/m3_calibration.json`,
+`llm_profile_baseline_ruling29`).** 1,820 Gemini flash-lite calls
+(70 unique held-out profiles × 26 scenarios, temperature 0), $0.1421
+against the $1.00 cap, zero persistent errors, 73 parse failures (4.0%,
+uniform fallback, counted). **Brier 0.3217 vs marginal 0.1930 on the
+identical 2,080 cells → lift −66.7%.** The frozen baseline list now
+reads: structural K=12 +7.0% (FAIL vs 25%), k-NN +33.8%, profile-only
+shares −14.2%, LLM-profile −66.7%. The parent's finding 5 replicates in
+the travel domain, amplified: an LLM given a designed signal-free profile
+invents demographic structure and predicts far worse than the population
+marginal. The negative control holds twice over.
+
+**M4 world minted + capacity calibrated (design-time, before any agent
+ran; `results/m4_capacity_calibration.json`).** 300 travelers (seed 3250,
+draw order preserved), PAT ~ N(08:30, 12′) clipped [07:30, 09:30] (seed
+3260), vault-deposited. Capacity 5.25 veh/min → day-1 naive max queue
+delay 14.79 min (target 15, band [12, 18]); full grid curve in the file.
+
+**PILOT (50 × 3, mechanics only per the pre-declaration — nothing here is
+graded): CLEAN.** `results/m4_pilot_summary.json`; trajectories
+system-side at `data/runs/m4_pilot/trajectories.jsonl`. 100/100 LLM calls,
+0 invalid answers, 0 retries, $0.0018, 4.5 s per 50-traveler day at
+concurrency 8, reasoning tokens 0. Mechanics observations (not graded):
+21/50 travelers changed plan after day 1, one moved to route B, departure
+spread widened 13.8 → 16.9 min; queue delay at pilot scale is ~0.1 min as
+expected (capacity is calibrated for 300, not 50 — the full run binds).
+W_i and X_i compute finite on the pilot trajectories; the frozen formula
+implementations carry offline unit tests (`tests/test_m4_engine.py`).
+
+**Full-run extrapolation (300 × 20 days = 5,700 LLM calls, days serial,
+travelers parallel):** cost ≈ $0.12 (pilot-measured ~600 prompt tokens ×
+5,700 calls; completions 1 token); wall-clock ≈ 9 min at concurrency 8 in
+the pilot's clean conditions, budget 20–40 min under the upstream 429
+oscillation seen in the sweeps. Cache + resume verified (per-(pid, day)
+keys; a crash loses nothing).
+
+**Viewer scaffold** in `mobility/app/` (index.html, viewer.js, style.css):
+loads a trajectory log, three panes wired (one-day departures→arrivals,
+20-day departure-histogram morph, traveler inspector — public trajectory
+only). Structure only; polish after the full run.
+
+**Tests at gate:** parent 726 passed; mobility 28 passed + 1 expected
+skip (7 new engine tests); both wall tests green. Costs this entry:
+$0.1421 (Ruling 29) + $0.0018 (pilot) → grand total ≈ $1.95.
+
+**GATE M4-PILOT: HARD STOP.** Awaiting the owner's go for the full
+300 × 20 run (and the two-route reconciliation stands open to veto).

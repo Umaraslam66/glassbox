@@ -1,0 +1,38 @@
+{
+  "experiment": "m4_pilot",
+  "date": "2026-08-04",
+  "config": {
+    "experiment": "m4_pilot",
+    "date": "2026-08-04",
+    "authorized_by": "Gate M3 review: Stage M4 pilot (mechanics only, no bar grading)",
+    "prereg_commit": "57bfcfb",
+    "n_travelers": 50,
+    "n_days": 3,
+    "temperature": 0.7,
+    "concurrency": 8,
+    "memory_days": 3,
+    "cards_run": "m1_cards_r2",
+    "regime": "reasoning-off (frozen answering config), cached, resumable",
+    "notes": "First 50 positions of the seeded 300-draw (seed 3250). Day 1 mechanical-naive per memo (a); days 2-3 LLM = 100 calls. Capacity from results/m4_capacity_calibration.json (design-time, planted parameters only). Menu and world per the pre-declaration at commit 4f1b741."
+  },
+  "capacity_per_min": 5.25,
+  "n_travelers": 50,
+  "n_days": 3,
+  "llm_calls_expected": 100,
+  "invalid_answers_defaulted": 0,
+  "day_wallclock_s": [
+    0.0,
+    4.5,
+    4.5
+  ],
+  "client": {
+    "calls_made": 100,
+    "cache_hits": 0,
+    "retries": 0,
+    "cost_usd": 0.0018,
+    "prompt_tokens": 59815,
+    "completion_tokens": 100,
+    "reasoning_tokens": 0
+  },
+  "note": "pilot is mechanics-only per the pre-declaration: no bar grading on pilot data"
+}

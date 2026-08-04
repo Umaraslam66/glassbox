@@ -1,0 +1,52 @@
+/* M4 viewer scaffold — minimal, elegant baseline; real polish after the
+   full run (PRD section 8: one page, one purpose, no dashboard clutter). */
+
+:root {
+  --bg: #101014;
+  --pane: #17171d;
+  --ink: #e8e6e1;
+  --muted: #8a8894;
+  --route-a: #e4b363;
+  --route-b: #6ea8bf;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  padding: 2rem clamp(1rem, 6vw, 4rem);
+}
+
+header { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.01em; }
+.sub { color: var(--muted); }
+#status { color: var(--muted); margin-left: auto; }
+
+.load {
+  border: 1px solid var(--muted);
+  border-radius: 6px;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+}
+.load input { display: none; }
+
+main { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
+
+.pane {
+  background: var(--pane);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+.pane h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+.hint { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+
+canvas { width: 100%; height: auto; background: var(--bg); border-radius: 6px; }
+
+.controls { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.5rem; }
+input[type="range"] { accent-color: var(--route-a); }
+
+table { border-collapse: collapse; margin-top: 0.75rem; width: 100%; }
+th, td { text-align: left; padding: 0.25rem 0.75rem 0.25rem 0; color: var(--ink); }
+th { color: var(--muted); font-weight: 500; }

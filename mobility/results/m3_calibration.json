@@ -454,5 +454,24 @@
       "frozen_mnl_m2": 1.1218,
       "regularized_mnl_lambda_1.0": 1.6639
     }
+  },
+  "llm_profile_baseline_ruling29": {
+    "role": "frozen section 5 baseline 4 (LLM given public profile, no choices), Ruling 29; reported beside the lift bar",
+    "date": "2026-08-04",
+    "model": "gemini flash-lite, temperature 0",
+    "n_calls_made": 1820,
+    "n_cached_before": 0,
+    "n_cells": 2080,
+    "parse_failures_uniform_fallback": 73,
+    "persistent_errors": 0,
+    "brier": 0.3217,
+    "brier_marginal_same_cells": 0.193,
+    "lift_vs_marginal": -0.6665,
+    "cost_usd": 0.1421,
+    "cap_usd": 1.0,
+    "tokens": {
+      "input": 290102,
+      "output": 22041
+    }
   }
 }

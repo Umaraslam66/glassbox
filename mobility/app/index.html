@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLASSBOX-Mobility — simulation viewer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--
+  Stage M4 simulation viewer — SCAFFOLD (structure only; polish after the
+  full run, per the Gate M3-close authorization). Single page, no backend.
+  Reads the system-side trajectory log (pid, day, route, dep_min,
+  travel_min, arrive_min) — never planted parameters, never cards.
+-->
+<header>
+  <h1>GLASSBOX-Mobility</h1>
+  <p class="sub">day-loop simulation viewer</p>
+  <label class="load">
+    load trajectories.jsonl
+    <input type="file" id="file" accept=".jsonl,.json">
+  </label>
+  <span id="status">no run loaded</span>
+</header>
+
+<main>
+  <section id="day-view" class="pane">
+    <h2>One day <span class="hint">departures &rarr; arrivals on both routes</span></h2>
+    <div class="controls">
+      <label>day <input type="range" id="day-slider" min="1" max="1" value="1"></label>
+      <span id="day-label">–</span>
+    </div>
+    <canvas id="day-canvas" width="900" height="220"></canvas>
+  </section>
+
+  <section id="evolution" class="pane">
+    <h2>Twenty days <span class="hint">departure-time histogram, the peak-spreading exhibit</span></h2>
+    <canvas id="hist-canvas" width="900" height="220"></canvas>
+  </section>
+
+  <section id="inspector" class="pane">
+    <h2>Traveler <span class="hint">public trajectory only</span></h2>
+    <select id="traveler-select"><option>–</option></select>
+    <table id="traveler-table">
+      <thead><tr><th>day</th><th>route</th><th>left</th><th>drive</th><th>arrived</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+
+<script src="viewer.js"></script>
+</body>
+</html>
