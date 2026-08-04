@@ -29,15 +29,18 @@ The same population of agents:
   passed — one of only a few bars that did);
 - **moves right in aggregate**: cut transit fares 20% and ridership rises
   with an elasticity of −0.33, squarely inside the published empirical
-  range; charge €4 to drive into town and car trips drop 10%, matching
-  London/Stockholm program evaluations; a 20-day congestion simulation
-  shows the morning peak genuinely spreading once travelers discover the
-  alternative route;
+  range; charge €4 to drive into town and car trips drop 10%, at the low
+  edge of the published London/Stockholm range; in the 20-day congestion
+  simulation, the frozen peak-spreading bar FAILED on its day-1 anchor —
+  which we traced to the anchor measuring a saturated queue rather than
+  behavior; measured from day 2 (exploratory, pre-declared footnote), the
+  peak fell 24% as travelers discovered the alternative route;
 - **and is individually unmeasurable**: not one of the six planted
   parameters could be recovered to the pre-registered standard. Value of
   time — the workhorse number of transport appraisal — came back with a
   112% median error against a 35% bar. The estimator's uncertainty
-  statements covered the truth 17% of the time instead of the nominal 68%.
+  statements covered the truth 17% of the time against the frozen 60–75%
+  acceptance band.
 
 For anyone who wants to use LLM agents as synthetic survey respondents or
 policy-simulation citizens, that combination is the warning: **believability

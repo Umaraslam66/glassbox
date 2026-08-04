@@ -1112,3 +1112,36 @@ M5-final commit); exclusion scan clean — no .env/secret/key-named files
 tracked, zero tracked files under mobility/data/, PRD_MOBILITY.md
 untracked per Ruling 5, both wall tests green. NOTHING PUSHED. Awaiting
 the owner's verbatim Ruling 36 corrections and Ruling 37 specification.
+
+## 2026-08-04 — Rulings 36–39 received in full; Ruling 36 executed
+
+**The missing rulings arrived, stated verbatim by the owner:** 36 (three
+summary corrections + spot-check re-run), 37 (publication package —
+assemble and scan only, NO push without the owner's explicit word),
+38 (no browser tools this session; all viewer frames rendered headlessly),
+39 (Viewer V3 concept phase: three distinct art directions as
+final-quality frames from recorded data only, hard stop after concepts).
+Order of work 36 → 37 → 39, stop at Gate M5-final-2.
+
+**Ruling 36 executed.** `RESEARCH_SUMMARY_MOBILITY.md` edited — exactly
+the three ordered corrections, nothing else (diff verified):
+(a) the peak-spreading sentence now leads with the frozen FAIL verdict on
+its day-1 anchor, states the saturated-queue mechanism, and labels the
+day-2 −24% fall exploratory (pre-declared footnote); (b) the cordon
+result now reads "at the low edge of" the published London/Stockholm
+range instead of "matching" it; (c) coverage is cited against the frozen
+60–75% band instead of "nominal 68%". REPORT_MOBILITY.md untouched per
+the ruling.
+
+**Transcription spot-check re-run on the edited summary
+(programmatic, zero API): 18/18 claims verified** against their result
+files (script in session scratchpad; every check names its file and
+field). Rounding conveniences on record: −0.327→"−0.33", −9.9%→"10%",
+16.7%→"17%", 0.6091→"0.61", 112.18%→"112%", −66.65%→"−67%"; the day-2
+peak rebase computed from the m4_bars trajectory (0.3867 → 0.2933,
+−24.2%) is quoted as "24%". Two pre-existing plain-language roundings
+("five-fold" for 4.8×, "half" for 184/400) verified and left as-is per
+"no other content changes".
+
+**Tests at this commit:** parent 726 passed; mobility 28 passed +
+1 expected skip; both wall tests green.
