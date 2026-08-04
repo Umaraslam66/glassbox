@@ -1145,3 +1145,76 @@ peak rebase computed from the m4_bars trajectory (0.3867 → 0.2933,
 
 **Tests at this commit:** parent 726 passed; mobility 28 passed +
 1 expected skip; both wall tests green.
+
+## 2026-08-04 — Rulings 37–39 executed: publication package scanned (NOT pushed), V3 concept frames committed
+
+**Ruling 37 (publication package — assembled and scanned; NOTHING
+PUSHED).** The would-be push is every local commit on `main` from the
+85aabbf scaffold to this one, to origin github.com/Umaraslam66/glassbox
+(`git push origin main`). Range verification: the range touches only
+`mobility/` plus the single root-README pointer line;
+`PRD_MOBILITY.md` is absent from EVERY commit tree in the range
+(checked tree-by-tree, not diff-by-diff); no tracked file under
+`mobility/data/`; `.env` untracked and ignored. Content scan of every
+distinct blob version in the range (155 text blobs pre-concepts + this
+commit's additions) and all commit messages: zero API-key-shaped
+strings, zero `.env` secret values (matched programmatically, three
+secret values, never printed), zero absolute local paths, zero personal
+emails in file content. All committed images inspected visually: pure
+viewer/concept canvas output, no browser UI, no personal tabs. On the
+record for the owner: (a) commit author/committer on all commits is the
+same public git identity already on origin's existing commits; (b) the
+predecessor's Gate M5-final log entry names the remote URL (the repo's
+own address — harmless, noted for completeness); (c) a mouse cursor is
+visible in some V2 screenshots (cosmetic). Push requires the owner's
+explicit word; final test verification at this commit is below.
+
+**Ruling 38 held.** No browser tools this session. All V3 concept
+frames were rendered headlessly (node-canvas from npm) and judged by
+reading the rendered files back.
+
+**Ruling 39 (V3 concept phase — three directions, committed to
+`results/v3_concepts/`, STOPPED for the owner's pick).** All frames
+render exclusively from recorded artifacts: the system-side trajectory
+log (five fields), the real Stage-M1 biography cards (post-study demo
+use per this ruling, provenance stated in a caption inside every
+frame), public profiles, and numbers computed from them. No invented
+thoughts, dialogue or activities anywhere; avatars are monogram chips
+derived from id + profile, stated as such. Every numeric claim in
+every frame was re-verified against the extract before acceptance.
+- **A — the living town** (`A1_day1_0815`, `A1b_day1_0835`,
+  `A2_day20_0815`, `A3_day12_0534`): 300 houses grouped by recorded
+  area type (91/115/94), windows lit by recorded departure/arrival,
+  queue at the bridge reconstructed to land on exact recorded
+  arrivals, office windows lighting per arrival. A1b exists because
+  the design brief's assumption "day-1 jam at 08:15" was wrong in the
+  data (4 queued at 08:15; the queue peaks at 77 cars at 08:35 —
+  consistent with capacity 5.25/min × 14.8 min max delay); both the
+  briefed frame and the true peak were rendered, both captioned
+  honestly.
+- **B — the commuter diary** (`B1_lukas_day12`, `B2_discovery_day2`,
+  `B3_lena_day20`): corridor scene beside a traveler dossier —
+  verbatim card excerpt (non-adjacent joins marked […]), 20-square
+  route ribbon, data-diary lines computed from that traveler's
+  recorded minutes, cast strip. Casting deviation, flagged: B2
+  features t0122 (first_day_on_B = 2, day-1 queue 14.7 min — 4th
+  largest) instead of one of the three earliest adopters, whose day-1
+  queues (0.6–1.6 min) offer no before/after contrast.
+- **C — Twenty Mornings, One Wall** (`C1_mural_full`, `C2_mural_act1`,
+  `C3_mural_earlyrisers`): the whole run as one poster — 20 morning
+  strips of arrivals, route A above / ring road below each line,
+  named threads (t0287's −245 min ratchet, a 6-switch zig-zag, a
+  steady 08:25-every-day traveler), margin notes only where the log
+  records something (58 discover the ring road on day 2; peak
+  crowding 38.7% day 2 → 29.3% day 20; nobody arrives for 2 h 12 min
+  on day 20).
+- Data-integrity note: the session brief quoted t0287's day-20
+  departure as ~05:56; the recorded value is 03:56 (dep drift
+  −245 min). All three directions computed from the data and carry
+  the correct value. Renderer scripts and PNG masters remain in the
+  session scratchpad (not repo material); frames are reproducible
+  from the trajectory log + cards by the same recipe.
+
+**Zero study-API spend this session** (all rendering local; grand
+total unchanged ≈ $2.34). **STOPPED at Gate M5-final-2:** awaiting the
+owner's direction pick for V3 and the explicit push order.
