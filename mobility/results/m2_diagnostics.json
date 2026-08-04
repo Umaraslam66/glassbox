@@ -1,0 +1,309 @@
+{
+  "experiment": "m2_diagnostics",
+  "date": "2026-08-04",
+  "tripwire_hunt": {
+    "status": "MANDATED by the frozen distractor bar (fired at 0.2215)",
+    "max_abs": {
+      "noised_vs_phi": 0.2489,
+      "prenoise_vs_phi": 0.3825,
+      "noised_vs_phi_hat": 0.2215
+    },
+    "per_scenario": {
+      "distr_00": {
+        "noised_vs_phi": {
+          "VOT": 0.1848,
+          "SCH": 0.0719,
+          "MOD": 0.1054,
+          "CRW": -0.0611,
+          "PRC": -0.1871,
+          "HAB": 0.0186
+        },
+        "prenoise_vs_phi": {
+          "VOT": 0.2159,
+          "SCH": 0.1195,
+          "MOD": 0.1486,
+          "CRW": 0.0095,
+          "PRC": -0.2225,
+          "HAB": -0.0162
+        },
+        "noised_vs_phi_hat": {
+          "VOT": 0.2215,
+          "SCH": 0.0064,
+          "MOD": 0.1106,
+          "CRW": -0.1223,
+          "PRC": -0.1932,
+          "HAB": -0.0154
+        }
+      },
+      "distr_01": {
+        "noised_vs_phi": {
+          "VOT": -0.1685,
+          "SCH": 0.0708,
+          "MOD": 0.0152,
+          "CRW": -0.0692,
+          "PRC": 0.078,
+          "HAB": 0.1186
+        },
+        "prenoise_vs_phi": {
+          "VOT": -0.1633,
+          "SCH": 0.0694,
+          "MOD": -0.0044,
+          "CRW": -0.0742,
+          "PRC": 0.1698,
+          "HAB": 0.1314
+        },
+        "noised_vs_phi_hat": {
+          "VOT": -0.1912,
+          "SCH": 0.054,
+          "MOD": -0.0974,
+          "CRW": -0.0492,
+          "PRC": 0.0897,
+          "HAB": 0.135
+        }
+      },
+      "distr_02": {
+        "noised_vs_phi": {
+          "VOT": -0.2001,
+          "SCH": -0.0343,
+          "MOD": -0.0112,
+          "CRW": -0.0337,
+          "PRC": -0.0016,
+          "HAB": 0.1128
+        },
+        "prenoise_vs_phi": {
+          "VOT": -0.2442,
+          "SCH": -0.0684,
+          "MOD": 0.0186,
+          "CRW": 0.0223,
+          "PRC": -0.0694,
+          "HAB": 0.1926
+        },
+        "noised_vs_phi_hat": {
+          "VOT": -0.1982,
+          "SCH": -0.061,
+          "MOD": -0.025,
+          "CRW": 0.0775,
+          "PRC": 0.1011,
+          "HAB": 0.2188
+        }
+      },
+      "distr_03": {
+        "noised_vs_phi": {
+          "VOT": -0.19,
+          "SCH": -0.2489,
+          "MOD": 0.0416,
+          "CRW": -0.071,
+          "PRC": -0.0608,
+          "HAB": 0.0174
+        },
+        "prenoise_vs_phi": {
+          "VOT": -0.2492,
+          "SCH": -0.3825,
+          "MOD": -0.0209,
+          "CRW": -0.1383,
+          "PRC": -0.101,
+          "HAB": -0.0768
+        },
+        "noised_vs_phi_hat": {
+          "VOT": -0.0781,
+          "SCH": -0.163,
+          "MOD": 0.0944,
+          "CRW": -0.0552,
+          "PRC": -0.092,
+          "HAB": 0.0241
+        }
+      },
+      "distr_04": {
+        "noised_vs_phi": {
+          "VOT": -0.2092,
+          "SCH": -0.1811,
+          "MOD": -0.1754,
+          "CRW": -0.0774,
+          "PRC": 0.0139,
+          "HAB": -0.0565
+        },
+        "prenoise_vs_phi": {
+          "VOT": -0.2095,
+          "SCH": -0.1981,
+          "MOD": -0.1666,
+          "CRW": -0.1119,
+          "PRC": -0.0702,
+          "HAB": -0.0497
+        },
+        "noised_vs_phi_hat": {
+          "VOT": -0.1116,
+          "SCH": -0.0679,
+          "MOD": -0.0286,
+          "CRW": -0.0316,
+          "PRC": 0.0784,
+          "HAB": -0.0522
+        }
+      },
+      "distr_05": {
+        "noised_vs_phi": {
+          "VOT": -0.0254,
+          "SCH": -0.097,
+          "MOD": -0.0634,
+          "CRW": -0.0326,
+          "PRC": -0.0515,
+          "HAB": -0.0764
+        },
+        "prenoise_vs_phi": {
+          "VOT": -0.1578,
+          "SCH": -0.0264,
+          "MOD": -0.0848,
+          "CRW": -0.0267,
+          "PRC": -0.0863,
+          "HAB": 0.0622
+        },
+        "noised_vs_phi_hat": {
+          "VOT": 0.0445,
+          "SCH": -0.0963,
+          "MOD": -0.0074,
+          "CRW": -0.0176,
+          "PRC": -0.1026,
+          "HAB": -0.0005
+        }
+      },
+      "distr_06": {
+        "noised_vs_phi": {
+          "VOT": 0.1025,
+          "SCH": 0.08,
+          "MOD": 0.1146,
+          "CRW": -0.0056,
+          "PRC": -0.2421,
+          "HAB": 0.0154
+        },
+        "prenoise_vs_phi": {
+          "VOT": 0.117,
+          "SCH": 0.0096,
+          "MOD": 0.0962,
+          "CRW": 0.0612,
+          "PRC": -0.1811,
+          "HAB": -0.0428
+        },
+        "noised_vs_phi_hat": {
+          "VOT": 0.1307,
+          "SCH": -0.0712,
+          "MOD": 0.074,
+          "CRW": -0.0797,
+          "PRC": -0.1792,
+          "HAB": -0.0281
+        }
+      },
+      "distr_07": {
+        "noised_vs_phi": {
+          "VOT": -0.1932,
+          "SCH": -0.0488,
+          "MOD": -0.0332,
+          "CRW": -0.1431,
+          "PRC": -0.0518,
+          "HAB": 0.1044
+        },
+        "prenoise_vs_phi": {
+          "VOT": -0.2461,
+          "SCH": 0.0069,
+          "MOD": 0.0331,
+          "CRW": -0.0895,
+          "PRC": -0.1446,
+          "HAB": 0.0852
+        },
+        "noised_vs_phi_hat": {
+          "VOT": -0.0931,
+          "SCH": 0.0001,
+          "MOD": 0.0064,
+          "CRW": -0.0437,
+          "PRC": -0.0595,
+          "HAB": 0.0508
+        }
+      },
+      "distr_08": {
+        "noised_vs_phi": {
+          "VOT": -0.0971,
+          "SCH": 0.0199,
+          "MOD": 0.0993,
+          "CRW": 0.0014,
+          "PRC": -0.07,
+          "HAB": 0.0209
+        },
+        "prenoise_vs_phi": {
+          "VOT": -0.2546,
+          "SCH": -0.0564,
+          "MOD": 0.1213,
+          "CRW": 0.0802,
+          "PRC": -0.0695,
+          "HAB": 0.1206
+        },
+        "noised_vs_phi_hat": {
+          "VOT": -0.0594,
+          "SCH": 0.0019,
+          "MOD": 0.051,
+          "CRW": -0.0264,
+          "PRC": -0.0483,
+          "HAB": 0.1011
+        }
+      },
+      "distr_09": {
+        "noised_vs_phi": {
+          "VOT": -0.0302,
+          "SCH": 0.0591,
+          "MOD": -0.0029,
+          "CRW": 0.0866,
+          "PRC": -0.0819,
+          "HAB": 0.0715
+        },
+        "prenoise_vs_phi": {
+          "VOT": 0.0259,
+          "SCH": 0.1898,
+          "MOD": 0.1369,
+          "CRW": 0.0188,
+          "PRC": -0.1227,
+          "HAB": 0.2134
+        },
+        "noised_vs_phi_hat": {
+          "VOT": 0.0473,
+          "SCH": 0.0849,
+          "MOD": 0.0048,
+          "CRW": 0.0338,
+          "PRC": -0.0855,
+          "HAB": 0.1368
+        }
+      }
+    },
+    "reading": "breaches against planted phi = renderer leaks traits into designed-zero scenarios; breaches only against phi_hat = correlated estimation variance, not truth leakage"
+  },
+  "fit_quality_exploratory": {
+    "in_sample_training_scenarios_heldout_travelers": {
+      "model_accuracy": 0.8039,
+      "population_majority_baseline": 0.7138,
+      "n_choices": 8319
+    },
+    "held_out_scenarios_heldout_travelers": {
+      "model_accuracy": 0.7668,
+      "population_majority_baseline": 0.7159,
+      "n_choices": 2080
+    },
+    "note": "argmax prediction vs the noised choice; baseline = per-scenario majority option over training travelers (zero-information)"
+  },
+  "saturation_profile_exploratory": {
+    "b_time_nonnegative": 184,
+    "b_cost_nonnegative": 110,
+    "vot_ratio_outside_winsor_0.5_200": 220,
+    "abs_asc_car_above_3": 301,
+    "abs_b_switch_above_3": 209,
+    "n_travelers": 400,
+    "note": "near-deterministic rendered choices push coefficients to ridge-limited magnitudes (quasi-separation); ratios destabilize"
+  },
+  "designed_score_contrast_exploratory": {
+    "held_out_r_from_simple_tendency_index": {
+      "VOT": 0.6127,
+      "SCH": 0.4916,
+      "MOD": 0.709,
+      "CRW": 0.5864,
+      "PRC": 0.5432,
+      "HAB": 0.6553
+    },
+    "median": 0.5996,
+    "note": "same noised choices, same held-out travelers, same training scenarios as the structural estimator; the index knows the designed loadings (grader-side oracle), so this is an upper reference for signal present in the choices, not a rival system-side estimator"
+  }
+}

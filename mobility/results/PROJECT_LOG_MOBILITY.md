@@ -491,3 +491,74 @@ PCA + orthogonal Procrustes on training travelers only (no scipy in the
 repo; carries no bar). (6) Ridge λ = 1e-4 as a numerical existence guard,
 reported not tuned. (7) The distractor tripwire uses all 10 distractors ×
 all 400 travelers on the noised choices, A=+1/B=−1.
+
+## 2026-08-04 — GATE M2 RUN: ALL FIVE FROZEN BARS FAILED; tripwire hunt found real renderer leakage
+
+Source of truth: `results/m2_recovery.json` (frozen pipeline) and
+`results/m2_diagnostics.json` (mandated tripwire hunt + exploratory
+forensics). Zero API spend; the noised world re-derived bit-identically
+(55,978 answers checked) before anything ran. Splits created at seed 3210
+and frozen in `experiments/m2_splits.json`.
+
+**Frozen bars, verbatim (held-out travelers):**
+- Per-dimension recovery r ≥ 0.75, all 6: **FAIL, all six.** VOT 0.447,
+  SCH 0.406, MOD 0.320, CRW 0.603, PRC 0.285, HAB 0.591 (median 0.427).
+- VOT real units, median error ≤ 35%: **FAIL** — e_raw 112.2%. The 25%
+  reported line: fail (reported, never a gate condition).
+- Uncertainty coverage 60–75%: **FAIL** — pooled 16.7%; the bootstrap is
+  3–9× overconfident on every dimension (variance ratios in the file).
+- Designed-zero separability |r(VOT̂, PRĈ)| ≤ 0.15: **FAIL** — −0.343.
+- Distractor tripwire |r| ≤ 0.15: **FAIL** — max 0.222; the frozen bar's
+  mandated leakage hunt was run before this report (below).
+
+**Frozen decomposition (declared primary presentation).** e_ceiling at the
+measured ρ̂_VOT = 0.670 is 31.7%; estimator overhead = 112.2% − 31.7% =
+**+80.5 points — the estimator, not the card ceiling, dominates the VOT
+miss.** Disattenuated r (r/ρ̂, capped at 1): VOT 0.668, SCH 0.836,
+MOD 0.436, CRW 0.951, PRC 0.553, HAB 1.000. Read: SCH/CRW/HAB misses are
+mostly ceiling-inherited (Ruling 23 anticipated exactly this); VOT/MOD/PRC
+carry large estimator-side losses on top of the ceiling.
+
+**Where it breaks (diagnostics file; exploratory except the hunt):**
+1. **Quasi-separation.** The rendered choices are far more deterministic
+   than a shallow logit: 301/400 travelers hit |ASC_car| > 3, 209/400
+   |β_switch| > 3; coefficients grow to ridge-limited magnitudes.
+2. **Wrong-sign time coefficients for 184/400 travelers.** The frozen
+   utility prices all minutes with one β_time; travelers who consistently
+   buy schedule buffers (dep block) or prefer the quiet/uncrowded/habitual
+   slower option are fit with positive β_time, which then corrupts
+   VOT̂ = β_time/β_cost (220/400 outside [0.5, 200] €/h; 40/80 held-out
+   degenerate).
+3. **Mechanical VOT–PRC entanglement.** φ̂_VOT and φ̂_PRC share β̂_cost
+   (numerator/denominator), so estimation noise induces the −0.343 —
+   the parent's TRU–RSK lesson reappearing in ratio form.
+4. **The signal is in the choices; the structural estimator loses it.**
+   From the SAME noised choices, same held-out travelers, the simple
+   designed-score tendency index (grader-side oracle reference) recovers
+   r = 0.49–0.71 (median 0.60) vs the structural MNL's 0.29–0.60 (median
+   0.43). In-sample choice accuracy is 0.804 vs 0.714 zero-information —
+   the model mimics choices adequately while its parameters entangle.
+5. **The latent comparison fit does not rescue** (held-out r 0.23–0.54).
+
+**Tripwire hunt verdict (mandated): REAL RENDERER LEAKAGE, not estimation
+artifact and not a Wall incident.** Pre-noise distractor choices correlate
+with PLANTED φ in 9 of 10 distractors, max |r| 0.383 (distr_03
+sleep-in-vs-early-swim × SCH; distr_09 dentist-slot × HAB +0.213; distr_00
+museum-vs-park × VOT +0.216). The persona drives designed-zero lifestyle
+choices; with LLM travelers no scenario is behaviorally a distractor. The
+bank audit could not see this (it classifies constructs, not rendered
+behavior). No truth crossed the Wall.
+
+**Honest framing.** This is the study's pre-registered negative direction:
+standard travel-demand estimation does NOT recover planted parameters from
+these LLM travelers' choices, and the file records where it breaks
+(near-deterministic choices, unmodeled texture, ratio instability,
+persona-everywhere). Ruling 23's ceiling pre-declaration covers part of the
+miss; the estimator overhead beyond it is the new, larger finding.
+
+**Tests at gate:** parent 726 passed; mobility 21 passed + 1 expected skip
+(new estimator tests included); both wall tests green. Cost: $0.00 this
+stage; grand total unchanged ≈ $1.81.
+
+**GATE M2: HARD STOP.** All five frozen bars failed. Nothing proceeds
+without the owner's ruling.
